@@ -1,0 +1,14 @@
+@media (min-width: 1024) and (max-width: 1230px) {
+  .ext-class-ang1 {
+    left: 80px;
+  }
+  .ext-class-ang2 {
+    right: 80px;
+  }
+  .ext-class-ang3 {
+    left: 80px;
+  }
+  .ext-class-ang4 {
+    right: 80px;
+  }
+}

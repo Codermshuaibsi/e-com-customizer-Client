@@ -1,0 +1,9 @@
+@media (max-width: 640px) {
+  .ext-class-foot {
+    justify-content: center;
+  }
+  .ext-class-foot2 {
+    justify-content: center;
+    text-align: center;
+  }
+}
