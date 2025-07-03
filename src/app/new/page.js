@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import Navbar from "./Navbar/page";
+// import Navbar from "./Navbar/page";
 import Hero from "./Hero/page";
 import Product from "./Product/page";
 import HatsSection from "./Hats/page";
@@ -12,6 +12,7 @@ import Brands from "./Brands/page";
 import Followinsta from "./Follow-insta/page";
 import Newsletter from "./Newsletter/page";
 import Footer from "./Footer/page";
+import Navbar from "../COMMON/Navbar";
 
 function AllSection() {
   return (

@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import "../Navbar/page.css";
+// import "../Navbar/page.css";
 import {
   FaEnvelope,
   FaFacebookF,
@@ -21,7 +21,7 @@ export default function Navbar() {
     const routes = [
       "/catalog_tshirt_page",
       "/Catalog_page",
-      "/catalog_tshirt_page",
+      "/new_collection",
       "/brand",
       "/about",
     ];
@@ -29,7 +29,7 @@ export default function Navbar() {
   };
   return (
     <header>
-      <div className="bg-black text-white text-sm px-4 md:px-10 py-3 flex flex-col md:flex-row justify-between items-center gap-3">
+      <div className="bg-black text-white text-sm px-4 md:px-10 py-3 flex flex-row md:flex-row justify-between items-center gap-3">
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-6 items-center">
           <div className="flex items-center gap-2">
             <IoCallOutline />
@@ -58,7 +58,8 @@ export default function Navbar() {
       <div className="bg-white py-4 px-4 md:px-8 lg:px-16 flex flex-col lg:flex-row justify-between items-center gap-4">
         {/* Left: brand + search */}
         <div className="flex flex-col md:flex-row w-full lg:w-2/3 items-center gap-6">
-          <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#333333]">
+          <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#333333] cursor-pointer"
+          onClick={()=>navigation.push("/")}>
             BRAND
           </div>
 
@@ -87,10 +88,11 @@ export default function Navbar() {
             <a
               href="#"
               className="text-[#3559C7] font-semibold text-base sm:text-lg underline"
+              onClick={()=>navigation.push("/login")}
             >
               SIGN IN
             </a>
-            <button className="bg-[#3559C7] text-white px-4 py-2 sm:px-6 sm:py-3 font-semibold">
+            <button className="bg-[#3559C7] text-white px-4 py-2 sm:px-6 sm:py-3 font-semibold" onClick={()=>navigation.push("/signup")}>
               SIGN UP
             </button>
           </div>
@@ -117,7 +119,7 @@ export default function Navbar() {
         {navItems.map((item, index) => (
           <a
             key={item}
-            className="uppercase text-base sm:text-xl font-semibold text-[#333333]"
+            className="uppercase text-base sm:text-md font-semibold text-[#333333]"
             href="#"
             onClick={() => Goto_new_page(index)}
           >
