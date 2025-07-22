@@ -6,7 +6,7 @@ export default function HatsSection() {
   return (
     <>
       <section
-        className="w-full min-h-[94vh] bg-cover bg-center flex justify-center lg:justify-start  items-center"
+        className="w-full min-h-[450px] bg-cover bg-center flex justify-center lg:justify-start  items-center"
         style={{
           backgroundImage:
             "url('https://res.cloudinary.com/dxlykgx6w/image/upload/v1751115174/view-baseball-cap_ebcgvo.png')",

@@ -71,7 +71,7 @@ export default function Hero() {
       </div> */}
 
       <section
-        className="w-full h-[80vh] mt-4 bg-cover bg-center flex items-center relative transition-all duration-500 ease-in-out"
+        className="w-full h-[350px] mt-4 bg-cover bg-center flex items-center relative transition-all duration-500 ease-in-out"
         style={{
           backgroundImage: `url(${sliderImages[currentIndex]})`,
         }}

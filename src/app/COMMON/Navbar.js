@@ -8,11 +8,13 @@ import {
   FaInstagram,
   FaSearch,
 } from "react-icons/fa";
+import { HiHeart, HiOutlineHeart } from "react-icons/hi";
 import { FiMail } from "react-icons/fi";
 import { IoCallOutline } from "react-icons/io5";
 import { LiaShoppingBagSolid } from "react-icons/lia";
 import { HiMenu, HiX } from "react-icons/hi";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 export default function Navbar() {
   const navItems = ["TSHIRT", "HATS", "NEW COLLECTIONS", "BRAND", "ABOUT"];
   const [showMenu, setShowMenu] = useState(false);
@@ -58,8 +60,10 @@ export default function Navbar() {
       <div className="bg-white py-4 px-4 md:px-8 lg:px-16 flex flex-col lg:flex-row justify-between items-center gap-4">
         {/* Left: brand + search */}
         <div className="flex flex-col md:flex-row w-full lg:w-2/3 items-center gap-6">
-          <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#333333] cursor-pointer"
-          onClick={()=>navigation.push("/")}>
+          <div
+            className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#333333] cursor-pointer"
+            onClick={() => navigation.push("/")}
+          >
             BRAND
           </div>
 
@@ -79,20 +83,29 @@ export default function Navbar() {
               <span className="absolute top-0 right-0 h-2 w-2 bg-blue-600 rounded-full"></span>
             </div>
             <FiMail className="text-2xl md:text-3xl text-[#424241]" />
+            
+              <button className="text-xl text-red-500" onClick={()=> navigation.push("/wishlist")}>
+                {true ? <HiHeart size={30} /> : <HiOutlineHeart />}{" "}
+               
+              </button>
+            
           </div>
         </div>
 
-        {/* Right: icons + login */}
+     
         <div className="flex flex-col md:flex-row gap-4 md:gap-8 items-center">
           <div className="flex gap-4 items-center">
             <a
               href="#"
               className="text-[#3559C7] font-semibold text-base sm:text-lg underline"
-              onClick={()=>navigation.push("/login")}
+              onClick={() => navigation.push("/login")}
             >
               SIGN IN
             </a>
-            <button className="bg-[#3559C7] text-white px-4 py-2 sm:px-6 sm:py-3 font-semibold" onClick={()=>navigation.push("/signup")}>
+            <button
+              className="bg-[#3559C7] text-white px-4 py-2 sm:px-6 sm:py-3 font-semibold"
+              onClick={() => navigation.push("/signup")}
+            >
               SIGN UP
             </button>
           </div>

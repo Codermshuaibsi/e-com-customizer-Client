@@ -7,7 +7,7 @@ export default function FreshDrop() {
 
         <>
             <section
-                className="w-full h-[80vh] bg-cover bg-center flex items-center"
+                className="w-full h-[450px] bg-cover bg-center flex items-center"
                 style={{
                     backgroundImage:
                         "url('https://res.cloudinary.com/dxlykgx6w/image/upload/v1751178156/03-beyonce-cowboy-carter-press-cr-blair-caldwell-2024-billboard-pro-1260_kmeia8.png')",

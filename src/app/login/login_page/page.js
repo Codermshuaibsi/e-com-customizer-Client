@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const generateCaptcha = (length = 6) =>
@@ -11,6 +12,7 @@ const Login = () => {
     password: "",
     captchaInput: "",
   });
+  const navigation =useRouter("/")
 
   const [captchaCode, setCaptchaCode] = useState("");
 
@@ -28,16 +30,45 @@ const Login = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (formData.captchaInput !== captchaCode) {
       alert("Invalid captcha");
       return;
     }
+    try {
 
-    console.log("Login data submitted:", formData);
+         const res = await fetch("https://e-com-customizer.onrender.com/api/v1/login", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    email: formData.emailOrPhone,
+    password: formData.password,
+  }),
+});
+
+
+
+const data = await res.json();
+console.log(data);
+localStorage.setItem("user_token",data.token);
+console.log("Login data submitted:", formData);
     alert("Login successful!");
+       navigation.push("/")
+
+    
+      
+    } catch (error) {
+       alert(`${error}`);
+    }
+
+
+
+
+    
   };
 
   return (

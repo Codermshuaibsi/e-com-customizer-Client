@@ -8,6 +8,7 @@ import {
   FaInstagram,
   FaSearch,
 } from "react-icons/fa";
+import { HiOutlineHeart } from "react-icons/hi"
 import { FiMail } from "react-icons/fi";
 import { IoCallOutline } from "react-icons/io5";
 import { LiaShoppingBagSolid } from "react-icons/lia";

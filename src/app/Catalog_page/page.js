@@ -1,10 +1,7 @@
 "use client";
 
 import React from "react";
-import Navbar from "../new/Navbar/page";
 
-import Footer from "../new/Footer/page";
-import TruckersHero from "./Herosection.js/page";
 import ProductPage from "./FilterProduct/page";
 import Navbar1 from "../COMMON/Navbar";
 import Footer1 from "../COMMON/Footer";
