@@ -1,0 +1,347 @@
+'use client';
+import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+
+const FetchCartItems11 = () => {
+  const [cartItems, setCartItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+  const handleCheckout = () => {
+    const token = localStorage.getItem('user_token');
+    if (token) {
+      router.push('/order');
+    } else {
+      alert('Please login to proceed to checkout.');
+      router.push('/login');
+    }
+  };
+
+  const fetchCartItems = async () => {
+    const token = localStorage.getItem('user_token');
+
+    if (token) {
+      try {
+        const res = await fetch('https://e-com-customizer.onrender.com/api/v1/fetchAllCartItems', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        const data = await res.json();
+        console.log(data);
+        if (data.success) {
+          setCartItems(data.cartItems || []);
+        } else {
+          console.error('Cart fetch failed:', data.message);
+        }
+      } catch (error) {
+        console.error('Error fetching cart items:', error);
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      const guestCart = JSON.parse(localStorage.getItem('guest_cart')) || [];
+      setCartItems(guestCart);
+      setLoading(false);
+    }
+  };
+
+  const removeFromCart = async (id) => {
+    const token = localStorage.getItem("user_token");
+
+    if (token) {
+      try {
+        const res = await fetch(`https://e-com-customizer.onrender.com/api/v1/removeFromCart/${id.productId}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await res.json();
+        console.log("Removed from cart:", data);
+
+        if (res.ok) {
+          alert("Item removed successfully.");
+          fetchCartItems();
+        } else {
+          alert("Failed to remove item.");
+        }
+      } catch (error) {
+        console.error("Error removing item:", error);
+      }
+    } else {
+      let guestCart = JSON.parse(localStorage.getItem("guest_cart")) || [];
+      guestCart = guestCart.filter((item) => item._id !== id._id);
+      localStorage.setItem("guest_cart", JSON.stringify(guestCart));
+      setCartItems(guestCart);
+      alert("Item removed from cart.");
+    }
+  };
+
+ const updateQuantity = async (item, newQuantity) => {
+
+  console.log("Updating quantity for item:", item.productId, "to", newQuantity);
+  if (newQuantity < 1) return;
+
+  const token = localStorage.getItem("user_token")?.replace(/^"|"$/g, "");
+
+  if (token) {
+    // ✅ API call to update quantity for logged-in user
+    try {
+      const res = await fetch(
+        `http://localhost:4000/api/v1/updateCartQuantity/${item.productId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ quantity: newQuantity }),
+        }
+      );
+
+      if (res.ok) {
+        const updatedItems = cartItems.map((cartItem) =>
+          cartItem._id === item._id
+            ? { ...cartItem, quantity: newQuantity }
+            : cartItem
+        );
+        setCartItems(updatedItems);
+      } else {
+        console.error("Failed to update quantity on server");
+      }
+    } catch (err) {
+      console.error("Error updating quantity:", err);
+    }
+  } else {
+    // ✅ Update quantity for guest user (localStorage only)
+    let guestCart = JSON.parse(localStorage.getItem("guest_cart")) || [];
+    guestCart = guestCart.map((cartItem) =>
+      cartItem._id === item._id
+        ? { ...cartItem, quantity: newQuantity }
+        : cartItem
+    );
+    localStorage.setItem("guest_cart", JSON.stringify(guestCart));
+    setCartItems(guestCart);
+  }
+};
+;
+
+  useEffect(() => {
+    fetchCartItems();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading your cart...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const totalAmount = cartItems.reduce(
+    (acc, item) => acc + item.price * item.quantity,
+    0
+  );
+
+  const totalItems = cartItems.reduce((acc, item) => acc + item.quantity, 0);
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-white shadow-sm border-b">
+        <div className="max-w-6xl mx-auto px-4 py-4">
+          <div className="flex items-center gap-2">
+            <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.1 5M7 13v0a2 2 0 002 2h9a2 2 0 002-2v0M7 13H5.4M17 21v-2a2 2 0 00-2-2H9a2 2 0 00-2 2v2" />
+            </svg>
+            <h1 className="text-2xl font-semibold text-gray-800">My Cart</h1>
+            {cartItems.length > 0 && (
+              <span className="text-gray-500">({totalItems} item{totalItems > 1 ? 's' : ''})</span>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-6xl mx-auto px-4 py-6">
+        {cartItems.length === 0 ? (
+          <div className="bg-white rounded-lg shadow-sm p-8 text-center">
+            <div className="w-24 h-24 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+              <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.1 5M7 13v0a2 2 0 002 2h9a2 2 0 002-2v0M7 13H5.4M17 21v-2a2 2 0 00-2-2H9a2 2 0 00-2 2v2" />
+              </svg>
+            </div>
+            <h2 className="text-xl font-semibold text-gray-800 mb-2">Your cart is empty</h2>
+            <p className="text-gray-600 mb-6">Add items to it now</p>
+            <Link href="/" className="inline-block px-8 py-3 bg-blue-600 text-white rounded-sm font-medium hover:bg-blue-700 transition-colors">
+              Shop Now
+            </Link>
+          </div>
+        ) : (
+          <div className="flex flex-col lg:flex-row gap-6">
+            {/* Cart Items */}
+            <div className="flex-1">
+              <div className="bg-white rounded-lg shadow-sm">
+                <div className="p-4 border-b bg-blue-50">
+                  <div className="flex items-center justify-between">
+                    <h2 className="font-semibold text-gray-800">From Saved Addresses</h2>
+                    <span className="text-sm text-gray-600">Deliver to: 110001</span>
+                  </div>
+                </div>
+                
+                <div className="divide-y">
+                  {cartItems.map((item) => (
+                    <div key={item._id} className="p-6">
+                      <div className="flex flex-col sm:flex-row gap-4">
+                        {/* Product Image */}
+                      <Link href={`/PDP_page/${item._id}`}>  <div className="w-32 h-32 flex-shrink-0 mx-auto sm:mx-0">
+                          <Image
+                            src={item.thumbnail[0]}
+                            alt={item.title || "Product image"}
+                            width={128}
+                            height={128}
+                            className="w-full h-full object-contain rounded border"
+                          />
+                        </div> </Link>
+                        
+                        {/* Product Details */}
+                        <div className="flex-1 min-w-0">
+                          <h3 className="text-lg font-medium text-gray-900 mb-2 line-clamp-2">
+                            {item.title}
+                          </h3>
+                          
+                          <div className="flex items-center gap-4 mb-3">
+                            <span className="text-2xl font-semibold text-gray-900">
+                              ₹{item.price?.toLocaleString()}
+                            </span>
+                            <span className="text-sm text-gray-500 line-through">
+                              ₹{(item.price * 1.2)?.toLocaleString()}
+                            </span>
+                            <span className="text-sm text-green-600 font-medium">
+                              17% off
+                            </span>
+                          </div>
+                          
+                          <div className="flex flex-wrap items-center gap-4 mb-4">
+                            {/* Quantity Selector */}
+                            <div className="flex items-center border rounded">
+                              <button 
+                                onClick={() => updateQuantity(item, item.quantity - 1)}
+                                className="px-3 py-1 hover:bg-gray-100 transition-colors"
+                                disabled={item.quantity <= 1}
+                              >
+                                -
+                              </button>
+                              <span className="px-4 py-1 border-x min-w-[60px] text-center">
+                                {item.quantity}
+                              </span>
+                              <button 
+                                onClick={() => updateQuantity(item, item.quantity + 1)}
+                                className="px-3 py-1 hover:bg-gray-100 transition-colors"
+                              >
+                                +
+                              </button>
+                            </div>
+                            
+                            {/* Action Buttons */}
+                            <button className="text-sm font-medium text-gray-700 hover:text-gray-900 flex items-center gap-1">
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                              </svg>
+                              Save for later
+                            </button>
+                            
+                            <button 
+                              onClick={() => removeFromCart(item)}
+                              className="text-sm font-medium text-gray-700 hover:text-red-600 flex items-center gap-1 transition-colors"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              </svg>
+                              Remove
+                            </button>
+                          </div>
+                          
+                          <div className="text-sm text-green-600 font-medium">
+                            ✓ Delivery by Tomorrow | Free ₹40
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                {/* Continue Shopping */}
+                <div className="p-4 border-t bg-gray-50">
+                  <Link href="/" className="text-blue-600 font-medium hover:text-blue-800 flex items-center gap-2">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    Continue Shopping
+                  </Link>
+                </div>
+              </div>
+            </div>
+            
+            {/* Price Summary */}
+            <div className="lg:w-80">
+              <div className="bg-white rounded-lg shadow-sm sticky top-4">
+                <div className="p-4 border-b">
+                  <h3 className="font-semibold text-gray-800 text-lg">Price Details</h3>
+                </div>
+                
+                <div className="p-4 space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Price ({totalItems} item{totalItems > 1 ? 's' : ''})</span>
+                    <span className="font-medium">₹{(totalAmount * 1.2).toLocaleString()}</span>
+                  </div>
+                  
+                  <div className="flex justify-between text-green-600">
+                    <span>Discount</span>
+                    <span>-₹{(totalAmount * 0.2).toLocaleString()}</span>
+                  </div>
+                  
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Delivery Charges</span>
+                    <span className="text-green-600">Free</span>
+                  </div>
+                  
+                  <hr className="my-3" />
+                  
+                  <div className="flex justify-between text-lg font-semibold">
+                    <span>Total Amount</span>
+                    <span>₹{totalAmount.toLocaleString()}</span>
+                  </div>
+                  
+                  <div className="text-sm text-green-600 font-medium">
+                    You will save ₹{(totalAmount * 0.2).toLocaleString()} on this order
+                  </div>
+                </div>
+                
+                <div className="p-4 border-t">
+                  <button 
+                    onClick={handleCheckout}
+                    className="w-full py-3 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-sm transition-colors"
+                  >
+                    Place Order
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default FetchCartItems11;

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -19,7 +20,7 @@ const Signup = () => {
   });
 
   const [captchaCode, setCaptchaCode] = useState("");
-
+   const navigation=useRouter();
   const generateCaptcha = (length = 6) =>
     Math.random().toString(36).slice(2, 2 + length).toUpperCase();
 
@@ -34,54 +35,93 @@ const Signup = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+
+     if (name === "phone") {
+    const numericValue = value.replace(/\D/g, ""); // Remove non-digits
+    if (numericValue.length > 10) return; // Stop if more than 10 digits
+    setFormData((prev) => ({ ...prev, [name]: numericValue }));
+    return;
+  }
+  if (name === "Pincode") {
+  const numericValue = value.replace(/\D/g, ""); // Remove non-digits
+  if (numericValue.length > 6) return;
+  setFormData((prev) => ({ ...prev, [name]: numericValue }));
+  return;
+}
+
+
+  setFormData((prev) => ({ ...prev, [name]: value }));
+   
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match!");
-      return;
+    if (!formData.firstName || !formData.lastName || !formData.email || !formData.phone || !formData.password || !formData.address || !formData.city || !formData.state || !formData.Pincode) {
+    alert("Please fill in all the required fields.");
+    return;
+  }
+
+  const pincodeRegex = /^[0-9]{6}$/;
+if (!pincodeRegex.test(formData.Pincode)) {
+  alert("Please enter a valid 6-digit pincode.");
+  return;
+}
+
+  // Email validation using RegExp
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(formData.email)) {
+    alert("Please enter a valid email address.");
+    return;
+  }
+
+  // Password validation (at least 6 characters)
+  if (formData.password.length < 6) {
+    alert("Password should be at least 6 characters long.");
+    return;
+  }
+
+  // Phone number validation (basic)
+  const phoneRegex = /^[0-9]{10}$/;
+  if (!phoneRegex.test(formData.phone)) {
+    alert("Please enter a valid 10-digit phone number.");
+    return;
+  }
+
+  const payload = {
+    firstName: formData.firstName,
+    lastName: formData.lastName,
+    email: formData.email,
+    phoneNumber: formData.phone,
+    password: formData.password,
+    address: formData.address,
+    state: formData.state,
+    pincode: formData.Pincode,
+    city: formData.city,
+    favouriteGame: "ludo",
+  };
+
+  try {
+    const res = await fetch("https://e-com-customizer.onrender.com/api/v1/signuP", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+       console.log("Signup Response:", data);
+    alert(data.message || "Signup successful!")
+      navigation.push("/login");
     }
-
-    if (formData.captchaInput !== captchaCode) {
-      alert("Invalid captcha!");
-      return;
-    }
-
-    const payload = {
-      firstName: formData.firstName,
-      lastName: formData.lastName,
-      email: formData.email,
-      phoneNumber: formData.phone,
-      password: formData.password,
-      address: formData.address,
-      state: formData.state,
-      pincode: formData.Pincode,
-      city: formData.city,
-      favouriteGame: "ludo",
-    };
-
-    try {
-      const res = await fetch(
-        "https://e-com-customizer.onrender.com/api/v1/signup",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        }
-      );
-
-      const data = await res.json();
-      console.log("Signup Response:", data);
-      alert(data.message || "Signup successful!");
-    } catch (error) {
-      console.error("Signup error:", error);
-      alert("Something went wrong.");
-    }
+   
+  } catch (error) {
+    console.error("Signup error:", error);
+    alert("Something went wrong.");
+  }
   };
 
   return (
@@ -164,6 +204,7 @@ const Signup = () => {
                 placeholder="9876543210"
                 value={formData.phone}
                 onChange={handleChange}
+                maxLength={10}
                 required
                 className="lg:flex-1 px-4 py-2 max-w-[100%] w-[100%] h-[37px] rounded border border-gray-300 dark:border-gray-600 text-sm dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
               />
@@ -208,11 +249,12 @@ const Signup = () => {
                 Pincode
               </label>
               <input
-                type="number"
+                type="text"
                 name="Pincode"
                 placeholder="Pincode"
                 value={formData.Pincode}
                 onChange={handleChange}
+                maxLength={6}
                 required
                 className="w-full px-4 py-2 rounded border border-gray-300 dark:border-gray-600 text-sm dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
               />

@@ -18,7 +18,7 @@ function AllSection() {
   return (
     <>
       <div className=" mx-auto max-w-[1720px]">
-        <Navbar />
+        {/* <Navbar /> */}
         <Hero />
         <Product />
         <HatsSection />

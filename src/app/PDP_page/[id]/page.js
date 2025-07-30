@@ -1,13 +1,19 @@
 "use client";
-
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+// import React, { useState } from "react";
 import { LiaShoppingBagSolid } from "react-icons/lia";
 import { FaRegHeart } from "react-icons/fa";
 import { BiMinus, BiPlus } from "react-icons/bi";
 import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
-
-
+// import { Link } from "lucide-react";
+import Link from "next/link";
+import Navbar from "../../COMMON/Navbar";
 export default function ProductDetailPage() {
+
+
+ const { id } = useParams();
+
   const thumbnails = [
     "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751116991/101-0378-YEL-F01_750x_1_tweatg.png",
     "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751116990/101-0378-YEL-F01_750x_1_2_hqnoo3.png",
@@ -15,57 +21,146 @@ export default function ProductDetailPage() {
     "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751116991/101-0378-YEL-F01_750x_1_tweatg.png"
   ];
 
-   const hats = [
-    {
-      img: "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751116991/101-0378-YEL-F01_750x_1_tweatg.png",
-      sale: true,
-      color: "Yellow",
-    },
-    {
-      img: "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751116991/101-0391-BLK-F01_750x_1_woo9r9.png",
-      sale: false,
-      color: "Black",
-    },
-    {
-      img: "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751116990/101-0378-YA-BLK-F01_750x_1_sp0dgy.png",
-      sale: false,
-      color: "Black",
-    },
-    {
-      img: "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751116990/101-0378-YEL-F01_750x_1_2_hqnoo3.png",
-      sale: false,
-      color: "Yellow",
-    },
-    {
-      img: "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751116990/101-0378-YA-RED-F01_750x_1_jqz2si.png",
-      sale: false,
-      color: "Red",
-    },
-    {
-      img: "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751116990/101-0378-YEL-F01_750x_1_1_zhc0mr.png",
-      sale: false,
-      color: "Yellow",
-    },
-    {
-      img: "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751116990/101-0512-RUS_750x_1_r1ryco.png",
-      sale: true,
-      color: "Rust",
-    },
-    {
-      img: "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751116990/101-0512-WIN-F01_750x_1_u5i4af.png",
-      sale: true,
-      color: "Wine",
-    },
-  ];
+  //  const hats = [
+  //   {
+  //     img: "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751116991/101-0378-YEL-F01_750x_1_tweatg.png",
+  //     sale: true,
+  //     color: "Yellow",
+  //   },
+  //   {
+  //     img: "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751116991/101-0391-BLK-F01_750x_1_woo9r9.png",
+  //     sale: false,
+  //     color: "Black",
+  //   },
+  //   {
+  //     img: "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751116990/101-0378-YA-BLK-F01_750x_1_sp0dgy.png",
+  //     sale: false,
+  //     color: "Black",
+  //   },
+  //   {
+  //     img: "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751116990/101-0378-YEL-F01_750x_1_2_hqnoo3.png",
+  //     sale: false,
+  //     color: "Yellow",
+  //   },
+  //   {
+  //     img: "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751116990/101-0378-YA-RED-F01_750x_1_jqz2si.png",
+  //     sale: false,
+  //     color: "Red",
+  //   },
+  //   {
+  //     img: "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751116990/101-0378-YEL-F01_750x_1_1_zhc0mr.png",
+  //     sale: false,
+  //     color: "Yellow",
+  //   },
+  //   {
+  //     img: "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751116990/101-0512-RUS_750x_1_r1ryco.png",
+  //     sale: true,
+  //     color: "Rust",
+  //   },
+  //   {
+  //     img: "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751116990/101-0512-WIN-F01_750x_1_u5i4af.png",
+  //     sale: true,
+  //     color: "Wine",
+  //   },
+  // ];
 
   const [selectedImage, setSelectedImage] = useState(thumbnails[0]);
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState("description");
+  const [product, setProduct] = useState(null);
+  const [hats, setProducts4] = useState([]);
 
   const increaseQty = () => setQuantity(prev => prev + 1);
   const decreaseQty = () => setQuantity(prev => (prev > 1 ? prev - 1 : 1));
 
+
+ const addToCart = async (item) => {
+  console.log(id)
+  const token = localStorage.getItem("user_token");
+
+  if (token) {
+    // ✅ Logged-in Cart
+    try {
+      const res = await fetch(`https://e-com-customizer.onrender.com/api/v1/addToCart/${item._id}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+      console.log("Server Cart:", data);
+      if (!res.ok) {
+
+        alert(data.message || "Item added to cart successfully");
+        
+      }
+    } catch (error) {
+      console.error("Error adding to server cart:", error);
+    }
+  } else {
+    // ✅ Guest Cart (localStorage)
+    let guestCart = JSON.parse(localStorage.getItem("guest_cart")) || [];
+    console.log("guestCart",guestCart)
+
+    // check if item already exists
+    const already = guestCart.find((items) => items.id === item);
+    
+    if (!already) {
+      // guestCart.push({ item, quantity: 1 });
+      guestCart.push(item);
+      localStorage.setItem("guest_cart", JSON.stringify(guestCart));
+      alert("Item added to local cart");
+    } else {
+      alert("Item already in local cart");
+    }
+  }
+};
+  
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const res = await fetch(`https://e-com-customizer.onrender.com/api/v1/getProductById/${id}`);
+        const data = await res.json();
+         // Adjust if API response differs
+        console.log(data.data)
+
+        if(res.ok) {
+          setSelectedImage(data.data.thumbnail[0]); 
+          setProduct(data.data);// Assuming product has an images array
+        } 
+      } catch (error) {
+        console.error("Error fetching product:", error);
+      }
+    };
+
+     const fetchProducts = async () => {
+      try {
+        const res = await fetch("https://e-com-customizer.onrender.com/api/v1/totalProduct");
+        const data = await res.json();
+        console.log(data)
+        setProducts4(data.AllProduct || []);
+        console.log(data.AllProduct)  ;
+      } catch (err) {
+        setError("Failed to fetch products");
+      } 
+    };
+
+   
+
+
+    if (id) {
+      fetchProduct();
+    }
+     fetchProducts();
+  }, []);
+
+  
+
   return ( <>
+  <Navbar />
     <div className="p-6  py-10 px-15 max-w-full bg-white">
       <div className="text-[#4F4F4F] text-[11px] sm:text-[12px] font-semibold uppercase py-2"> 
             Home / All Products / Cap / Lorem Ipsum is Simply
@@ -73,8 +168,8 @@ export default function ProductDetailPage() {
       <div className="flex flex-col md:flex-row gap-10">
         {/* Left: Images */}
         <div className="flex-[1.2]">
-          <div className="border-2 rounded-lg p-4 relative border-[#3559C7]">
-            <img src={selectedImage} alt="Main Hat" className="w-full h-auto object-contain" />
+          <div className="border-2 rounded-lg p-4 relative border-[#3559C7] h-[300px]">
+            <img src={selectedImage} alt="Main Hat" className="w-full object-contain h-full" />
             <div className="absolute bottom-3 right-3 text-white text-xl bg-black bg-opacity-50 p-2 rounded-full">
               ⤢
             </div>
@@ -96,9 +191,9 @@ export default function ProductDetailPage() {
 
         {/* Right: Product Details */}
         <div className="flex-[1.5]">
-          <h2 className="sm:text-2xl font-extrabold uppercase">LOREM IPSUM IS SIMPLY</h2>
+          <h2 className="sm:text-2xl font-extrabold uppercase">{product?.title}</h2>
           <div className="flex items-center mt-2 gap-4">
-            <span className="text-[#3559C7] text-xl font-bold">$12.33</span>
+            <span className="text-[#3559C7] text-xl font-bold">{product?.price}</span>
             <span className="line-through text-gray-500">$14.33</span>
             <span className="sm:text-sm text-green-600 text-[10px] font-medium">Availability: In stock</span>
           </div>
@@ -110,7 +205,7 @@ export default function ProductDetailPage() {
           </div>
 
           <p className="mt-4 text-[15px] text-gray-700 leading-relaxed">
-            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since. the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.
+           {product?.description}
           </p>
 
           {/* Quantity and Buttons */}
@@ -137,7 +232,7 @@ export default function ProductDetailPage() {
               <button className="bg-[#3559C7] text-white px-6 py-2 font-bold text-sm uppercase">
                 Customize
               </button>
-              <button className="border border-[#3559C7] text-[#3559C7] px-6 py-2 font-bold text-sm uppercase">
+              <button  onClick={()=>addToCart(product)} className="border border-[#3559C7] text-[#3559C7] px-6 py-2 font-bold text-sm uppercase">
                 Add to Cart
               </button>
             </div>
@@ -174,11 +269,7 @@ export default function ProductDetailPage() {
 
         {activeTab === "description" ? (
           <div className="bg-gray-50 px-6 py-10 text-lg text-gray-800 w-full">
-            Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-            Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
-            when an unknown printer took a galley of type and scrambled it to make a type
-            specimen book. It has survived not only five centuries, but also the leap into
-            electronic typesetting, remaining essentially unchanged.
+            {product?.description}
           </div>
         ) : (
           <div className="text-center text-gray-500 py-10 w-full">No reviews yet.</div>
@@ -204,10 +295,11 @@ export default function ProductDetailPage() {
           key={idx}
           className="border border-gray-200 rounded shadow-sm overflow-hidden group bg-white"
         >
-          <div className="p-4">
-            <div className="p-1.5 relative border border-gray-300">
+          <div className="p-4 h-[380px]">
+       <Link href={`/PDP_page/${hat?._id}`}>  
+          <div className="p-1.5 relative border border-gray-300">
               <img
-                src={hat.img}
+                src={hat.thumbnail}
                 alt="Hat"
                 className="w-full h-52 object-contain mb-4"
               />
@@ -217,18 +309,26 @@ export default function ProductDetailPage() {
                 </div>
               )}
             </div>
-            <h3 className="text-[17px] font-semibold mt-4">LOREM IPSUM</h3>
-            <p className="text-lg font-bold mt-1">
-              $ 12.23
-              <span className="line-through text-xs text-gray-500 ml-2">
-                $ 14.23
-              </span>
-            </p>
+            </Link> 
+            <h3 className="text-[17px] font-semibold mt-4">{hat.title}</h3>
+            <p className="text-lg font-bold mt-1 text-gray-800">
+                      {hat.discountedPrice &&
+                      hat.discountedPrice < hat.price ? (
+                        <>
+                          ₹{Number(hat.discountedPrice).toFixed(2)}
+                          <span className="line-through text-sm text-gray-500 ml-2">
+                            ₹{Number(hat.price).toFixed(2)}
+                          </span>
+                        </>
+                      ) : (
+                        <>₹{Number(hat.price).toFixed(2)}</>
+                      )}
+                    </p>
           </div>
           <div className="flex items-center justify-between px-4 pb-4">
-            <button className="flex-1 bg-[#3559C7] text-white font-bold text-sm py-2 px-4 flex items-center justify-center gap-2 hover:bg-blue-800 transition">
+            <button onClick={() => addToCart(hat)} className="flex-1 bg-[#3559C7] text-white font-bold text-sm py-[14px] px-4 flex items-center justify-center gap-2 hover:bg-blue-800 transition">
               <LiaShoppingBagSolid />
-              SHOP NOW
+              Add to Cart
             </button>
             <button className="ml-2 border border-gray-300 w-12 h-12 flex items-center justify-center hover:bg-gray-100">
               <FaRegHeart size={18} />
@@ -248,3 +348,4 @@ export default function ProductDetailPage() {
    </>
   );
 }
+

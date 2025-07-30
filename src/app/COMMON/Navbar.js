@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 // import "../Navbar/page.css";
 import {
   FaEnvelope,
@@ -8,17 +8,31 @@ import {
   FaInstagram,
   FaSearch,
 } from "react-icons/fa";
+import slugify from "slugify";
 import { HiHeart, HiOutlineHeart } from "react-icons/hi";
 import { FiMail } from "react-icons/fi";
 import { IoCallOutline } from "react-icons/io5";
 import { LiaShoppingBagSolid } from "react-icons/lia";
 import { HiMenu, HiX } from "react-icons/hi";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
+import User_profile_dero from "../userprofile/page";
+
 export default function Navbar() {
-  const navItems = ["TSHIRT", "HATS", "NEW COLLECTIONS", "BRAND", "ABOUT"];
+  const navItems = [
+    "TSHIRT",
+    "HATS",
+    "NEW COLLECTIONS",
+    "BRAND",
+    "ABOUT",
+    "CUSTOMIZER",
+  ];
   const [showMenu, setShowMenu] = useState(false);
   const navigation = useRouter();
+  const [showCustomizer, setShowCustomizer] = useState(false);
+  const [showCategories, setShowCategories] = useState([]);
+  const [showBrand, setShowBrand] = useState(false);
+  const [brands, setBrands] = useState([]);
   const Goto_new_page = (index) => {
     const routes = [
       "/catalog_tshirt_page",
@@ -27,8 +41,101 @@ export default function Navbar() {
       "/brand",
       "/about",
     ];
-    navigation.push(routes[index]);
+
+    if (index === 5) {
+      // CUSTOMIZER clicked
+      setShowCustomizer(true); // trigger a state
+    } else {
+      navigation.push(routes[index]);
+    }
+
+    // navigation.push(routes[index]);
   };
+
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("user_token");
+    setIsLoggedIn(!!token);
+
+    const fetchAllCategories = async () => {
+      try {
+        const res = await fetch(
+          "https://e-com-customizer.onrender.com/api/v1/showAllCategory"
+        );
+
+        if (!res.ok) {
+          throw new Error("Failed to fetch categories");
+        }
+
+        const data = await res.json();
+        console.log("Fetched Categories:", data);
+        setShowCategories(data.data);
+        console.log("All Categories:", data);
+        return data;
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+        return [];
+      }
+    };
+
+    const fetchBrands = async () => {
+      try {
+        const res = await fetch(
+          "https://e-com-customizer.onrender.com/api/v1/totalBrands"
+        );
+        const json = await res.json();
+        console.log("Fetched Brands: Navber", json);
+        if (res.ok) setBrands(json); // or adjust to your shape
+        else console.error(json.message);
+      } catch (e) {
+        console.error("Failed to fetch brands:", e);
+      }
+    };
+
+    fetchBrands();
+    fetchAllCategories();
+    // true if token exists
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("user_token");
+    setIsLoggedIn(false);
+    navigation.push("/login");
+  };
+  const pathname = usePathname();
+
+  useEffect(() => {
+    console.log("📍 Current route:", pathname);
+  }, [pathname]);
+
+  const customizerCategories = [
+    "Fitness & Sporting Goods",
+    "Jewelry & Watches",
+    "Sports & Apparel",
+    "Furniture & Home Decor",
+    "Food & Beverages",
+    "B2B",
+    "Industrial",
+    "Electronics",
+    "Promotional",
+  ];
+
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowCustomizer(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
     <header>
       <div className="bg-black text-white text-sm px-4 md:px-10 py-3 flex flex-row md:flex-row justify-between items-center gap-3">
@@ -79,35 +186,54 @@ export default function Navbar() {
           </div>
           <div className="flex gap-4 md:gap-6 items-center">
             <div className="relative">
-              <LiaShoppingBagSolid className="text-2xl md:text-3xl text-[#424241]" />
+              <Link href={"/get_all_cart"}>
+                {" "}
+                <LiaShoppingBagSolid className="text-2xl md:text-3xl text-[#424241]" />
+              </Link>
               <span className="absolute top-0 right-0 h-2 w-2 bg-blue-600 rounded-full"></span>
             </div>
-            <FiMail className="text-2xl md:text-3xl text-[#424241]" />
-            
-              <button className="text-xl text-red-500" onClick={()=> navigation.push("/wishlist")}>
-                {true ? <HiHeart size={30} /> : <HiOutlineHeart />}{" "}
-               
-              </button>
-            
+            <Link href={"/mainuserprofile"}>
+              {" "}
+              <FiMail className="text-2xl md:text-3xl text-[#424241]" />{" "}
+            </Link>
+
+            <button
+              className="text-xl text-red-500"
+              onClick={() => navigation.push("/wishlist")}
+            >
+              {true ? <HiHeart size={30} /> : <HiOutlineHeart />}{" "}
+            </button>
           </div>
         </div>
 
-     
         <div className="flex flex-col md:flex-row gap-4 md:gap-8 items-center">
           <div className="flex gap-4 items-center">
-            <a
-              href="#"
-              className="text-[#3559C7] font-semibold text-base sm:text-lg underline"
-              onClick={() => navigation.push("/login")}
-            >
-              SIGN IN
-            </a>
-            <button
-              className="bg-[#3559C7] text-white px-4 py-2 sm:px-6 sm:py-3 font-semibold"
-              onClick={() => navigation.push("/signup")}
-            >
-              SIGN UP
-            </button>
+            {isLoggedIn ? (
+              <>
+                <button
+                  className="text-[#3559C7] font-semibold text-base sm:text-lg underline"
+                  // onClick={() => navigation.push("")}
+                >
+                  <User_profile_dero />
+                </button>
+              </>
+            ) : (
+              <>
+                <a
+                  href="#"
+                  className="text-[#3559C7] font-semibold text-base sm:text-lg underline"
+                  onClick={() => navigation.push("/login")}
+                >
+                  SIGN IN
+                </a>
+                <button
+                  className="bg-[#3559C7] text-white px-4 py-2 sm:px-6 sm:py-3 font-semibold"
+                  onClick={() => navigation.push("/signup")}
+                >
+                  SIGN UP
+                </button>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -127,18 +253,101 @@ export default function Navbar() {
       <div
         className={`${
           showMenu ? "flex" : "hidden"
-        } sm:flex flex-wrap gap-4 sm:gap-8 justify-center mt-3 mb-3 px-5`}
+        } sm:flex flex-wrap gap-4 sm:gap-8 justify-center mt-3 mb-3 px-5 relative`}
       >
-        {navItems.map((item, index) => (
-          <a
-            key={item}
-            className="uppercase text-base sm:text-md font-semibold text-[#333333]"
-            href="#"
-            onClick={() => Goto_new_page(index)}
-          >
-            {item}
-          </a>
-        ))}
+        {navItems.map((item, index) => {
+          if (item === "CUSTOMIZER") {
+            return (
+              <div key={item} className="relative group" ref={dropdownRef}>
+                <a
+                  className="uppercase text-base sm:text-md font-semibold text-[#333333] cursor-pointer"
+                  onMouseEnter={() => setShowCustomizer(true)}
+                  onMouseLeave={() => setShowCustomizer(false)}
+                >
+                  {item}
+                </a>
+
+                {showCustomizer && (
+                  <div
+                    className="absolute left-1/2 top-full w-[95vw] max-w-2xl -translate-x-1/2 bg-white p-6 border border-gray-200 shadow-2xl rounded-md z-50"
+                    onMouseEnter={() => setShowCustomizer(true)}
+                    onMouseLeave={() => setShowCustomizer(false)}
+                  >
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                      {showCategories.map((category) => (
+                        <div key={category._id}>
+                          <h3 className="text-lg font-semibold mb-2 text-gray-800">
+                            {category.title}
+                          </h3>
+                          <ul className="space-y-1">
+                            {category.subCategory?.map((sub) => (
+                              <li key={sub._id}>
+                                <Link
+                                  href={`/customizerProducts/${sub._id}`}
+                                  className="text-sm text-gray-600 hover:text-blue-600 transition-colors"
+                                >
+                                  {sub.title}
+                                </Link>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          }
+
+          if (item === "BRAND") {
+            return (
+              <div
+                key="brand"
+                className="relative group"
+                ref={dropdownRef}
+                onMouseEnter={() => setShowBrand(true)}
+                onMouseLeave={() => setShowBrand(false)}
+              >
+                <a className="uppercase text-base sm:text-md font-semibold cursor-pointer">
+                  {item}
+                </a>
+
+                {showBrand && (
+                  <div className="absolute left-1/2 top-full w-[90vw] max-w-2xl -translate-x-1/2 bg-white p-6 border border-gray-200 shadow-xl rounded-md z-50">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                      {brands.map((b) => (
+                        <div key={b._id} className="flex flex-col items-center">
+                          <Link href={`/getbrandsproduct/${slugify(b.name, { lower: true })}`}>
+
+                            <img
+                              src={b.logoUrl}
+                              alt={b.name}
+                              className="h-16 object-contain mb-2"
+                            />
+                          </Link>
+                          <span className="text-sm font-bold">{b.name}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          }
+
+          // For other nav items
+          return (
+            <div key={item} className="relative">
+              <a
+                className="uppercase text-base sm:text-md font-semibold text-[#333333] cursor-pointer hover:text-blue-600 transition-colors"
+                onClick={() => Goto_new_page(index)}
+              >
+                {item}
+              </a>
+            </div>
+          );
+        })}
       </div>
     </header>
   );

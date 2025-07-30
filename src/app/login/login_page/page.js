@@ -30,46 +30,115 @@ const Login = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+//    const addToCart = async (id) => {
+//   const token = localStorage.getItem("user_token");
 
-    if (formData.captchaInput !== captchaCode) {
-      alert("Invalid captcha");
+//   if (token) {
+//     // ✅ Logged-in Cart
+//     try {
+//       const res = await fetch(`https://e-com-customizer.onrender.com/api/v1/addToCart/${id}`, {
+//         method: "POST",
+//         headers: {
+//           "Content-Type": "application/json",
+//           Authorization: `Bearer ${token}`,
+//         },
+//       });
+
+//       const data = await res.json();
+//       console.log("Server Cart:", data);
+//     } catch (error) {
+//       console.error("Error adding to server cart:", error);
+//     }
+//   } else {
+//     // ✅ Guest Cart (localStorage)
+//     let guestCart = JSON.parse(localStorage.getItem("guest_cart")) || [];
+
+//     // check if item already exists
+//     const already = guestCart.find((item) => item.id === id);
+//     if (!already) {
+//       guestCart.push({ id, quantity: 1 });
+//       localStorage.setItem("guest_cart", JSON.stringify(guestCart));
+//       alert("Item added to local cart");
+//     } else {
+//       alert("Item already in local cart");
+//     }
+//   }
+// };
+
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  if (formData.captchaInput !== captchaCode) {
+    alert("Invalid captcha");
+    return;
+  }
+
+  try {
+    const res = await fetch("https://e-com-customizer.onrender.com/api/v1/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: formData.emailOrPhone,
+        password: formData.password,
+      }),
+    });
+
+    const data = await res.json();
+    console.log(data)
+    if (!data.token) {
+      alert("Login failed: " + data.message);
       return;
     }
-    try {
 
-         const res = await fetch("https://e-com-customizer.onrender.com/api/v1/login", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify({
-    email: formData.emailOrPhone,
-    password: formData.password,
-  }),
-});
+    localStorage.setItem("user_token", data.token);
+    localStorage.setItem("user_ID",data.user._id,);
+    console.log("Login successful");
 
+    // ✅ Sync guest cart to server
+    const guestCart = JSON.parse(localStorage.getItem("guest_cart")) || [];
 
-
-const data = await res.json();
-console.log(data);
-localStorage.setItem("user_token",data.token);
-console.log("Login data submitted:", formData);
-    alert("Login successful!");
-       navigation.push("/")
-
-    
-      
-    } catch (error) {
-       alert(`${error}`);
+    if (guestCart.length > 0) {
+      for (const item of guestCart) {
+        await fetch(`https://e-com-customizer.onrender.com/api/v1/addToCart/${item._id}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${data.token}`,
+          },
+          body: JSON.stringify({
+            quantity: item.quantity || 1, // in case quantity exists
+          }),
+        });
+      }
+      console.log("Guest cart synced to server");
+      localStorage.removeItem("guest_cart"); // ✅ Clear guest cart after sync
     }
 
+const guestWishlist = JSON.parse(localStorage.getItem("guest_wishlist")) || [];
 
+if (guestWishlist.length > 0) {
+  for (const item of guestWishlist) {
+    await fetch(`https://e-com-customizer.onrender.com/api/v1/addToWishlist/${item._id}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${data.token}`, // token from login response
+      },
+    });
+  }
 
+  console.log("Guest wishlist synced to server");
+  localStorage.removeItem("guest_wishlist"); // ✅ Correct key
+}
+    alert("Login successful!");
+    navigation.push("/");
 
-    
-  };
+  } catch (error) {
+    alert("Login error: " + error.message);
+    console.error(error);
+  }
+};
+
 
   return (
     <section className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900 px-4">

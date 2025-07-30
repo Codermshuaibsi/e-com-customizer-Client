@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import Hero from "@/app/new/Hero/page";
+// import Hero from "@/app/new/Hero/page";
 
 const HeroPageTshirt = () => {
 

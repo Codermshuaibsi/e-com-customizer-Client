@@ -3,8 +3,12 @@ import React, { useState, useEffect } from "react";
 import { LiaShoppingBagSolid } from "react-icons/lia";
 import { FaRegHeart } from "react-icons/fa";
 import Link from "next/link";
+import { use } from "react";
+import { useRouter } from "next/navigation"
+import slugify from "slugify";
 
-export default function ProductPage() {
+export default function ProductPage({params}) {
+  const { slug } = use(params);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -15,6 +19,12 @@ export default function ProductPage() {
 
   const [selectedColors, setSelectedColors] = useState([]);
   const colors = ["Yellow", "Black", "Red", "Rust", "Wine", "Blue"];
+
+//  const router = useRouter();
+//   const { slug } = params;
+
+  console.log("Slug from router:", slug);
+
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -131,10 +141,13 @@ export default function ProductPage() {
 
   // Filtered + Paginated Products
 let filtered = selectedColors.length
-  ? products.filter((item) =>
-      selectedColors.includes(item.color?.toLowerCase())
-    )
-  : [...products]; // Clone to avoid mutating original
+  ? products.filter((item) => {
+      const productColor = (item.color || "").toLowerCase().replace("back", "black").trim();
+      return selectedColors.includes(productColor);
+    })
+  : [...products];
+
+ // Clone to avoid mutating original
 
 // 2. Sort the filtered products
 if (sortOption === "lowToHigh") {
@@ -144,8 +157,15 @@ if (sortOption === "lowToHigh") {
 }
 
 // 3. Pagination logic
-const totalPages = Math.ceil(filtered.length / itemsPerPage);
-const currentProducts = filtered.slice(
+const brandFiltered = filtered.filter(
+  (product) =>
+   slugify(product.brand?.name || "", { lower: true }) === slug
+
+);
+const totalPages = Math.ceil(brandFiltered.length / itemsPerPage); // ✅ Now it works
+
+
+const currentProducts = brandFiltered.slice(
   (currentPage - 1) * itemsPerPage,
   currentPage * itemsPerPage
 );
@@ -257,19 +277,14 @@ const currentProducts = filtered.slice(
                       <h3 className="text-[17px] font-semibold mt-4">
                         {item.title}
                       </h3>
-                     <p className="text-lg font-bold mt-1 text-gray-800">
-                      {item.discountedPrice &&
-                      item.discountedPrice < item.price ? (
-                        <>
-                          ₹{Number(item.discountedPrice).toFixed(2)}
-                          <span className="line-through text-sm text-gray-500 ml-2">
-                            ₹{Number(item.price).toFixed(2)}
+                      <p className="text-lg font-bold mt-1">
+                        ₹{item.price}
+                        {item.oldPrice && (
+                          <span className="line-through text-xs text-gray-500 ml-2">
+                            ₹{item.oldPrice}
                           </span>
-                        </>
-                      ) : (
-                        <>₹{Number(item.price).toFixed(2)}</>
-                      )}
-                    </p>
+                        )}
+                      </p>
                     </div>
                     <div className="flex items-center justify-between px-4 pb-4">
                       {item.quantity > 0 ? (
