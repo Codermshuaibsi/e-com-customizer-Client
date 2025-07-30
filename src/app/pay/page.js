@@ -1,9 +1,12 @@
-import PaymentCheckout from "./paymentt/page";
+"use client";
+import { Suspense } from "react";
+import PaymentCheckout from "../components/PaymentCheckout";
 
 export default function CartPaymentPage() {
   return (
-    
-      <PaymentCheckout />
-    
+     <Suspense fallback={<div>Loading Payment Info...</div>}>
+      <PaymentCheckout/>
+      </Suspense>
+
   );
 }
