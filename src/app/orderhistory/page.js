@@ -1,9 +1,11 @@
+import Navbar from "../COMMON/Navbar";
 import OrderHistoryPage from "./userorderhistory/page";
 
 
 function OrderHistory() {
   return (
     <div>
+      <Navbar />
       <OrderHistoryPage />
     </div>
   );

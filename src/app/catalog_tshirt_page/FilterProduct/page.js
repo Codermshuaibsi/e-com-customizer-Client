@@ -16,24 +16,31 @@ export default function ProductPage() {
   const [selectedColors, setSelectedColors] = useState([]);
   const colors = ["Yellow", "Black", "Red", "Rust", "Wine", "Blue"];
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const res = await fetch(
-          "https://e-com-customizer.onrender.com/api/v1/totalProduct"
-        );
-        const data = await res.json();
-        console.log(data);
-        setProducts(data.AllProduct || []);
-      } catch (err) {
-        setError("Failed to fetch products");
-      } finally {
-        setLoading(false);
-      }
-    };
+ useEffect(() => {
+  const fetchProducts = async () => {
+    try {
+      const res = await fetch(
+        "https://e-com-customizer.onrender.com/api/v1/totalProduct"
+      );
+      const data = await res.json();
+      console.log("All Products:", data);
 
-    fetchProducts();
-  }, []);
+      // Filter products with subCategory.title === "T-Shirts"
+      const filteredProducts = (data.AllProduct || []).filter(
+        (item) => item.subCategory?.title === "T-Shirts"
+      );
+
+      setProducts(filteredProducts);
+    } catch (err) {
+      setError("Failed to fetch products");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchProducts();
+}, []);
+
 
   // Wishlist Function
  async function AddToWishlist(item) {

@@ -164,79 +164,147 @@ export default function Navbar() {
       </div>
 
       {/* Middle main nav */}
-      <div className="bg-white py-4 px-4 md:px-8 lg:px-16 flex flex-col lg:flex-row justify-between items-center gap-4">
-        {/* Left: brand + search */}
-        <div className="flex flex-col md:flex-row w-full lg:w-2/3 items-center gap-6">
-          <div
-            className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#333333] cursor-pointer"
-            onClick={() => navigation.push("/")}
-          >
-            BRAND
-          </div>
-
-          <div className="flex w-full max-w-lg">
-            <input
-              type="text"
-              placeholder="Search here"
-              className="w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-l-md"
-            />
-            <button className="bg-[#3559C7] text-white px-4 rounded-r-md">
-              <FaSearch />
-            </button>
-          </div>
-          <div className="flex gap-4 md:gap-6 items-center">
-            <div className="relative">
-              <Link href={"/get_all_cart"}>
-                {" "}
-                <LiaShoppingBagSolid className="text-2xl md:text-3xl text-[#424241]" />
-              </Link>
-              <span className="absolute top-0 right-0 h-2 w-2 bg-blue-600 rounded-full"></span>
-            </div>
-            <Link href={"/mainuserprofile"}>
-              {" "}
-              <FiMail className="text-2xl md:text-3xl text-[#424241]" />{" "}
-            </Link>
-
-            <button
-              className="text-xl text-red-500"
-              onClick={() => navigation.push("/wishlist")}
-            >
-              {true ? <HiHeart size={30} /> : <HiOutlineHeart />}{" "}
-            </button>
-          </div>
-        </div>
-
-        <div className="flex flex-col md:flex-row gap-4 md:gap-8 items-center">
-          <div className="flex gap-4 items-center">
-            {isLoggedIn ? (
-              <>
-                <button
-                  className="text-[#3559C7] font-semibold text-base sm:text-lg underline"
-                  // onClick={() => navigation.push("")}
-                >
-                  <User_profile_dero />
-                </button>
-              </>
-            ) : (
-              <>
-                <a
-                  href="#"
-                  className="text-[#3559C7] font-semibold text-base sm:text-lg underline"
-                  onClick={() => navigation.push("/login")}
-                >
-                  SIGN IN
-                </a>
-                <button
-                  className="bg-[#3559C7] text-white px-4 py-2 sm:px-6 sm:py-3 font-semibold"
-                  onClick={() => navigation.push("/signup")}
-                >
-                  SIGN UP
-                </button>
-              </>
-            )}
-          </div>
-        </div>
+      <div className="bg-white py-4 px-4 md:px-8 lg:px-16">
+  {/* Mobile Layout */}
+  <div className="lg:hidden">
+    {/* Top row: Brand + Auth */}
+    <div className="flex justify-between items-center mb-4">
+      <div
+        className="text-2xl sm:text-3xl font-bold text-[#333333] cursor-pointer"
+        onClick={() => navigation.push("/")}
+      >
+        BRAND
       </div>
+      
+      {/* Auth section for mobile */}
+      <div className="flex gap-2 items-center">
+        {isLoggedIn ? (
+          <button className="text-[#3559C7] font-semibold text-sm underline">
+            <User_profile_dero />
+          </button>
+        ) : (
+          <>
+            <a
+              href="#"
+              className="text-[#3559C7] font-semibold text-sm underline"
+              onClick={() => navigation.push("/login")}
+            >
+              SIGN IN
+            </a>
+            <button
+              className="bg-[#3559C7] text-white px-3 py-2 text-sm font-semibold rounded"
+              onClick={() => navigation.push("/signup")}
+            >
+              SIGN UP
+            </button>
+          </>
+        )}
+      </div>
+    </div>
+
+    {/* Search bar */}
+    <div className="flex w-full mb-4">
+      <input
+        type="text"
+        placeholder="Search here"
+        className="w-full px-4 py-3 bg-gray-100 border border-gray-300 rounded-l-md text-base"
+      />
+      <button className="bg-[#3559C7] text-white px-4 rounded-r-md flex items-center justify-center min-w-[50px]">
+        <FaSearch />
+      </button>
+    </div>
+
+    {/* Icons row */}
+    <div className="flex justify-center gap-8 items-center">
+      <div className="relative">
+        <Link href={"/get_all_cart"}>
+          <LiaShoppingBagSolid className="text-3xl text-[#424241]" />
+        </Link>
+        <span className="absolute -top-1 -right-1 h-3 w-3 bg-blue-600 rounded-full"></span>
+      </div>
+      
+      <Link href={"/mainuserprofile"}>
+        <FiMail className="text-3xl text-[#424241]" />
+      </Link>
+      
+      <button
+        className="text-red-500"
+        onClick={() => navigation.push("/wishlist")}
+      >
+        {true ? <HiHeart size={32} /> : <HiOutlineHeart size={32} />}
+      </button>
+    </div>
+  </div>
+
+  {/* Desktop Layout */}
+  <div className="hidden lg:flex justify-between items-center gap-4">
+    {/* Left: brand + search */}
+    <div className="flex w-full lg:w-2/3 items-center gap-6">
+      <div
+        className="text-4xl xl:text-5xl font-bold text-[#333333] cursor-pointer whitespace-nowrap"
+        onClick={() => navigation.push("/")}
+      >
+        BRAND
+      </div>
+      
+      <div className="flex w-full max-w-lg">
+        <input
+          type="text"
+          placeholder="Search here"
+          className="w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-l-md"
+        />
+        <button className="bg-[#3559C7] text-white px-4 rounded-r-md">
+          <FaSearch />
+        </button>
+      </div>
+      
+      <div className="flex gap-6 items-center">
+        <div className="relative">
+          <Link href={"/get_all_cart"}>
+            <LiaShoppingBagSolid className="text-3xl text-[#424241]" />
+          </Link>
+          <span className="absolute top-0 right-0 h-2 w-2 bg-blue-600 rounded-full"></span>
+        </div>
+        
+        <Link href={"/mainuserprofile"}>
+          <FiMail className="text-3xl text-[#424241]" />
+        </Link>
+        
+        <button
+          className="text-red-500"
+          onClick={() => navigation.push("/wishlist")}
+        >
+          {true ? <HiHeart size={30} /> : <HiOutlineHeart size={30} />}
+        </button>
+      </div>
+    </div>
+
+    {/* Right: Auth */}
+    <div className="flex gap-4 items-center whitespace-nowrap">
+      {isLoggedIn ? (
+        <button className="text-[#3559C7] font-semibold text-base xl:text-lg underline">
+          <User_profile_dero />
+        </button>
+      ) : (
+        <>
+          <a
+            href="#"
+            className="text-[#3559C7] font-semibold text-base xl:text-lg underline"
+            onClick={() => navigation.push("/login")}
+          >
+            SIGN IN
+          </a>
+          <button
+            className="bg-[#3559C7] text-white px-6 py-3 font-semibold rounded"
+            onClick={() => navigation.push("/signup")}
+          >
+            SIGN UP
+          </button>
+        </>
+      )}
+    </div>
+  </div>
+</div>
 
       <hr className="text-[#d6d6d6]" />
 
@@ -252,13 +320,13 @@ export default function Navbar() {
 
       <div
         className={`${
-          showMenu ? "flex" : "hidden"
-        } sm:flex flex-wrap gap-4 sm:gap-8 justify-center mt-3 mb-3 px-5 relative`}
+          showMenu ? "" : "hidden"
+        } md:flex flex-wrap gap-4 sm:gap-8 justify-center mt-3 mb-3 px-5 relative`}
       >
         {navItems.map((item, index) => {
           if (item === "CUSTOMIZER") {
             return (
-              <div key={item} className="relative group" ref={dropdownRef}>
+              <div key={item} className="relative group mb-2" ref={dropdownRef}>
                 <a
                   className="uppercase text-base sm:text-md font-semibold text-[#333333] cursor-pointer"
                   onMouseEnter={() => setShowCustomizer(true)}
@@ -301,44 +369,48 @@ export default function Navbar() {
           }
 
           if (item === "BRAND") {
-            return (
-              <div
-                key="brand"
-                className="relative group"
-                ref={dropdownRef}
-                onMouseEnter={() => setShowBrand(true)}
-                onMouseLeave={() => setShowBrand(false)}
-              >
-                <a className="uppercase text-base sm:text-md font-semibold cursor-pointer">
-                  {item}
-                </a>
-
-                {showBrand && (
-                  <div className="absolute left-1/2 top-full w-[90vw] max-w-2xl -translate-x-1/2 bg-white p-6 border border-gray-200 shadow-xl rounded-md z-50">
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                      {brands.map((b) => (
-                        <div key={b._id} className="flex flex-col items-center">
-                          <Link href={`/getbrandsproduct/${slugify(b.name, { lower: true })}`}>
-
-                            <img
-                              src={b.logoUrl}
-                              alt={b.name}
-                              className="h-16 object-contain mb-2"
-                            />
-                          </Link>
-                          <span className="text-sm font-bold">{b.name}</span>
-                        </div>
-                      ))}
-                    </div>
+  return (
+    <div
+      key="brand"
+      className="relative group mb-2"
+      ref={dropdownRef}
+      onMouseEnter={() => setShowBrand(true)}
+      onMouseLeave={() => setShowBrand(false)}
+    >
+      <a className="uppercase text-base sm:text-md font-semibold cursor-pointer hover:text-gray-600 transition-colors">
+        {item}
+      </a>
+      
+      {showBrand && (
+        <div className="absolute left-1/2 top-full w-[90vw] max-w-[350px] -translate-x-1/2 bg-white p-6 border border-gray-200 shadow-xl rounded-md z-50 animate-fadeIn">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-12">
+            {brands.map((brand) => (
+              <div key={brand._id} className="flex flex-col items-center group/brand">
+                <Link href={`/getbrandsproduct/${slugify(brand.name, { lower: true })}`}>
+                  <div className="transition-transform hover:scale-105 w-[60px]">
+                    <img
+                      src={brand.logoUrl}
+                      alt={brand.name}
+                      className="h-20 object-contain mb-2 rounded-lg shadow-sm"
+                      loading="lazy"
+                    />
                   </div>
-                )}
+                </Link>
+                <span className="text-sm font-bold text-center group-hover/brand:text-blue-600 transition-colors">
+                  {brand.name}
+                </span>
               </div>
-            );
-          }
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
           // For other nav items
           return (
-            <div key={item} className="relative">
+            <div key={item} className="relative mb-3">
               <a
                 className="uppercase text-base sm:text-md font-semibold text-[#333333] cursor-pointer hover:text-blue-600 transition-colors"
                 onClick={() => Goto_new_page(index)}

@@ -1,107 +1,57 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { LiaShoppingBagSolid } from "react-icons/lia";
 import { FaRegHeart } from "react-icons/fa";
 
 export default function New_Product() {
-  const hats = [
-    
-    {
-            img: "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751181412/images_5_1_rxdsej.png",
-            sale: false,
-            color:"Tshirt"
-        },
-        {
-            img: "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751181412/images_8_1_cfx3qe.png",
-            sale: false,
-            color:"Tshirt"
-        },
-        {
-            img: "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751181412/images_9_1_dgnanl.png",
-            sale: false,
-            color:"Tshirt"
-        },
-        {
-            img: "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751181411/purepng.com-red-t-shirtclothingred-t-shirtfashion-dress-shirt-cloth-tshirt-631522326799mcfdo_1_clofl9.png",
-            sale: false,
-            color:"Tshirt"
-        },
-        {
-            img: "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751181412/images_5_1_rxdsej.png",
-            sale: false,
-            color:"Tshirt"
-        },
-        {
-            img: "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751181412/images_8_1_cfx3qe.png",
-            sale: false,
-            color:"Tshirt"
-        },
-        {
-            img: "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751181412/images_9_1_dgnanl.png",
-            sale: false,
-            color:"Tshirt"
-        },
-        {
-            img: "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751181411/purepng.com-red-t-shirtclothingred-t-shirtfashion-dress-shirt-cloth-tshirt-631522326799mcfdo_1_clofl9.png",
-            sale: false,
-            color:"Tshirt"
-        },
-    {
-      img: "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751116991/101-0378-YEL-F01_750x_1_tweatg.png",
-      sale: true,
-      color: "hats",
-    },
-    {
-      img: "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751116991/101-0391-BLK-F01_750x_1_woo9r9.png",
-      sale: false,
-      color: "hats",
-    },
-    {
-      img: "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751116990/101-0378-YA-BLK-F01_750x_1_sp0dgy.png",
-      sale: false,
-      color: "hats",
-    },
-    {
-      img: "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751116990/101-0378-YEL-F01_750x_1_2_hqnoo3.png",
-      sale: false,
-      color: "hats",
-    },
-    {
-      img: "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751116990/101-0378-YA-RED-F01_750x_1_jqz2si.png",
-      sale: false,
-      color: "hats",
-    },
-    {
-      img: "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751116990/101-0378-YEL-F01_750x_1_1_zhc0mr.png",
-      sale: false,
-      color: "hats",
-    },
-    {
-      img: "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751116990/101-0512-RUS_750x_1_r1ryco.png",
-      sale: true,
-      color: "hats",
-    },
-    {
-      img: "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751116990/101-0512-WIN-F01_750x_1_u5i4af.png",
-      sale: true,
-      color: "hats",
-    },
-  ];
+  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [selectedCategories, setSelectedCategories] = useState([]);
 
-  const colors = ["hats", "Tshirt"];
-  const [selectedColors, setSelectedColors] = useState([]);
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch(
+          "https://e-com-customizer.onrender.com/api/v1/totalProduct"
+        );
+        const data = await res.json();
+        setProducts(data.AllProduct || []);
+      } catch (err) {
+        console.error("Failed to fetch products", err);
+      }
+    };
 
-  const handleColorToggle = (color) => {
-    setSelectedColors((prev) =>
-      prev.includes(color) ? prev.filter((c) => c !== color) : [...prev, color]
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch(
+          "https://e-com-customizer.onrender.com/api/v1/showAllCategory"
+        );
+        const data = await res.json();
+        setCategories(data.data || []);
+        console.log("Categories fetched:", data.data);
+      } catch (err) {
+        console.error("Failed to fetch categories", err);
+      }
+    };
+
+    fetchProducts();
+    fetchCategories();
+  }, []);
+
+  const handleCategoryToggle = (categoryTitle) => {
+    setSelectedCategories((prev) =>
+      prev.includes(categoryTitle)
+        ? prev.filter((c) => c !== categoryTitle)
+        : [...prev, categoryTitle]
     );
   };
 
-  const filteredHats =
-    selectedColors.length === 0
-      ? hats
-      : hats.filter((hat) => selectedColors.includes(hat.color));
-
+  const filteredProducts =
+    selectedCategories.length === 0
+      ? products
+      : products.filter((product) =>
+          selectedCategories.includes(product.subCategory?.title)
+        );
   return (
     <div className="min-h-screen bg-gray-100 p-4 sm:p-6 md:p-[60px]">
       <div className="flex flex-col md:flex-row gap-6">
@@ -112,43 +62,48 @@ export default function New_Product() {
             </h3>
             <button
               className="text-[#3559C7] text-sm font-bold uppercase hover:underline"
-              onClick={() => setSelectedColors([])}
+              onClick={() => setSelectedCategories([])}
             >
               CLEAR ALL
             </button>
           </div>
 
-          <div>
-            <div className="flex justify-between items-center mb-4">
-              <h4 className="text-sm font-bold text-[#2e2e2e] uppercase">Color</h4>
-              <button className="w-5 h-5 border border-[#4F4F4F] rounded-full flex items-center justify-center">
-                <span className="text-[14px] font-bold text-[#4F4F4F] leading-none">−</span>
-              </button>
-            </div>
-
-            <ul className="space-y-8 border-b border-gray-300 pb-3">
-              {colors.map((color, idx) => (
-                <li key={idx} className="flex items-center justify-between">
-                  <label htmlFor={color} className="text-[14px] text-[#2e2e2e] font-medium">
-                    {color}
-                  </label>
-                  <input
-                    type="checkbox"
-                    id={color}
-                    checked={selectedColors.includes(color)}
-                    
-                    onChange={() => handleColorToggle(color)}
-                    className="w-5 h-5 border border-[#a0a0a0] rounded-sm  cursor-pointer checked:bg-[#3559C7] checked:border-[#3559C7] checked:bg-check-icon transition-all"
-                  />
-                </li>
-              ))}
-              <li>
-                <button className="text-xs font-bold text-[#3559C7] mt-1 uppercase hover:underline">
-                  + SHOW MORE
+          {categories.length > 0 ? (
+            <>
+              <div className="flex justify-between items-center mb-4">
+                <h4 className="text-sm font-bold text-[#2e2e2e] uppercase">
+                  Categories
+                </h4>
+                <button className="w-5 h-5 border border-[#4F4F4F] rounded-full flex items-center justify-center">
+                  <span className="text-[14px] font-bold text-[#4F4F4F] leading-none">
+                    −
+                  </span>
                 </button>
-              </li>
-            </ul>
-          </div>
+              </div>
+
+              <ul className="space-y-8 border-b border-gray-300 pb-3">
+                {categories.map((cat, idx) => (
+                  <li key={idx} className="flex items-center justify-between">
+                    <label
+                      htmlFor={cat.title}
+                      className="text-[14px] text-[#2e2e2e] font-medium"
+                    >
+                      {cat.title}
+                    </label>
+                    <input
+                      type="checkbox"
+                      id={cat.title}
+                      checked={selectedCategories.includes(cat.title)}
+                      onChange={() => handleCategoryToggle(cat.title)}
+                      className="w-5 h-5 border border-[#a0a0a0] rounded-sm  cursor-pointer checked:bg-[#3559C7] checked:border-[#3559C7] checked:bg-check-icon transition-all"
+                    />
+                  </li>
+                ))}
+              </ul>
+            </>
+          ) : (
+            ""
+          )}
         </aside>
 
         <div className="flex-1">
@@ -165,7 +120,7 @@ export default function New_Product() {
 
           <section className="px-1 sm:px-0">
             <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-5">
-              {filteredHats.sort(() => 0.5 - Math.random()).map((hat, idx) => (
+              {filteredProducts.map((item, idx) => (
                 <div
                   key={idx}
                   className="border border-gray-200 rounded shadow-sm overflow-hidden group bg-white"
@@ -173,22 +128,23 @@ export default function New_Product() {
                   <div className="p-4">
                     <div className="p-1.5 relative border border-gray-300">
                       <img
-                        src={hat.img}
-                        alt="Hat"
+                        src={item.thumbnail?.[0] || "/no-image.png"}
+                        alt="image"
                         className="w-full h-52 object-contain mb-4"
                       />
-                      {hat.sale && (
+                      {item.sale && (
                         <div className="absolute top-0 left-0 bg-[#539C27] text-white px-6 tracking-widest py-1 text-xs font-bold z-10">
                           SALE
                         </div>
                       )}
                     </div>
-                    <h3 className="text-[17px] font-semibold mt-4">LOREM IPSUM</h3>
+                    <h3 className="text-[17px] font-semibold mt-4">
+                      {item.title?.length > 30
+                        ? item.title.slice(0, 30) + "..."
+                        : item.title}
+                    </h3>
                     <p className="text-lg font-bold mt-1">
-                      $ 12.23
-                      <span className="line-through text-xs text-gray-500 ml-2">
-                        $ 14.23
-                      </span>
+                      ₹{item.price ? item.price.toLocaleString("en-IN") : "N/A"}
                     </p>
                   </div>
                   <div className="flex items-center justify-between px-4 pb-4">
