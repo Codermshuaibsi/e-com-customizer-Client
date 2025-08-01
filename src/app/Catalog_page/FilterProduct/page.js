@@ -24,7 +24,10 @@ export default function ProductPage() {
         );
         const data = await res.json();
         console.log(data);
-        setProducts(data.AllProduct || []);
+         const filteredProducts = (data.AllProduct || []).filter(
+        (item) => item.subCategory?.title === "Cap"
+      );
+        setProducts(filteredProducts || []);
       } catch (err) {
         setError("Failed to fetch products");
       } finally {

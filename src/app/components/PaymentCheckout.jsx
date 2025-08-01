@@ -234,7 +234,7 @@ const CheckoutForm = ({ id, totalp }) => {
           }
         );
         const data = await res.json();
-        
+        console.log("hkghjgjhghgjg",data)
         if (data.success) {
           const verifyRes = await fetch(
             "https://e-com-customizer.onrender.com/api/v1/payment/verifySignature",

@@ -1,5 +1,7 @@
 "use client";
+import Link from "next/link";
 import React, { useEffect, useState } from "react";
+import slugify from "slugify";
 
 export default function Brands() {
   const [brands, setBrands] = useState([]);
@@ -7,12 +9,15 @@ export default function Brands() {
   useEffect(() => {
     const fetchBrands = async () => {
       try {
-        const res = await fetch("https://e-com-customizer.onrender.com/api/v1/totalBrands");
+        const res = await fetch(
+          "https://e-com-customizer.onrender.com/api/v1/totalBrands"
+        );
         const data = await res.json();
         console.log("Fetched Brands:", data);
 
         if (res.ok) {
-          setBrands(data); // adjust if your API response uses a different key
+          const activeBrands = data.filter((brand) => brand.active === true);
+          setBrands(activeBrands); // adjust if your API response uses a different key
         } else {
           console.error("Failed to fetch brands:", data.message);
         }
@@ -39,12 +44,20 @@ export default function Brands() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mx-auto w-full max-w-6xl">
-        {brands.slice(0,4).map((brand, index) => (
+        {brands.slice(0, 4).map((brand, index) => (
           <div
             key={index}
             className="border w-full h-[150px] flex items-center justify-center border-gray-300 p-6"
           >
-            <img src={brand.logoUrl} alt={brand.name || `Brand ${index + 1}`} />
+            <Link
+              href={`/getbrandsproduct/${slugify(brand.name, { lower: true })}`}
+            >
+              {" "}
+              <img
+                src={brand.logoUrl}
+                alt={brand.name || `Brand ${index + 1}`}
+              />
+            </Link>
           </div>
         ))}
       </div>

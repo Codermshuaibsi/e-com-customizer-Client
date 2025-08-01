@@ -86,7 +86,11 @@ export default function Navbar() {
         );
         const json = await res.json();
         console.log("Fetched Brands: Navber", json);
-        if (res.ok) setBrands(json); // or adjust to your shape
+        if (res.ok)
+          {
+              const activeBrands = json.filter((brand) => brand.active === true);
+      setBrands(activeBrands);
+          }
         else console.error(json.message);
       } catch (e) {
         console.error("Failed to fetch brands:", e);
@@ -382,27 +386,28 @@ export default function Navbar() {
       </a>
       
       {showBrand && (
-        <div className="absolute left-1/2 top-full w-[90vw] max-w-[350px] -translate-x-1/2 bg-white p-6 border border-gray-200 shadow-xl rounded-md z-50 animate-fadeIn">
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-12">
-            {brands.map((brand) => (
-              <div key={brand._id} className="flex flex-col items-center group/brand">
-                <Link href={`/getbrandsproduct/${slugify(brand.name, { lower: true })}`}>
-                  <div className="transition-transform hover:scale-105 w-[60px]">
-                    <img
-                      src={brand.logoUrl}
-                      alt={brand.name}
-                      className="h-20 object-contain mb-2 rounded-lg shadow-sm"
-                      loading="lazy"
-                    />
-                  </div>
-                </Link>
-                <span className="text-sm font-bold text-center group-hover/brand:text-blue-600 transition-colors">
-                  {brand.name}
-                </span>
-              </div>
-            ))}
+       <div className="absolute left-1/2 top-full w-[90vw] max-w-[350px] -translate-x-1/2 bg-white p-6 border border-gray-200 shadow-xl rounded-md z-50 animate-fadeIn">
+  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+    {brands.map((brand) => (
+      <div key={brand._id} className="flex flex-col items-center group/brand transition-transform duration-200">
+        <Link href={`/getbrandsproduct/${slugify(brand.name, { lower: true })}`}>
+          <div className="transition-transform hover:scale-105 w-[60px]">
+            <img
+              src={brand.logoUrl}
+              alt={`${brand.name} logo`}
+              className="h-14 w-20 object-scale-down mb-2 rounded-lg shadow-sm"
+              loading="lazy"
+            />
           </div>
-        </div>
+        </Link>
+        <span className="text-[9px] font-bold text-center group-hover/brand:text-blue-600 transition-colors">
+          {brand.name}
+        </span>
+      </div>
+    ))}
+  </div>
+</div>
+
       )}
     </div>
   );
