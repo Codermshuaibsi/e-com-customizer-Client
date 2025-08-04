@@ -10,7 +10,7 @@ function Catalog_AllSection() {
     <>
       <div className=" mx-auto max-w-[1720px]">
             {/* <TruckersHero /> */}
-            <ProductPage />\
+            <ProductPage />
       </div>
     </>
   );
