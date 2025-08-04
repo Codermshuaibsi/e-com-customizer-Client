@@ -9,10 +9,10 @@ import Footer from "../COMMON/Footer";
 export default function page() {
   return (
     <div>
-      <Navbar/>
+      
         {/* <HeroPageTshirt /> */}
        <ProductPageTshirt />
-       <Footer/>
+      
     </div>
   );
 }

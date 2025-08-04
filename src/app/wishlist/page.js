@@ -5,9 +5,7 @@ import Footer from "../COMMON/Footer"
 function main_wistlist(){
 
    return( <>
-   <Navbar />
        <WishlistPage />
-       {/* <Footer /> */}
     </>)
 }
 export default main_wistlist

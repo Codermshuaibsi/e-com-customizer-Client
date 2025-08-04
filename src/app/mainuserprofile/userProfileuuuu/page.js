@@ -39,7 +39,7 @@ const UserProfilePage = () => {
   const [message, setMessage] = useState(null);
   const [error, setError] = useState(null);
   const [orderHistory, setOrderHistory] = useState([]);
-   const [uploading, setUploading] = useState(false);
+  const [uploading, setUploading] = useState(false);
   // Dummy user data for orders and wishlist
   const [user, setUser] = useState({
     profileImage: "/avatar.png",
@@ -81,6 +81,7 @@ const UserProfilePage = () => {
       console.log("Order History Data:", data);
       if (data.success) {
         setOrderHistory(data.orderHistory);
+
       } else {
         console.error("Failed to fetch order history:", data.message);
       }
@@ -433,45 +434,45 @@ const UserProfilePage = () => {
     }
   };
 
-   const handleImageChange = async (e) => {
-  console.log("frffd"); // 👈 Debug log
-  const file = e.target.files[0];
-  if (!file) return;
+  const handleImageChange = async (e) => {
+    console.log("frffd"); // 👈 Debug log
+    const file = e.target.files[0];
+    if (!file) return;
 
-  if (file.size > 2 * 1024 * 1024) {
-    alert("Max file size is 2MB");
-    return;
-  }
-
-  try {
-    setUploading(true);
-    const formData = new FormData();
-    formData.append("thumbnail", file); // Make sure backend accepts this field name
-
-    const token = localStorage.getItem("user_token");
-
-    const res = await fetch("http://localhost:4000/api/v1/updateThumbnail", {
-      method: "PUT",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: formData,
-    });
-
-    const data = await res.json();
-
-    if (res.ok) {
-      alert("Profile photo updated successfully");
-    } else {
-      alert(data.message || "Something went wrong");
+    if (file.size > 2 * 1024 * 1024) {
+      alert("Max file size is 2MB");
+      return;
     }
-  } catch (err) {
-    console.error(err);
-    alert("Image upload failed");
-  } finally {
-    setUploading(false);
-  }
-};
+
+    try {
+      setUploading(true);
+      const formData = new FormData();
+      formData.append("thumbnail", file); // Make sure backend accepts this field name
+
+      const token = localStorage.getItem("user_token");
+
+      const res = await fetch("http://localhost:4000/api/v1/updateThumbnail", {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert("Profile photo updated successfully");
+      } else {
+        alert(data.message || "Something went wrong");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Image upload failed");
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const menuItems = [
     { id: "profile", label: "My Profile", icon: FaUser },
@@ -484,30 +485,28 @@ const UserProfilePage = () => {
 
   return (
     <div
-      className={`min-h-screen ${
-        darkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-800"
-      }`}
+      className={`min-h-screen ${darkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-800"
+        }`}
     >
       <div className="max-w-7xl mx-auto p-4">
         {/* Header */}
         <div
-          className={`${
-            darkMode ? "bg-gray-800" : "bg-white"
-          } rounded-lg shadow-sm p-6 mb-6`}
+          className={`${darkMode ? "bg-gray-800" : "bg-white"
+            } rounded-lg shadow-sm p-6 mb-6`}
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-             <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center text-white text-2xl font-bold overflow-hidden">
-  {GetUserDetail?.thumbnail ? (
-    <img
-      src={GetUserDetail.thumbnail}
-      alt="User"
-      className="w-full h-full object-cover rounded-full"
-    />
-  ) : (
-    GetUserDetail?.name?.charAt(0).toUpperCase() || "U"
-  )}
-</div>
+              <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center text-white text-2xl font-bold overflow-hidden">
+                {GetUserDetail?.thumbnail ? (
+                  <img
+                    src={GetUserDetail.thumbnail}
+                    alt="User"
+                    className="w-full h-full object-cover rounded-full"
+                  />
+                ) : (
+                  GetUserDetail?.name?.charAt(0).toUpperCase() || "U"
+                )}
+              </div>
 
               <div>
                 <h1 className="text-2xl font-semibold">
@@ -526,11 +525,10 @@ const UserProfilePage = () => {
             </div>
             <button
               onClick={toggleDarkMode}
-              className={`p-3 rounded-full ${
-                darkMode
-                  ? "bg-gray-700 hover:bg-gray-600"
-                  : "bg-gray-100 hover:bg-gray-200"
-              } transition-colors`}
+              className={`p-3 rounded-full ${darkMode
+                ? "bg-gray-700 hover:bg-gray-600"
+                : "bg-gray-100 hover:bg-gray-200"
+                } transition-colors`}
             >
               {darkMode ? (
                 <FaSun className="text-yellow-400" />
@@ -544,22 +542,20 @@ const UserProfilePage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Sidebar */}
           <div
-            className={`${
-              darkMode ? "bg-gray-800" : "bg-white"
-            } rounded-lg shadow-sm p-4 h-fit`}
+            className={`${darkMode ? "bg-gray-800" : "bg-white"
+              } rounded-lg shadow-sm p-4 h-fit`}
           >
             <nav className="space-y-2">
               {menuItems.map((item) => (
                 <button
                   key={item.id}
                   onClick={() => setActiveTab(item.id)}
-                  className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-colors ${
-                    activeTab === item.id
-                      ? "bg-blue-50 text-blue-600 border-l-4 border-blue-600"
-                      : darkMode
+                  className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-colors ${activeTab === item.id
+                    ? "bg-blue-50 text-blue-600 border-l-4 border-blue-600"
+                    : darkMode
                       ? "hover:bg-gray-700 text-gray-300"
                       : "hover:bg-gray-50 text-gray-700"
-                  }`}
+                    }`}
                 >
                   <item.icon className="w-5 h-5" />
                   <span className="font-medium">{item.label}</span>
@@ -567,9 +563,8 @@ const UserProfilePage = () => {
               ))}
 
               <hr
-                className={`my-4 ${
-                  darkMode ? "border-gray-700" : "border-gray-200"
-                }`}
+                className={`my-4 ${darkMode ? "border-gray-700" : "border-gray-200"
+                  }`}
               />
 
               <button className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-colors text-red-600 hover:bg-red-50">
@@ -588,9 +583,8 @@ const UserProfilePage = () => {
           <div className="lg:col-span-3">
             {activeTab === "profile" && (
               <div
-                className={`${
-                  darkMode ? "bg-gray-800" : "bg-white"
-                } rounded-lg shadow-sm p-6`}
+                className={`${darkMode ? "bg-gray-800" : "bg-white"
+                  } rounded-lg shadow-sm p-6`}
               >
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-semibold">
@@ -608,16 +602,14 @@ const UserProfilePage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label
-                      className={`block text-sm font-medium ${
-                        darkMode ? "text-gray-400" : "text-gray-600"
-                      } mb-2`}
+                      className={`block text-sm font-medium ${darkMode ? "text-gray-400" : "text-gray-600"
+                        } mb-2`}
                     >
                       Full Name
                     </label>
                     <div
-                      className={`p-3 rounded-lg ${
-                        darkMode ? "bg-gray-700" : "bg-gray-50"
-                      }`}
+                      className={`p-3 rounded-lg ${darkMode ? "bg-gray-700" : "bg-gray-50"
+                        }`}
                     >
                       {GetUserDetail.name +
                         " " +
@@ -627,16 +619,14 @@ const UserProfilePage = () => {
 
                   <div>
                     <label
-                      className={`block text-sm font-medium ${
-                        darkMode ? "text-gray-400" : "text-gray-600"
-                      } mb-2`}
+                      className={`block text-sm font-medium ${darkMode ? "text-gray-400" : "text-gray-600"
+                        } mb-2`}
                     >
                       Email Address
                     </label>
                     <div
-                      className={`p-3 rounded-lg ${
-                        darkMode ? "bg-gray-700" : "bg-gray-50"
-                      }`}
+                      className={`p-3 rounded-lg ${darkMode ? "bg-gray-700" : "bg-gray-50"
+                        }`}
                     >
                       {GetUserDetail.email}
                     </div>
@@ -644,16 +634,14 @@ const UserProfilePage = () => {
 
                   <div>
                     <label
-                      className={`block text-sm font-medium ${
-                        darkMode ? "text-gray-400" : "text-gray-600"
-                      } mb-2`}
+                      className={`block text-sm font-medium ${darkMode ? "text-gray-400" : "text-gray-600"
+                        } mb-2`}
                     >
                       Phone Number
                     </label>
                     <div
-                      className={`p-3 rounded-lg ${
-                        darkMode ? "bg-gray-700" : "bg-gray-50"
-                      }`}
+                      className={`p-3 rounded-lg ${darkMode ? "bg-gray-700" : "bg-gray-50"
+                        }`}
                     >
                       +91 {GetUserDetail.phone}
                     </div>
@@ -661,16 +649,14 @@ const UserProfilePage = () => {
 
                   <div>
                     <label
-                      className={`block text-sm font-medium ${
-                        darkMode ? "text-gray-400" : "text-gray-600"
-                      } mb-2`}
+                      className={`block text-sm font-medium ${darkMode ? "text-gray-400" : "text-gray-600"
+                        } mb-2`}
                     >
                       Gender
                     </label>
                     <div
-                      className={`p-3 rounded-lg ${
-                        darkMode ? "bg-gray-700" : "bg-gray-50"
-                      }`}
+                      className={`p-3 rounded-lg ${darkMode ? "bg-gray-700" : "bg-gray-50"
+                        }`}
                     >
                       Male
                     </div>
@@ -681,9 +667,8 @@ const UserProfilePage = () => {
 
             {activeTab === "addresses" && (
               <div
-                className={`${
-                  darkMode ? "bg-gray-800" : "bg-white"
-                } rounded-lg shadow-sm p-6`}
+                className={`${darkMode ? "bg-gray-800" : "bg-white"
+                  } rounded-lg shadow-sm p-6`}
               >
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-semibold">Manage Addresses</h2>
@@ -700,9 +685,8 @@ const UserProfilePage = () => {
                   {UserShipingAddresses.length === 0 ? (
                     <div className="text-center py-8">
                       <p
-                        className={`${
-                          darkMode ? "text-gray-400" : "text-gray-600"
-                        }`}
+                        className={`${darkMode ? "text-gray-400" : "text-gray-600"
+                          }`}
                       >
                         No addresses found. Add your first address!
                       </p>
@@ -711,11 +695,10 @@ const UserProfilePage = () => {
                     UserShipingAddresses.map((addr, index) => (
                       <div
                         key={addr._id || index}
-                        className={`p-4 rounded-lg border ${
-                          darkMode
-                            ? "border-gray-700 bg-gray-700"
-                            : "border-gray-200 bg-gray-50"
-                        }`}
+                        className={`p-4 rounded-lg border ${darkMode
+                          ? "border-gray-700 bg-gray-700"
+                          : "border-gray-200 bg-gray-50"
+                          }`}
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
@@ -724,8 +707,8 @@ const UserProfilePage = () => {
                                 {addr.type === "home"
                                   ? "🏠 Home"
                                   : addr.type === "work"
-                                  ? "🏢 Work"
-                                  : "📍 Other"}
+                                    ? "🏢 Work"
+                                    : "📍 Other"}
                               </span>
                               {addr.isDefault && (
                                 <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">
@@ -735,17 +718,15 @@ const UserProfilePage = () => {
                             </div>
                             <p className="font-medium mb-1">{addr.fullName}</p>
                             <p
-                              className={`${
-                                darkMode ? "text-gray-300" : "text-gray-600"
-                              } mb-2`}
+                              className={`${darkMode ? "text-gray-300" : "text-gray-600"
+                                } mb-2`}
                             >
                               {addr.address}, {addr.city}, {addr.state} -{" "}
                               {addr.pincode}, {addr.country}
                             </p>
                             <p
-                              className={`${
-                                darkMode ? "text-gray-400" : "text-gray-500"
-                              } text-sm`}
+                              className={`${darkMode ? "text-gray-400" : "text-gray-500"
+                                } text-sm`}
                             >
                               Phone: +91 {addr.phone}
                             </p>
@@ -774,9 +755,8 @@ const UserProfilePage = () => {
 
             {activeTab === "orders" && (
               <div
-                className={`${
-                  darkMode ? "bg-gray-800" : "bg-white"
-                } rounded-lg shadow-sm p-6`}
+                className={`${darkMode ? "bg-gray-800" : "bg-white"
+                  } rounded-lg shadow-sm p-6`}
               >
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-semibold">My Orders</h2>
@@ -788,10 +768,9 @@ const UserProfilePage = () => {
                 <div className="space-y-4">
                   {orderHistory.map((order) => (
                     <div
-                      key={order.id}
-                      className={`p-4 rounded-lg border ${
-                        darkMode ? "border-gray-700" : "border-gray-200"
-                      }`}
+                      key={order._id}
+                      className={`p-4 rounded-lg border ${darkMode ? "border-gray-700" : "border-gray-200"
+                        }`}
                     >
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center space-x-4">
@@ -801,22 +780,29 @@ const UserProfilePage = () => {
                           <div>
                             <p className="font-medium">Order #{order._id}</p>
                             <p
-                              className={`text-sm ${
-                                darkMode ? "text-gray-400" : "text-gray-600"
-                              }`}
+                              className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-600"
+                                }`}
                             >
-                              Placed on {order.createdAt}
+                              Placed on{" "}
+                              {new Date(order.createdAt).toLocaleDateString("en-US", {
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric",
+                              })}
                             </p>
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className="font-semibold">{order.totalAmount}</p>
+                          <p className="font-semibold">
+                            ₹{order.totalAmount.toLocaleString("en-IN", {
+                              minimumFractionDigits: 2,
+                            })}
+                          </p>
                           <span
-                            className={`text-sm px-2 py-1 rounded-full ${
-                              order.orderStatus === "Delivered"
+                            className={`text-sm px-2 py-1 rounded-full ${order.orderStatus === "Delivered"
                                 ? "bg-green-100 text-green-800"
                                 : "bg-blue-100 text-blue-800"
-                            }`}
+                              }`}
                           >
                             {order.orderStatus}
                           </span>
@@ -824,15 +810,15 @@ const UserProfilePage = () => {
                       </div>
                     </div>
                   ))}
+
                 </div>
               </div>
             )}
 
             {activeTab === "wishlist" && (
               <div
-                className={`${
-                  darkMode ? "bg-gray-800" : "bg-white"
-                } rounded-lg shadow-sm p-6`}
+                className={`${darkMode ? "bg-gray-800" : "bg-white"
+                  } rounded-lg shadow-sm p-6`}
               >
                 <h2 className="text-xl font-semibold mb-6">
                   My Wishlist ({user.wishlist.length} items)
@@ -842,9 +828,8 @@ const UserProfilePage = () => {
                   {user.wishlist.map((item) => (
                     <div
                       key={item.id}
-                      className={`p-4 rounded-lg border ${
-                        darkMode ? "border-gray-700" : "border-gray-200"
-                      }`}
+                      className={`p-4 rounded-lg border ${darkMode ? "border-gray-700" : "border-gray-200"
+                        }`}
                     >
                       <div className="flex items-center space-x-4">
                         <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center text-2xl">
@@ -873,9 +858,8 @@ const UserProfilePage = () => {
 
             {activeTab === "password" && (
               <div
-                className={`${
-                  darkMode ? "bg-gray-800" : "bg-white"
-                } rounded-lg shadow-sm p-6`}
+                className={`${darkMode ? "bg-gray-800" : "bg-white"
+                  } rounded-lg shadow-sm p-6`}
               >
                 <h2 className="text-xl font-semibold mb-6">Change Password</h2>
 
@@ -885,9 +869,8 @@ const UserProfilePage = () => {
                 >
                   <div>
                     <label
-                      className={`block text-sm font-medium ${
-                        darkMode ? "text-gray-400" : "text-gray-600"
-                      } mb-2`}
+                      className={`block text-sm font-medium ${darkMode ? "text-gray-400" : "text-gray-600"
+                        } mb-2`}
                     >
                       Current Password
                     </label>
@@ -895,20 +878,18 @@ const UserProfilePage = () => {
                       type="password"
                       value={currentPassword}
                       onChange={(e) => setCurrentPassword(e.target.value)}
-                      className={`w-full p-3 rounded-lg border ${
-                        darkMode
-                          ? "bg-gray-700 border-gray-600 text-white"
-                          : "bg-white border-gray-300"
-                      } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                      className={`w-full p-3 rounded-lg border ${darkMode
+                        ? "bg-gray-700 border-gray-600 text-white"
+                        : "bg-white border-gray-300"
+                        } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
                       placeholder="Enter current password"
                     />
                   </div>
 
                   <div>
                     <label
-                      className={`block text-sm font-medium ${
-                        darkMode ? "text-gray-400" : "text-gray-600"
-                      } mb-2`}
+                      className={`block text-sm font-medium ${darkMode ? "text-gray-400" : "text-gray-600"
+                        } mb-2`}
                     >
                       New Password
                     </label>
@@ -916,20 +897,18 @@ const UserProfilePage = () => {
                       type="password"
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
-                      className={`w-full p-3 rounded-lg border ${
-                        darkMode
-                          ? "bg-gray-700 border-gray-600 text-white"
-                          : "bg-white border-gray-300"
-                      } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                      className={`w-full p-3 rounded-lg border ${darkMode
+                        ? "bg-gray-700 border-gray-600 text-white"
+                        : "bg-white border-gray-300"
+                        } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
                       placeholder="Enter new password"
                     />
                   </div>
 
                   <div>
                     <label
-                      className={`block text-sm font-medium ${
-                        darkMode ? "text-gray-400" : "text-gray-600"
-                      } mb-2`}
+                      className={`block text-sm font-medium ${darkMode ? "text-gray-400" : "text-gray-600"
+                        } mb-2`}
                     >
                       Confirm New Password
                     </label>
@@ -937,11 +916,10 @@ const UserProfilePage = () => {
                       type="password"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
-                      className={`w-full p-3 rounded-lg border ${
-                        darkMode
-                          ? "bg-gray-700 border-gray-600 text-white"
-                          : "bg-white border-gray-300"
-                      } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                      className={`w-full p-3 rounded-lg border ${darkMode
+                        ? "bg-gray-700 border-gray-600 text-white"
+                        : "bg-white border-gray-300"
+                        } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
                       placeholder="Confirm new password"
                     />
                   </div>
@@ -963,9 +941,8 @@ const UserProfilePage = () => {
 
             {activeTab === "settings" && (
               <div
-                className={`${
-                  darkMode ? "bg-gray-800" : "bg-white"
-                } rounded-lg shadow-sm p-6`}
+                className={`${darkMode ? "bg-gray-800" : "bg-white"
+                  } rounded-lg shadow-sm p-6`}
               >
                 <h2 className="text-xl font-semibold mb-6">Account Settings</h2>
 
@@ -973,18 +950,16 @@ const UserProfilePage = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <label
-                        className={`block text-sm font-medium ${
-                          darkMode ? "text-gray-400" : "text-gray-600"
-                        } mb-2`}
+                        className={`block text-sm font-medium ${darkMode ? "text-gray-400" : "text-gray-600"
+                          } mb-2`}
                       >
                         Language
                       </label>
                       <select
-                        className={`w-full p-3 rounded-lg border ${
-                          darkMode
-                            ? "bg-gray-700 border-gray-600 text-white"
-                            : "bg-white border-gray-300"
-                        } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                        className={`w-full p-3 rounded-lg border ${darkMode
+                          ? "bg-gray-700 border-gray-600 text-white"
+                          : "bg-white border-gray-300"
+                          } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
                       >
                         <option>English</option>
                         <option>Hindi</option>
@@ -995,18 +970,16 @@ const UserProfilePage = () => {
 
                     <div>
                       <label
-                        className={`block text-sm font-medium ${
-                          darkMode ? "text-gray-400" : "text-gray-600"
-                        } mb-2`}
+                        className={`block text-sm font-medium ${darkMode ? "text-gray-400" : "text-gray-600"
+                          } mb-2`}
                       >
                         Currency
                       </label>
                       <select
-                        className={`w-full p-3 rounded-lg border ${
-                          darkMode
-                            ? "bg-gray-700 border-gray-600 text-white"
-                            : "bg-white border-gray-300"
-                        } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                        className={`w-full p-3 rounded-lg border ${darkMode
+                          ? "bg-gray-700 border-gray-600 text-white"
+                          : "bg-white border-gray-300"
+                          } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
                       >
                         <option>INR (₹)</option>
                         <option>USD ($)</option>
@@ -1019,23 +992,20 @@ const UserProfilePage = () => {
                     <div>
                       <h3 className="font-medium">Dark Mode</h3>
                       <p
-                        className={`text-sm ${
-                          darkMode ? "text-gray-400" : "text-gray-600"
-                        }`}
+                        className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-600"
+                          }`}
                       >
                         Switch between light and dark theme
                       </p>
                     </div>
                     <button
                       onClick={toggleDarkMode}
-                      className={`relative w-12 h-6 rounded-full transition-colors ${
-                        darkMode ? "bg-blue-600" : "bg-gray-300"
-                      }`}
+                      className={`relative w-12 h-6 rounded-full transition-colors ${darkMode ? "bg-blue-600" : "bg-gray-300"
+                        }`}
                     >
                       <div
-                        className={`absolute w-5 h-5 bg-white rounded-full top-0.5 transition-transform ${
-                          darkMode ? "translate-x-6" : "translate-x-0.5"
-                        }`}
+                        className={`absolute w-5 h-5 bg-white rounded-full top-0.5 transition-transform ${darkMode ? "translate-x-6" : "translate-x-0.5"
+                          }`}
                       />
                     </button>
                   </div>
@@ -1044,9 +1014,8 @@ const UserProfilePage = () => {
                     <div>
                       <h3 className="font-medium">Email Notifications</h3>
                       <p
-                        className={`text-sm ${
-                          darkMode ? "text-gray-400" : "text-gray-600"
-                        }`}
+                        className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-600"
+                          }`}
                       >
                         Receive order updates and offers via email
                       </p>
@@ -1066,18 +1035,16 @@ const UserProfilePage = () => {
       {isEditModalOpen && (
         <div className="fixed inset-0 bg-[#0000007a] bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div
-            className={`${
-              darkMode ? "bg-gray-800" : "bg-white"
-            } rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto`}
+            className={`${darkMode ? "bg-gray-800" : "bg-white"
+              } rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto`}
           >
             <div className="p-6">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-2xl font-semibold">Edit Profile</h2>
                 <button
                   onClick={closeEditModal}
-                  className={`p-2 rounded-full ${
-                    darkMode ? "hover:bg-gray-700" : "hover:bg-gray-100"
-                  } transition-colors`}
+                  className={`p-2 rounded-full ${darkMode ? "hover:bg-gray-700" : "hover:bg-gray-100"
+                    } transition-colors`}
                 >
                   <svg
                     className="w-6 h-6"
@@ -1111,39 +1078,37 @@ const UserProfilePage = () => {
                   )}
                 </div>
                 <div>
- <label className="cursor-pointer">
-  <div
-    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm transition-colors inline-block"
-  >
-    {uploading ? "Uploading..." : "Change Photo"}
-    <input
-      id="uploadImage"
-      type="file"
-      accept="image/*"
-      onChange={handleImageChange}
-      className="hidden"
-    />
-  </div>
-</label>
+                  <label className="cursor-pointer">
+                    <div
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm transition-colors inline-block"
+                    >
+                      {uploading ? "Uploading..." : "Change Photo"}
+                      <input
+                        id="uploadImage"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        className="hidden"
+                      />
+                    </div>
+                  </label>
 
 
-  <p
-    className={`text-sm mt-1 ${
-      darkMode ? "text-gray-400" : "text-gray-600"
-    }`}
-  >
-    JPG, GIF or PNG. Max size 2MB
-  </p>
-</div>
+                  <p
+                    className={`text-sm mt-1 ${darkMode ? "text-gray-400" : "text-gray-600"
+                      }`}
+                  >
+                    JPG, GIF or PNG. Max size 2MB
+                  </p>
+                </div>
 
 
                 {/* Form Fields */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label
-                      className={`block text-sm font-medium ${
-                        darkMode ? "text-gray-400" : "text-gray-600"
-                      } mb-2`}
+                      className={`block text-sm font-medium ${darkMode ? "text-gray-400" : "text-gray-600"
+                        } mb-2`}
                     >
                       First Name *
                     </label>
@@ -1153,20 +1118,18 @@ const UserProfilePage = () => {
                       onChange={(e) =>
                         handleInputChange("firstName", e.target.value)
                       }
-                      className={`w-full p-3 rounded-lg border ${
-                        darkMode
-                          ? "bg-gray-700 border-gray-600 text-white"
-                          : "bg-white border-gray-300"
-                      } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                      className={`w-full p-3 rounded-lg border ${darkMode
+                        ? "bg-gray-700 border-gray-600 text-white"
+                        : "bg-white border-gray-300"
+                        } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
                       placeholder="Enter your first name"
                     />
                   </div>
 
                   <div>
                     <label
-                      className={`block text-sm font-medium ${
-                        darkMode ? "text-gray-400" : "text-gray-600"
-                      } mb-2`}
+                      className={`block text-sm font-medium ${darkMode ? "text-gray-400" : "text-gray-600"
+                        } mb-2`}
                     >
                       Last Name
                     </label>
@@ -1176,20 +1139,18 @@ const UserProfilePage = () => {
                       onChange={(e) =>
                         handleInputChange("lastName", e.target.value)
                       }
-                      className={`w-full p-3 rounded-lg border ${
-                        darkMode
-                          ? "bg-gray-700 border-gray-600 text-white"
-                          : "bg-white border-gray-300"
-                      } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                      className={`w-full p-3 rounded-lg border ${darkMode
+                        ? "bg-gray-700 border-gray-600 text-white"
+                        : "bg-white border-gray-300"
+                        } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
                       placeholder="Enter your last name"
                     />
                   </div>
 
                   <div>
                     <label
-                      className={`block text-sm font-medium ${
-                        darkMode ? "text-gray-400" : "text-gray-600"
-                      } mb-2`}
+                      className={`block text-sm font-medium ${darkMode ? "text-gray-400" : "text-gray-600"
+                        } mb-2`}
                     >
                       Email Address *
                     </label>
@@ -1199,20 +1160,18 @@ const UserProfilePage = () => {
                       onChange={(e) =>
                         handleInputChange("email", e.target.value)
                       }
-                      className={`w-full p-3 rounded-lg border ${
-                        darkMode
-                          ? "bg-gray-700 border-gray-600 text-white"
-                          : "bg-white border-gray-300"
-                      } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                      className={`w-full p-3 rounded-lg border ${darkMode
+                        ? "bg-gray-700 border-gray-600 text-white"
+                        : "bg-white border-gray-300"
+                        } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
                       placeholder="Enter your email"
                     />
                   </div>
 
                   <div>
                     <label
-                      className={`block text-sm font-medium ${
-                        darkMode ? "text-gray-400" : "text-gray-600"
-                      } mb-2`}
+                      className={`block text-sm font-medium ${darkMode ? "text-gray-400" : "text-gray-600"
+                        } mb-2`}
                     >
                       Phone Number *
                     </label>
@@ -1222,11 +1181,10 @@ const UserProfilePage = () => {
                       onChange={(e) =>
                         handleInputChange("phoneNumber", e.target.value)
                       }
-                      className={`w-full p-3 rounded-lg border ${
-                        darkMode
-                          ? "bg-gray-700 border-gray-600 text-white"
-                          : "bg-white border-gray-300"
-                      } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                      className={`w-full p-3 rounded-lg border ${darkMode
+                        ? "bg-gray-700 border-gray-600 text-white"
+                        : "bg-white border-gray-300"
+                        } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
                       placeholder="Enter your phone number"
                     />
                   </div>
@@ -1236,11 +1194,10 @@ const UserProfilePage = () => {
                 <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
                   <button
                     onClick={closeEditModal}
-                    className={`px-6 py-3 rounded-lg font-medium transition-colors ${
-                      darkMode
-                        ? "bg-gray-700 hover:bg-gray-600 text-white"
-                        : "bg-gray-100 hover:bg-gray-200 text-gray-700"
-                    }`}
+                    className={`px-6 py-3 rounded-lg font-medium transition-colors ${darkMode
+                      ? "bg-gray-700 hover:bg-gray-600 text-white"
+                      : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                      }`}
                   >
                     Cancel
                   </button>
@@ -1261,9 +1218,8 @@ const UserProfilePage = () => {
       {isAddressModalOpen && (
         <div className="fixed inset-0 bg-[#0000007a] bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div
-            className={`${
-              darkMode ? "bg-gray-800" : "bg-white"
-            } rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto`}
+            className={`${darkMode ? "bg-gray-800" : "bg-white"
+              } rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto`}
           >
             <div className="p-6">
               <div className="flex items-center justify-between mb-6">
@@ -1272,9 +1228,8 @@ const UserProfilePage = () => {
                 </h2>
                 <button
                   onClick={closeAddressModal}
-                  className={`p-2 rounded-full ${
-                    darkMode ? "hover:bg-gray-700" : "hover:bg-gray-100"
-                  } transition-colors`}
+                  className={`p-2 rounded-full ${darkMode ? "hover:bg-gray-700" : "hover:bg-gray-100"
+                    } transition-colors`}
                 >
                   <svg
                     className="w-6 h-6"
@@ -1301,9 +1256,8 @@ const UserProfilePage = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label
-                        className={`block text-sm font-medium ${
-                          darkMode ? "text-gray-400" : "text-gray-600"
-                        } mb-2`}
+                        className={`block text-sm font-medium ${darkMode ? "text-gray-400" : "text-gray-600"
+                          } mb-2`}
                       >
                         Full Name *
                       </label>
@@ -1313,20 +1267,18 @@ const UserProfilePage = () => {
                         onChange={(e) =>
                           handleAddressInputChange("fullName", e.target.value)
                         }
-                        className={`w-full p-3 rounded-lg border ${
-                          darkMode
-                            ? "bg-gray-700 border-gray-600 text-white"
-                            : "bg-white border-gray-300"
-                        } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                        className={`w-full p-3 rounded-lg border ${darkMode
+                          ? "bg-gray-700 border-gray-600 text-white"
+                          : "bg-white border-gray-300"
+                          } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
                         placeholder="Enter full name"
                       />
                     </div>
 
                     <div>
                       <label
-                        className={`block text-sm font-medium ${
-                          darkMode ? "text-gray-400" : "text-gray-600"
-                        } mb-2`}
+                        className={`block text-sm font-medium ${darkMode ? "text-gray-400" : "text-gray-600"
+                          } mb-2`}
                       >
                         Phone Number *
                       </label>
@@ -1336,11 +1288,10 @@ const UserProfilePage = () => {
                         onChange={(e) =>
                           handleAddressInputChange("phone", e.target.value)
                         }
-                        className={`w-full p-3 rounded-lg border ${
-                          darkMode
-                            ? "bg-gray-700 border-gray-600 text-white"
-                            : "bg-white border-gray-300"
-                        } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                        className={`w-full p-3 rounded-lg border ${darkMode
+                          ? "bg-gray-700 border-gray-600 text-white"
+                          : "bg-white border-gray-300"
+                          } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
                         placeholder="Enter phone number"
                       />
                     </div>
@@ -1355,9 +1306,8 @@ const UserProfilePage = () => {
                   <div className="space-y-4">
                     <div>
                       <label
-                        className={`block text-sm font-medium ${
-                          darkMode ? "text-gray-400" : "text-gray-600"
-                        } mb-2`}
+                        className={`block text-sm font-medium ${darkMode ? "text-gray-400" : "text-gray-600"
+                          } mb-2`}
                       >
                         Address (House No, Building, Street, Area) *
                       </label>
@@ -1366,11 +1316,10 @@ const UserProfilePage = () => {
                         onChange={(e) =>
                           handleAddressInputChange("address", e.target.value)
                         }
-                        className={`w-full p-3 rounded-lg border ${
-                          darkMode
-                            ? "bg-gray-700 border-gray-600 text-white"
-                            : "bg-white border-gray-300"
-                        } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                        className={`w-full p-3 rounded-lg border ${darkMode
+                          ? "bg-gray-700 border-gray-600 text-white"
+                          : "bg-white border-gray-300"
+                          } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
                         placeholder="Enter complete address"
                         rows={3}
                       />
@@ -1379,9 +1328,8 @@ const UserProfilePage = () => {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div>
                         <label
-                          className={`block text-sm font-medium ${
-                            darkMode ? "text-gray-400" : "text-gray-600"
-                          } mb-2`}
+                          className={`block text-sm font-medium ${darkMode ? "text-gray-400" : "text-gray-600"
+                            } mb-2`}
                         >
                           City/District/Town *
                         </label>
@@ -1391,20 +1339,18 @@ const UserProfilePage = () => {
                           onChange={(e) =>
                             handleAddressInputChange("city", e.target.value)
                           }
-                          className={`w-full p-3 rounded-lg border ${
-                            darkMode
-                              ? "bg-gray-700 border-gray-600 text-white"
-                              : "bg-white border-gray-300"
-                          } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                          className={`w-full p-3 rounded-lg border ${darkMode
+                            ? "bg-gray-700 border-gray-600 text-white"
+                            : "bg-white border-gray-300"
+                            } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
                           placeholder="Enter city"
                         />
                       </div>
 
                       <div>
                         <label
-                          className={`block text-sm font-medium ${
-                            darkMode ? "text-gray-400" : "text-gray-600"
-                          } mb-2`}
+                          className={`block text-sm font-medium ${darkMode ? "text-gray-400" : "text-gray-600"
+                            } mb-2`}
                         >
                           State *
                         </label>
@@ -1413,11 +1359,10 @@ const UserProfilePage = () => {
                           onChange={(e) =>
                             handleAddressInputChange("state", e.target.value)
                           }
-                          className={`w-full p-3 rounded-lg border ${
-                            darkMode
-                              ? "bg-gray-700 border-gray-600 text-white"
-                              : "bg-white border-gray-300"
-                          } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                          className={`w-full p-3 rounded-lg border ${darkMode
+                            ? "bg-gray-700 border-gray-600 text-white"
+                            : "bg-white border-gray-300"
+                            } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
                         >
                           <option value="">Select State</option>
                           <option value="Delhi">Delhi</option>
@@ -1435,9 +1380,8 @@ const UserProfilePage = () => {
 
                       <div>
                         <label
-                          className={`block text-sm font-medium ${
-                            darkMode ? "text-gray-400" : "text-gray-600"
-                          } mb-2`}
+                          className={`block text-sm font-medium ${darkMode ? "text-gray-400" : "text-gray-600"
+                            } mb-2`}
                         >
                           PIN Code *
                         </label>
@@ -1447,11 +1391,10 @@ const UserProfilePage = () => {
                           onChange={(e) =>
                             handleAddressInputChange("pincode", e.target.value)
                           }
-                          className={`w-full p-3 rounded-lg border ${
-                            darkMode
-                              ? "bg-gray-700 border-gray-600 text-white"
-                              : "bg-white border-gray-300"
-                          } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                          className={`w-full p-3 rounded-lg border ${darkMode
+                            ? "bg-gray-700 border-gray-600 text-white"
+                            : "bg-white border-gray-300"
+                            } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
                           placeholder="Enter PIN code"
                           maxLength={6}
                         />
@@ -1460,9 +1403,8 @@ const UserProfilePage = () => {
 
                     <div>
                       <label
-                        className={`block text-sm font-medium ${
-                          darkMode ? "text-gray-400" : "text-gray-600"
-                        } mb-2`}
+                        className={`block text-sm font-medium ${darkMode ? "text-gray-400" : "text-gray-600"
+                          } mb-2`}
                       >
                         Country *
                       </label>
@@ -1472,11 +1414,10 @@ const UserProfilePage = () => {
                         onChange={(e) =>
                           handleAddressInputChange("country", e.target.value)
                         }
-                        className={`w-full p-3 rounded-lg border ${
-                          darkMode
-                            ? "bg-gray-700 border-gray-600 text-white"
-                            : "bg-white border-gray-300"
-                        } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                        className={`w-full p-3 rounded-lg border ${darkMode
+                          ? "bg-gray-700 border-gray-600 text-white"
+                          : "bg-white border-gray-300"
+                          } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
                         placeholder="Enter country"
                       />
                     </div>
@@ -1542,9 +1483,8 @@ const UserProfilePage = () => {
                   />
                   <label
                     htmlFor="defaultAddress"
-                    className={`text-sm ${
-                      darkMode ? "text-gray-300" : "text-gray-700"
-                    }`}
+                    className={`text-sm ${darkMode ? "text-gray-300" : "text-gray-700"
+                      }`}
                   >
                     Make this my default address
                   </label>
@@ -1554,11 +1494,10 @@ const UserProfilePage = () => {
                 <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
                   <button
                     onClick={closeAddressModal}
-                    className={`px-6 py-3 rounded-lg font-medium transition-colors ${
-                      darkMode
-                        ? "bg-gray-700 hover:bg-gray-600 text-white"
-                        : "bg-gray-100 hover:bg-gray-200 text-gray-700"
-                    }`}
+                    className={`px-6 py-3 rounded-lg font-medium transition-colors ${darkMode
+                      ? "bg-gray-700 hover:bg-gray-600 text-white"
+                      : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                      }`}
                   >
                     Cancel
                   </button>

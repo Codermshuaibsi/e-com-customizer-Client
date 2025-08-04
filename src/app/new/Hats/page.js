@@ -1,38 +1,59 @@
 "use client";
-import React from "react";
+import React, { useRef } from "react";
 import { IoIosArrowForward } from "react-icons/io";
+import { motion, useInView } from "framer-motion";
 
-export default function HatsSection() {
+export default function ShirtSection() {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: "-100px" }); // Animate once when near viewport
+
   return (
-    <>
-      <section
-        className="w-full min-h-[450px] bg-cover bg-center flex justify-center lg:justify-start  items-center"
-        style={{
-          backgroundImage:
-            "url('https://res.cloudinary.com/dxlykgx6w/image/upload/v1751115174/view-baseball-cap_ebcgvo.png')",
-          // backgroundSize: "contain",
-          // backgroundRepeat: "no-repeat",
-          // backgroundPosition: "center",
-        }}
-      >
-        <div className="max-w-[1400px]  px-6 md:px-12 lg:px-20">
-          <div className="text-white max-w-xl">
-            <h1 className="text-4xl md:text-6xl lg:w-[700px] md:max-w-[700px] lg:text-start md:text-center text-center sm:text-center font-extrabold leading-tight">
-              Make It Yours Custom <br /> Hats & Tees
-            </h1>
-            <p className="text-lg md:text-xl lg:text-start md:text-center text-center sm:text-center mt-6">
-              DESIGN YOUR OWN. PICK COLORS, ADD TEXT, <br />
-              CREATE A LOOK THAT’S UNIQUELY YOU.
-            </p>
-            <button className="mt-8 px-6 py-3 lg:mx-0 mx-auto bg-white text-black font-bold flex items-center gap-2 hover:bg-gray-100 transition">
-              START DESIGNING
-              <span className="text-xl">
-                <IoIosArrowForward className="bg-black text-white rounded-4xl  " />
-              </span>
-            </button>
-          </div>
-        </div>
-      </section>
-    </>
+    <section
+      ref={ref}
+      className="w-full min-h-[500px] bg-cover bg-center flex justify-center lg:justify-start items-center"
+      style={{
+        backgroundImage:
+          "url('https://5.imimg.com/data5/HD/BG/OZ/SELLER-19528648/printed-shirts.jpeg')",
+      }}
+    >
+      <div className="max-w-[1400px] px-6 md:px-12 lg:px-20">
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 1, delay: 0.2 }}
+          className="text-white rounded-2xl max-w-auto p-5 backdrop-blur-2xl"
+        >
+          <motion.h1
+            initial={{ opacity: 0, y: -30 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.8 }}
+            className="text-4xl md:text-6xl lg:w-[700px] font-extrabold leading-tight text-center md:text-center lg:text-start uppercase"
+          >
+            Cool Printed Shirts <br /> That Speak Your Vibe
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 30 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="text-lg md:text-xl text-center md:text-center lg:text-start mt-6"
+          >
+            Discover statement shirts in bold prints and vibrant colors.
+            <br className="hidden sm:block" />
+            Elevate your look. Be unique. Be unforgettable.
+          </motion.p>
+
+          <motion.button
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={inView ? { opacity: 1, scale: 1 } : {}}
+            transition={{ duration: 0.6, delay: 0.8 }}
+            className="mt-8 px-6 py-3 bg-white text-black font-bold flex items-center gap-2 hover:bg-gray-100 transition mx-auto lg:mx-0"
+          >
+            EXPLORE COLLECTION
+            <IoIosArrowForward className="text-white bg-black rounded-full p-1 text-2xl" />
+          </motion.button>
+        </motion.div>
+      </div>
+    </section>
   );
 }

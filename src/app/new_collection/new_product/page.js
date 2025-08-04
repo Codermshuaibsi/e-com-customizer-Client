@@ -1,180 +1,513 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { LiaShoppingBagSolid } from "react-icons/lia";
 import { FaRegHeart } from "react-icons/fa";
 
+import { useRouter } from "next/navigation";
+
 export default function New_Product() {
+  // State management
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [subcategories, setSubcategories] = useState({});
+  const [selectedSubcategories, setSelectedSubcategories] = useState([]);
+  const [expandedCategories, setExpandedCategories] = useState([]);
+  const [sortBy, setSortBy] = useState("featured");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState({ products: true, categories: true });
+  const router = useRouter();
 
+  // Constants
+  const ITEMS_PER_PAGE = 6;
+  const API_BASE_URL = "https://e-com-customizer.onrender.com/api/v1";
+
+  // Fetch data on component mount
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const res = await fetch(
-          "https://e-com-customizer.onrender.com/api/v1/totalProduct"
-        );
-        const data = await res.json();
-        setProducts(data.AllProduct || []);
-      } catch (err) {
-        console.error("Failed to fetch products", err);
-      }
-    };
-
-    const fetchCategories = async () => {
-      try {
-        const res = await fetch(
-          "https://e-com-customizer.onrender.com/api/v1/showAllCategory"
-        );
-        const data = await res.json();
-        setCategories(data.data || []);
-        console.log("Categories fetched:", data.data);
-      } catch (err) {
-        console.error("Failed to fetch categories", err);
-      }
-    };
-
     fetchProducts();
     fetchCategories();
   }, []);
 
-  const handleCategoryToggle = (categoryTitle) => {
-    setSelectedCategories((prev) =>
-      prev.includes(categoryTitle)
-        ? prev.filter((c) => c !== categoryTitle)
-        : [...prev, categoryTitle]
+  // Reset pagination when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedSubcategories]);
+
+  const fetchProducts = async () => {
+    try {
+      setLoading(prev => ({ ...prev, products: true }));
+      const res = await fetch(`${API_BASE_URL}/totalProduct`);
+      const data = await res.json();
+      setProducts(data.AllProduct || []);
+    } catch (err) {
+      console.error("Failed to fetch products:", err);
+      setProducts([]);
+    } finally {
+      setLoading(prev => ({ ...prev, products: false }));
+    }
+  };
+
+  // Wishlist Function
+  async function AddToWishlist(item) {
+    console.log("AddToWishlist called with:", item);
+    const token = localStorage.getItem("user_token");
+
+    if (token) {
+      // ✅ Logged-in user: send API request
+      try {
+        const res = await fetch(`https://e-com-customizer.onrender.com/api/v1/addToWishlist/${item._id}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          alert("Item added to Wishlist successfully");
+        } else {
+          alert(data.message || "Failed to add item to Wishlist");
+        }
+      } catch (error) {
+        console.error("Error adding to wishlist:", error);
+        alert("Something went wrong!");
+      }
+    } else {
+      // ✅ Guest wishlist: store in localStorage
+      let guestWishlist = JSON.parse(localStorage.getItem("guest_wishlist")) || [];
+
+      // Check if item already exists by _id
+      const alreadyExists = guestWishlist.find((p) => p._id === item._id);
+
+      if (!alreadyExists) {
+        guestWishlist.push(item);
+        localStorage.setItem("guest_wishlist", JSON.stringify(guestWishlist));
+        alert("Item added to local wishlist");
+      } else {
+        alert("Item already in local wishlist");
+      }
+    }
+  }
+
+  const fetchCategories = async () => {
+    try {
+      setLoading(prev => ({ ...prev, categories: true }));
+      const res = await fetch(`${API_BASE_URL}/showAllCategory`);
+      const data = await res.json();
+      setCategories(data.data || []);
+    } catch (err) {
+      console.error("Failed to fetch categories:", err);
+      setCategories([]);
+    } finally {
+      setLoading(prev => ({ ...prev, categories: false }));
+    }
+  };
+
+  const fetchSubcategories = async (categoryId, categoryTitle) => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/fetchAllSubCategoryOfCategory/${categoryId}`);
+      const data = await res.json();
+
+      const subcategoryList = data.success && data.categoryDetails
+        ? data.categoryDetails.subCategory || []
+        : [];
+
+      setSubcategories(prev => ({
+        ...prev,
+        [categoryTitle]: subcategoryList
+      }));
+
+      console.log(`Subcategories for ${categoryTitle}:`, subcategoryList);
+    } catch (err) {
+      console.error(`Failed to fetch subcategories for ${categoryTitle}:`, err);
+      setSubcategories(prev => ({
+        ...prev,
+        [categoryTitle]: []
+      }));
+    }
+  };
+
+  const addToCart = async (item) => {
+    // console.log(id)
+    const token = localStorage.getItem("user_token");
+
+    if (token) {
+      // ✅ Logged-in Cart
+      try {
+        const res = await fetch(
+          `https://e-com-customizer.onrender.com/api/v1/addToCart/${item._id}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const data = await res.json();
+        console.log("Server Cart:", data);
+        if (res.ok) {
+          alert("Item added to cart successfully");
+        } else {
+          alert(data.message || "Failed to add item to cart");
+        }
+      } catch (error) {
+        console.error("Error adding to server cart:", error);
+      }
+    } else {
+      // ✅ Guest Cart (localStorage)
+      let guestCart = JSON.parse(localStorage.getItem("guest_cart")) || [];
+      console.log("guestCart", guestCart);
+
+      // check if item already exists
+      const already = guestCart.find((items) => items.id === item);
+
+      if (!already) {
+        // guestCart.push({ item, quantity: 1 });
+        guestCart.push(item);
+        localStorage.setItem("guest_cart", JSON.stringify(guestCart));
+        alert("Item added to local cart");
+      } else {
+        alert("Item already in local cart");
+      }
+    }
+  };
+
+  // Filter and sort products
+  const filteredAndSortedProducts = useMemo(() => {
+    let filtered = selectedSubcategories.length === 0
+      ? products
+      : products.filter(product =>
+        selectedSubcategories.includes(product.subCategory?.title)
+      );
+
+    // Sort products
+    switch (sortBy) {
+      case "price-low-high":
+        filtered = [...filtered].sort((a, b) => (a.price || 0) - (b.price || 0));
+        break;
+      case "price-high-low":
+        filtered = [...filtered].sort((a, b) => (b.price || 0) - (a.price || 0));
+        break;
+      case "featured":
+      default:
+        // Keep original order for featured
+        break;
+    }
+
+    return filtered;
+  }, [products, selectedSubcategories, sortBy]);
+
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredAndSortedProducts.length / ITEMS_PER_PAGE);
+  const currentProducts = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    return filteredAndSortedProducts.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  }, [filteredAndSortedProducts, currentPage]);
+
+  // Event handlers
+  const handleCategoryToggle = async (category) => {
+    const { _id: categoryId, title: categoryTitle } = category;
+
+    if (expandedCategories.includes(categoryTitle)) {
+      setExpandedCategories(prev => prev.filter(c => c !== categoryTitle));
+    } else {
+      setExpandedCategories(prev => [...prev, categoryTitle]);
+
+      if (!subcategories[categoryTitle]) {
+        await fetchSubcategories(categoryId, categoryTitle);
+      }
+    }
+  };
+
+  const handleSubcategoryToggle = (subcategoryTitle) => {
+    setSelectedSubcategories(prev =>
+      prev.includes(subcategoryTitle)
+        ? prev.filter(s => s !== subcategoryTitle)
+        : [...prev, subcategoryTitle]
     );
   };
 
-  const filteredProducts =
-    selectedCategories.length === 0
-      ? products
-      : products.filter((product) =>
-          selectedCategories.includes(product.subCategory?.title)
-        );
+  const handleSortChange = (e) => {
+    setSortBy(e.target.value);
+    setCurrentPage(1);
+  };
+
+  const clearAllFilters = () => {
+    setSelectedSubcategories([]);
+    setExpandedCategories([]);
+    setCurrentPage(1);
+  };
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Generate pagination buttons
+  const generatePaginationButtons = () => {
+    const buttons = [];
+    const maxVisible = 5;
+
+    if (totalPages <= maxVisible) {
+      for (let i = 1; i <= totalPages; i++) {
+        buttons.push(i);
+      }
+    } else {
+      if (currentPage <= 3) {
+        buttons.push(1, 2, 3, 4, "...", totalPages);
+      } else if (currentPage >= totalPages - 2) {
+        buttons.push(1, "...", totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+      } else {
+        buttons.push(1, "...", currentPage - 1, currentPage, currentPage + 1, "...", totalPages);
+      }
+    }
+
+    return buttons;
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 p-4 sm:p-6 md:p-[60px]">
       <div className="flex flex-col md:flex-row gap-6">
-        <aside className="w-full h-[450px] md:w-64 bg-white p-4 shadow-sm ">
+        {/* Sidebar Filter */}
+        <aside className="w-full md:w-64 bg-white p-4 shadow-sm rounded-lg">
           <div className="flex justify-between items-center border-b pb-2 mb-4">
             <h3 className="text-[18px] font-extrabold text-[#2e2e2e] uppercase">
-              FILTER BY
+              Filter By
             </h3>
             <button
-              className="text-[#3559C7] text-sm font-bold uppercase hover:underline"
-              onClick={() => setSelectedCategories([])}
+              className="text-[#3559C7] text-sm font-bold uppercase hover:underline transition-colors"
+              onClick={clearAllFilters}
+              disabled={selectedSubcategories.length === 0}
             >
-              CLEAR ALL
+              Clear All
             </button>
           </div>
 
-          {categories.length > 0 ? (
+          {loading.categories ? (
+            <div className="text-center text-gray-500 py-4">Loading categories...</div>
+          ) : categories.length > 0 ? (
             <>
-              <div className="flex justify-between items-center mb-4">
-                <h4 className="text-sm font-bold text-[#2e2e2e] uppercase">
+              <div className="mb-4">
+                <h4 className="text-sm font-bold text-[#2e2e2e] uppercase mb-3">
                   Categories
                 </h4>
-                <button className="w-5 h-5 border border-[#4F4F4F] rounded-full flex items-center justify-center">
-                  <span className="text-[14px] font-bold text-[#4F4F4F] leading-none">
-                    −
-                  </span>
-                </button>
               </div>
 
-              <ul className="space-y-8 border-b border-gray-300 pb-3">
-                {categories.map((cat, idx) => (
-                  <li key={idx} className="flex items-center justify-between">
-                    <label
-                      htmlFor={cat.title}
-                      className="text-[14px] text-[#2e2e2e] font-medium"
-                    >
-                      {cat.title}
-                    </label>
-                    <input
-                      type="checkbox"
-                      id={cat.title}
-                      checked={selectedCategories.includes(cat.title)}
-                      onChange={() => handleCategoryToggle(cat.title)}
-                      className="w-5 h-5 border border-[#a0a0a0] rounded-sm  cursor-pointer checked:bg-[#3559C7] checked:border-[#3559C7] checked:bg-check-icon transition-all"
-                    />
-                  </li>
+              <div className="space-y-3 border-b border-gray-300 pb-4">
+                {categories.map((category, idx) => (
+                  <div key={category._id || idx} className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <button
+                        onClick={() => handleCategoryToggle(category)}
+                        className="flex items-center gap-2 text-[14px] text-[#2e2e2e] font-medium hover:text-[#3559C7] transition-colors w-full text-left"
+                      >
+                        <span className="text-[12px] font-mono w-3 text-center">
+                          {expandedCategories.includes(category.title) ? '−' : '+'}
+                        </span>
+                        {category.title}
+                      </button>
+                    </div>
+
+                    {expandedCategories.includes(category.title) && (
+                      <div className="ml-4 space-y-2 border-l-2 border-gray-200 pl-3">
+                        {subcategories[category.title]?.length > 0 ? (
+                          subcategories[category.title].map((subcategory, subIdx) => (
+                            <div key={subcategory._id || subIdx} className="flex items-center justify-between">
+                              <label
+                                htmlFor={`sub-${subcategory._id}`}
+                                className="text-[13px] text-[#555] font-normal cursor-pointer hover:text-[#3559C7] transition-colors flex-1"
+                              >
+                                {subcategory.title}
+                              </label>
+                              <input
+                                type="checkbox"
+                                id={`sub-${subcategory._id}`}
+                                checked={selectedSubcategories.includes(subcategory.title)}
+                                onChange={() => handleSubcategoryToggle(subcategory.title)}
+                                className="w-4 h-4 border border-[#a0a0a0] rounded-sm cursor-pointer checked:bg-[#3559C7] checked:border-[#3559C7] transition-all"
+                              />
+                            </div>
+                          ))
+                        ) : (
+                          <div className="text-[12px] text-gray-500 italic py-1">
+                            {subcategories[category.title] ? 'No subcategories found' : 'Loading...'}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 ))}
-              </ul>
+              </div>
             </>
           ) : (
-            ""
+            <div className="text-center text-gray-500 py-4">No categories available</div>
+          )}
+
+          {/* Active Filters */}
+          {selectedSubcategories.length > 0 && (
+            <div className="mt-4 pt-4 border-t border-gray-200">
+              <h5 className="text-sm font-bold text-[#2e2e2e] mb-2">Active Filters:</h5>
+              <div className="flex flex-wrap gap-2">
+                {selectedSubcategories.map((subcategory, idx) => (
+                  <span
+                    key={idx}
+                    className="inline-flex items-center gap-1 bg-[#3559C7] text-white text-xs px-2 py-1 rounded-full"
+                  >
+                    {subcategory}
+                    <button
+                      onClick={() => handleSubcategoryToggle(subcategory)}
+                      className="ml-1 text-white hover:text-gray-200 transition-colors"
+                      aria-label={`Remove ${subcategory} filter`}
+                    >
+                      ×
+                    </button>
+                  </span>
+                ))}
+              </div>
+            </div>
           )}
         </aside>
 
+        {/* Main Content */}
         <div className="flex-1">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4 px-1">
-            <div className="text-[#4F4F4F] text-[16px] sm:text-[18px] font-semibold uppercase">
-              Home / All Products / Catalog
+          {/* Header */}
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-6 px-1">
+            <div className="text-[#4F4F4F] text-[16px] sm:text-[18px] font-semibold">
+              <span className="uppercase">Home / All Products / Catalog</span>
+              {selectedSubcategories.length > 0 && (
+                <span className="text-[#3559C7] ml-2 font-normal">
+                  ({filteredAndSortedProducts.length} product{filteredAndSortedProducts.length !== 1 ? 's' : ''})
+                </span>
+              )}
             </div>
-            <select className="border px-3 py-2 rounded text-sm w-full sm:w-auto">
-              <option>Sort by featured</option>
-              <option>Price: Low to High</option>
-              <option>Price: High to Low</option>
+            <select
+              className="border px-3 py-2 rounded text-sm w-full sm:w-auto focus:outline-none focus:ring-2 focus:ring-[#3559C7] focus:border-transparent"
+              value={sortBy}
+              onChange={handleSortChange}
+            >
+              <option value="featured">Sort by featured</option>
+              <option value="price-low-high">Price: Low to High</option>
+              <option value="price-high-low">Price: High to Low</option>
             </select>
           </div>
 
+          {/* Products Grid */}
           <section className="px-1 sm:px-0">
-            <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-5">
-              {filteredProducts.map((item, idx) => (
-                <div
-                  key={idx}
-                  className="border border-gray-200 rounded shadow-sm overflow-hidden group bg-white"
-                >
-                  <div className="p-4">
-                    <div className="p-1.5 relative border border-gray-300">
-                      <img
-                        src={item.thumbnail?.[0] || "/no-image.png"}
-                        alt="image"
-                        className="w-full h-52 object-contain mb-4"
-                      />
-                      {item.sale && (
-                        <div className="absolute top-0 left-0 bg-[#539C27] text-white px-6 tracking-widest py-1 text-xs font-bold z-10">
-                          SALE
-                        </div>
-                      )}
+            {loading.products ? (
+              <div className="text-center py-12">
+                <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#3559C7]"></div>
+                <p className="text-gray-500 mt-2">Loading products...</p>
+              </div>
+            ) : currentProducts.length > 0 ? (
+              <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                {currentProducts.map((item, idx) => (
+                  <div
+                    key={item._id || idx}
+                    className="border border-gray-200 rounded-lg shadow-sm overflow-hidden group bg-white hover:shadow-md transition-shadow duration-200"
+                  >
+                    <div className="p-4 cursor-pointer"
+                      onClick={() => router.push(`/PDP_page/${item._id}`)}
+                    >
+
+                      <div className="p-1.5 relative border border-gray-300 rounded">
+                        <img
+                          src={item.thumbnail?.[0] || "/no-image.png"}
+                          alt={item.title || "Product image"}
+                          className="w-full h-52 object-contain mb-4"
+                          loading="lazy"
+                        />
+                        {item.sale && (
+                          <div className="absolute top-2 left-2 bg-[#539C27] text-white px-3 py-1 text-xs font-bold rounded">
+                            SALE
+                          </div>
+                        )}
+                      </div>
+                      <h3 className="text-[17px] font-semibold mt-4 line-clamp-2">
+                        {item.title?.length > 50
+                          ? item.title.slice(0, 50) + "..."
+                          : item.title || "Untitled Product"}
+                      </h3>
+                      <p className="text-lg font-bold mt-2 text-[#2e2e2e]">
+                        ₹{item.price ? item.price.toLocaleString("en-IN") : "N/A"}
+                      </p>
                     </div>
-                    <h3 className="text-[17px] font-semibold mt-4">
-                      {item.title?.length > 30
-                        ? item.title.slice(0, 30) + "..."
-                        : item.title}
-                    </h3>
-                    <p className="text-lg font-bold mt-1">
-                      ₹{item.price ? item.price.toLocaleString("en-IN") : "N/A"}
-                    </p>
+                    <div className="flex items-center gap-2 px-4 pb-4">
+                      <button
+                        onClick={() => addToCart(item)}
+                        className="flex-1 bg-[#3559C7] text-white font-bold text-sm py-3 px-4 flex items-center justify-center gap-2 hover:bg-blue-800 transition"
+                      >
+                        <LiaShoppingBagSolid />
+                        ADD TO CART
+                      </button>
+                      <button
+                        onClick={() => AddToWishlist(item)}
+                        className="ml-2 border border-gray-300 w-12 h-12 flex items-center justify-center hover:bg-gray-100"
+                      >
+                        <FaRegHeart size={18} />
+                      </button>
+                    </div>
                   </div>
-                  <div className="flex items-center justify-between px-4 pb-4">
-                    <button className="flex-1 bg-[#3559C7] text-white font-bold text-sm py-2 px-4 flex items-center justify-center gap-2 hover:bg-blue-800 transition">
-                      <LiaShoppingBagSolid />
-                      SHOP NOW
-                    </button>
-                    <button className="ml-2 border border-gray-300 w-12 h-12 flex items-center justify-center hover:bg-gray-100">
-                      <FaRegHeart size={18} />
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <div className="text-gray-400 text-6xl mb-4">📦</div>
+                <p className="text-gray-500 text-lg mb-2">
+                  {selectedSubcategories.length > 0
+                    ? "No products found matching your filters"
+                    : "No products available"}
+                </p>
+                {selectedSubcategories.length > 0 && (
+                  <button
+                    onClick={clearAllFilters}
+                    className="text-[#3559C7] hover:underline mt-2"
+                  >
+                    Clear all filters
+                  </button>
+                )}
+              </div>
+            )}
           </section>
 
-          <div className="mt-10 flex justify-center flex-wrap gap-2">
-            {[1, 2, 3, 4, "...", 10].map((p, i) => (
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="mt-10 flex justify-center items-center gap-2 flex-wrap">
               <button
-                key={i}
-                className={`px-3 py-1 rounded border text-sm ${
-                  p === 1
-                    ? "bg-blue-600 text-white"
-                    : "bg-white text-gray-700 hover:bg-gray-100"
-                }`}
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="px-3 py-2 text-sm border rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
-                {p}
+                Previous
               </button>
-            ))}
-          </div>
+
+              {generatePaginationButtons().map((page, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => typeof page === 'number' && handlePageChange(page)}
+                  disabled={page === "..."}
+                  className={`px-3 py-2 text-sm border rounded transition-colors ${page === currentPage
+                    ? "bg-[#3559C7] text-white border-[#3559C7]"
+                    : page === "..."
+                      ? "cursor-default"
+                      : "bg-white text-gray-700 hover:bg-gray-100"
+                    }`}
+                >
+                  {page}
+                </button>
+              ))}
+
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="px-3 py-2 text-sm border rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                Next
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

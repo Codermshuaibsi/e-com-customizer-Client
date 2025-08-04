@@ -1,12 +1,15 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import Image from "next/image";
 import { useParams } from "next/navigation";
-
+import Link from "next/link";
+import { BiCustomize } from "react-icons/bi";
+import { useRouter } from "next/navigation";
 const FitnessProducts = () => {
   const { id } = useParams(); // id is subCategoryId
   const [subCategoryData, setSubCategoryData] = useState([]);
   const [loading, setLoading] = useState(true);
+
+    const router = useRouter();
 
   useEffect(() => {
     const fetchSubCategoryDetails = async () => {
@@ -44,40 +47,61 @@ const FitnessProducts = () => {
       </h2>
       <p className="text-gray-600 max-w-2xl mx-auto mb-12">
         With niche-specific configurators, Doogma empowers your customers to
-        create custom fitness and sporting items.
+        create custom fitness and sporting products.
       </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
         {subCategoryData.map((product) => (
           <div
             key={product._id}
-            className="bg-white border rounded-xl p-6 flex flex-col items-center shadow-sm hover:shadow-lg transition"
+            className="border border-gray-200 rounded shadow-sm overflow-hidden group bg-white"
           >
-            <Image
-              src={product.thumbnail?.[0] || "/images/placeholder.png"}
-              alt={product.title}
-              width={200}
-              height={200}
-              className="object-contain"
-            />
+            <div className="p-4">
+              <div  onClick={() => router.push(`/PDP_page/${product._id}`)}  className="p-1.5 relative border border-gray-300">
 
-            <button className="mt-6 px-6 py-2 rounded-full text-sm font-semibold border border-gray-300 text-black transition hover:scale-105 bg-gradient-to-r from-yellow-300 to-teal-300">
-              CUSTOMIZE IT
-            </button>
+                {" "}
+                <img
+                  src={product.thumbnail?.[0] || "/no-image.png"}
+                  alt={product.title}
+                  className="w-full h-52 object-contain mb-4"
+                />{" "}
 
-            <h3 className="mt-6 text-lg font-medium text-gray-800 text-center">
-              {product.title}
-            </h3>
+              </div>
+              <h3 className="text-[17px] font-semibold mt-4">
+                {product.title}
+              </h3>
+              <p className="text-lg font-bold mt-1 text-gray-800">
+                {product.discountedPrice &&
+                  product.discountedPrice < product.price ? (
+                  <>
+                    ₹{Number(product.discountedPrice).toFixed(2)}
+                    <span className="line-through text-sm text-gray-500 ml-2">
+                      ₹{Number(product.price).toFixed(2)}
+                    </span>
+                  </>
+                ) : (
+                  <>₹{Number(product.price).toFixed(2)}</>
+                )}
+              </p>
+            </div>
+            <div className="flex products-center justify-between px-4 pb-4">
+              {product.quantity > 0 ? (
+                <>
+                  <button
+                    onClick={() => addToCart(product)}
+                    className="flex-1 bg-[#3559C7] text-white font-bold text-sm py-3 px-4 flex products-center justify-center gap-2 hover:bg-blue-800 transition"
+                  >
+                    <BiCustomize width={50} />
+                    Customize it
+                  </button>
 
-            <p className="text-sm text-gray-500 mt-2">{product.description}</p>
-
-            <p className="text-base font-semibold text-green-600 mt-2">
-              ₹{product.price}
-            </p>
-
-            {product.quantity === 0 && (
-              <p className="text-red-500 text-sm mt-1">Out of Stock</p>
-            )}
+                </>
+              ) : (
+                <span className="text-red-600 font-bold text-sm uppercase">
+                  Out of Stock
+                </span>
+              )}
+            </div>
           </div>
         ))}
       </div>

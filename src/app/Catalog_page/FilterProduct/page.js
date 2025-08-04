@@ -3,8 +3,17 @@ import React, { useState, useEffect } from "react";
 import { LiaShoppingBagSolid } from "react-icons/lia";
 import { FaRegHeart } from "react-icons/fa";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 
 export default function ProductPage() {
+  const params = useParams();
+  if(params)
+  {
+  console.log("param", params)
+  }
+  else{
+    console.log("no params")
+  }
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -14,8 +23,28 @@ export default function ProductPage() {
   const [currentPage, setCurrentPage] = useState(1);
 
   const [selectedColors, setSelectedColors] = useState([]);
-  const colors = ["Yellow", "Black", "Red", "Rust", "Wine", "Blue"];
+  const [colors, setColor] = useState([]);
 
+
+  useEffect(() => {
+
+    const fetchColor = async () => {
+      try {
+
+        const res = await fetch('http://localhost:4000/api/v1/get/color', param);
+        const data = await res.json();
+        setColor(data.data);
+        console.log(data.data)
+      }
+      catch (error) {
+        console.log("error", error)
+      }
+    };
+
+    fetchColor();
+
+
+  }, [])
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -24,9 +53,9 @@ export default function ProductPage() {
         );
         const data = await res.json();
         console.log(data);
-         const filteredProducts = (data.AllProduct || []).filter(
-        (item) => item.subCategory?.title === "Cap"
-      );
+        const filteredProducts = (data.AllProduct || []).filter(
+          (item) => item.subCategory?.title === params.sub._id
+        );
         setProducts(filteredProducts || []);
       } catch (err) {
         setError("Failed to fetch products");
@@ -39,48 +68,48 @@ export default function ProductPage() {
   }, []);
 
   // Wishlist Function
- async function AddToWishlist(item) {
-  console.log("AddToWishlist called with:", item);
-  const token = localStorage.getItem("user_token");
+  async function AddToWishlist(item) {
+    console.log("AddToWishlist called with:", item);
+    const token = localStorage.getItem("user_token");
 
-  if (token) {
-    // ✅ Logged-in user: send API request
-    try {
-      const res = await fetch(`https://e-com-customizer.onrender.com/api/v1/addToWishlist/${item._id}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+    if (token) {
+      // ✅ Logged-in user: send API request
+      try {
+        const res = await fetch(`https://e-com-customizer.onrender.com/api/v1/addToWishlist/${item._id}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-      const data = await res.json();
+        const data = await res.json();
 
-      if (res.ok) {
-        alert("Item added to Wishlist successfully");
-      } else {
-        alert(data.message || "Failed to add item to Wishlist");
+        if (res.ok) {
+          alert("Item added to Wishlist successfully");
+        } else {
+          alert(data.message || "Failed to add item to Wishlist");
+        }
+      } catch (error) {
+        console.error("Error adding to wishlist:", error);
+        alert("Something went wrong!");
       }
-    } catch (error) {
-      console.error("Error adding to wishlist:", error);
-      alert("Something went wrong!");
-    }
-  } else {
-    // ✅ Guest wishlist: store in localStorage
-    let guestWishlist = JSON.parse(localStorage.getItem("guest_wishlist")) || [];
-
-    // Check if item already exists by _id
-    const alreadyExists = guestWishlist.find((p) => p._id === item._id);
-
-    if (!alreadyExists) {
-      guestWishlist.push(item);
-      localStorage.setItem("guest_wishlist", JSON.stringify(guestWishlist));
-      alert("Item added to local wishlist");
     } else {
-      alert("Item already in local wishlist");
+      // ✅ Guest wishlist: store in localStorage
+      let guestWishlist = JSON.parse(localStorage.getItem("guest_wishlist")) || [];
+
+      // Check if item already exists by _id
+      const alreadyExists = guestWishlist.find((p) => p._id === item._id);
+
+      if (!alreadyExists) {
+        guestWishlist.push(item);
+        localStorage.setItem("guest_wishlist", JSON.stringify(guestWishlist));
+        alert("Item added to local wishlist");
+      } else {
+        alert("Item already in local wishlist");
+      }
     }
   }
-}
 
 
   const addToCart = async (item) => {
@@ -133,34 +162,35 @@ export default function ProductPage() {
   // addToCart();
 
   // Filtered + Paginated Products
-let filtered = selectedColors.length
-  ? products.filter((item) =>
-      selectedColors.includes(item.color?.toLowerCase())
-    )
-  : [...products]; // Clone to avoid mutating original
+  let filtered = selectedColors.length
+    ? products.filter((item) => {
+      const productColor = (item.color || "")
+      return selectedColors.includes(productColor);
+    })
+    : [...products];// Clone to avoid mutating original
 
-// 2. Sort the filtered products
-if (sortOption === "lowToHigh") {
-  filtered.sort((a, b) => a.price - b.price);
-} else if (sortOption === "highToLow") {
-  filtered.sort((a, b) => b.price - a.price);
-}
+  // 2. Sort the filtered products
+  if (sortOption === "lowToHigh") {
+    filtered.sort((a, b) => a.price - b.price);
+  } else if (sortOption === "highToLow") {
+    filtered.sort((a, b) => b.price - a.price);
+  }
 
-// 3. Pagination logic
-const totalPages = Math.ceil(filtered.length / itemsPerPage);
-const currentProducts = filtered.slice(
-  (currentPage - 1) * itemsPerPage,
-  currentPage * itemsPerPage
-);
+  // 3. Pagination logic
+  const totalPages = Math.ceil(filtered.length / itemsPerPage);
+  const currentProducts = filtered.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   // Color Filter Toggle
   const handleColorToggle = (color) => {
     setSelectedColors((prev) =>
-      prev.includes(color.toLowerCase())
-        ? prev.filter((c) => c !== color.toLowerCase())
-        : [...prev, color.toLowerCase()]
+      prev.includes(color)
+        ? prev.filter((c) => c !== color)
+        : [...prev, color]
     );
-    setCurrentPage(1); // Reset to page 1 after filter
+    setCurrentPage(1);
   };
 
   return (
@@ -191,17 +221,17 @@ const currentProducts = filtered.slice(
               {colors.map((color, idx) => (
                 <li key={idx} className="flex items-center justify-between">
                   <label
-                    htmlFor={color}
+                    htmlFor={color.colorname}
                     className="text-[14px] text-[#2e2e2e] font-medium"
                   >
-                    {color}
+                    {color.colorname}
                   </label>
                   <input
                     type="checkbox"
-                    id={color}
-                    checked={selectedColors.includes(color.toLowerCase())}
-                    onChange={() => handleColorToggle(color)}
-                    className="w-5 h-5 border border-[#a0a0a0] rounded-sm  cursor-pointer checked:bg-[#3559C7] checked:border-[#3559C7] transition-all"
+                    id={color.colorname}
+                    checked={selectedColors.includes(color.colorname)}
+                    onChange={() => handleColorToggle(color.colorname)}
+                    className="w-5 h-5 border border-[#a0a0a0] rounded-sm cursor-pointer checked:bg-[#3559C7] checked:border-[#3559C7] transition-all"
                   />
                 </li>
               ))}
@@ -235,6 +265,7 @@ const currentProducts = filtered.slice(
               <p className="text-center text-gray-600">No products found</p>
             ) : (
               <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-5">
+             
                 {currentProducts.map((item, idx) => (
                   <div
                     key={idx}
@@ -260,19 +291,19 @@ const currentProducts = filtered.slice(
                       <h3 className="text-[17px] font-semibold mt-4">
                         {item.title}
                       </h3>
-                     <p className="text-lg font-bold mt-1 text-gray-800">
-                      {item.discountedPrice &&
-                      item.discountedPrice < item.price ? (
-                        <>
-                          ₹{Number(item.discountedPrice).toFixed(2)}
-                          <span className="line-through text-sm text-gray-500 ml-2">
-                            ₹{Number(item.price).toFixed(2)}
-                          </span>
-                        </>
-                      ) : (
-                        <>₹{Number(item.price).toFixed(2)}</>
-                      )}
-                    </p>
+                      <p className="text-lg font-bold mt-1 text-gray-800">
+                        {item.discountedPrice &&
+                          item.discountedPrice < item.price ? (
+                          <>
+                            ₹{Number(item.discountedPrice).toFixed(2)}
+                            <span className="line-through text-sm text-gray-500 ml-2">
+                              ₹{Number(item.price).toFixed(2)}
+                            </span>
+                          </>
+                        ) : (
+                          <>₹{Number(item.price).toFixed(2)}</>
+                        )}
+                      </p>
                     </div>
                     <div className="flex items-center justify-between px-4 pb-4">
                       {item.quantity > 0 ? (
@@ -311,11 +342,10 @@ const currentProducts = filtered.slice(
                   <button
                     key={page}
                     onClick={() => setCurrentPage(page)}
-                    className={`px-3 py-1 rounded border text-sm ${
-                      page === currentPage
-                        ? "bg-blue-600 text-white"
-                        : "bg-white text-gray-700 hover:bg-gray-100"
-                    }`}
+                    className={`px-3 py-1 rounded border text-sm ${page === currentPage
+                      ? "bg-blue-600 text-white"
+                      : "bg-white text-gray-700 hover:bg-gray-100"
+                      }`}
                   >
                     {page}
                   </button>

@@ -13,9 +13,8 @@ function New_product_AllSection() {
   return (
     <>
       <div className=" mx-auto max-w-[1720px]">
-        <Navbar/>
+         
           <New_Product />
-        <Footer />
       </div>
     </>
   );

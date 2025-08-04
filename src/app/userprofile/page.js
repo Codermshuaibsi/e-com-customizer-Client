@@ -185,9 +185,8 @@ const User_profile_dero = () => {
         </div>
         <div className="flex items-center space-x-2">
           <ChevronDown
-            className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${
-              isOpen ? "rotate-180" : ""
-            }`}
+            className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${isOpen ? "rotate-180" : ""
+              }`}
           />
         </div>
       </button>
@@ -199,20 +198,21 @@ const User_profile_dero = () => {
           <div className="bg-gradient-to-r from-gray-50 to-blue-50 p-4">
             <div className="flex items-center space-x-3">
               <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center text-white font-semibold text-lg shadow-lg">
-                 {thumbnail ? (
-            <img
-              src={thumbnail}
-              alt="Profile"
-              className="w-full h-full object-cover rounded-full"
-            />
-          ) : (
-            userInitials
-          )}
+                {thumbnail ? (
+                  <img
+                    src={thumbnail}
+                    alt="Profile"
+                    className="w-full h-full object-cover rounded-full"
+                  />
+                ) : (
+                  userInitials
+                )}
               </div>
               <div className="flex-1 min-w-0 text-left pl-1">
-                <h3 className="font-semibold text-gray-900 truncate">{`${userName.toUpperCase()} ${
-                  userData.lastName
-                }`}</h3>
+                <h3 className="font-semibold text-gray-900 truncate">
+                  {`${userName.toUpperCase()} ${userData?.lastName || ""}`}
+                </h3>
+
                 <p className="text-sm text-gray-600 truncate">{userEmail}</p>
                 <div className="flex items-center mt-1">
                   <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
@@ -240,6 +240,7 @@ const User_profile_dero = () => {
             >
               <ShoppingBag className="w-5 h-5 text-gray-500 mr-3" />
               <span className="text-gray-700 font-medium">Order History</span>
+
             </button>
 
             <button

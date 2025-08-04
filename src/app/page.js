@@ -17,7 +17,6 @@ export default function page() {
     <div>
       {/* <Product_Overview_AllSection /> */}
       {/* <Catalog_AllSection /> */}
-      <Navbar />
       {/* <Catalog_AllSection /> */}
       {/* <Product_Overview_AllSection /> */}
       {/* <Catalog_tshirt_page /> */}

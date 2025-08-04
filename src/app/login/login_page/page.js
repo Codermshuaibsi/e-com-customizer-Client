@@ -1,7 +1,11 @@
 "use client";
 
+
+import { useAuth } from "../../context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+
+
 
 const generateCaptcha = (length = 6) =>
   Math.random().toString(36).slice(2, 2 + length).toUpperCase();
@@ -12,7 +16,10 @@ const Login = () => {
     password: "",
     captchaInput: "",
   });
-  const navigation =useRouter("/")
+
+  const { setUser } = useAuth();
+
+  const navigation = useRouter("/")
 
   const [captchaCode, setCaptchaCode] = useState("");
 
@@ -30,114 +37,116 @@ const Login = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-//    const addToCart = async (id) => {
-//   const token = localStorage.getItem("user_token");
+  //    const addToCart = async (id) => {
+  //   const token = localStorage.getItem("user_token");
 
-//   if (token) {
-//     // ✅ Logged-in Cart
-//     try {
-//       const res = await fetch(`https://e-com-customizer.onrender.com/api/v1/addToCart/${id}`, {
-//         method: "POST",
-//         headers: {
-//           "Content-Type": "application/json",
-//           Authorization: `Bearer ${token}`,
-//         },
-//       });
+  //   if (token) {
+  //     // ✅ Logged-in Cart
+  //     try {
+  //       const res = await fetch(`https://e-com-customizer.onrender.com/api/v1/addToCart/${id}`, {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       });
 
-//       const data = await res.json();
-//       console.log("Server Cart:", data);
-//     } catch (error) {
-//       console.error("Error adding to server cart:", error);
-//     }
-//   } else {
-//     // ✅ Guest Cart (localStorage)
-//     let guestCart = JSON.parse(localStorage.getItem("guest_cart")) || [];
+  //       const data = await res.json();
+  //       console.log("Server Cart:", data);
+  //     } catch (error) {
+  //       console.error("Error adding to server cart:", error);
+  //     }
+  //   } else {
+  //     // ✅ Guest Cart (localStorage)
+  //     let guestCart = JSON.parse(localStorage.getItem("guest_cart")) || [];
 
-//     // check if item already exists
-//     const already = guestCart.find((item) => item.id === id);
-//     if (!already) {
-//       guestCart.push({ id, quantity: 1 });
-//       localStorage.setItem("guest_cart", JSON.stringify(guestCart));
-//       alert("Item added to local cart");
-//     } else {
-//       alert("Item already in local cart");
-//     }
-//   }
-// };
+  //     // check if item already exists
+  //     const already = guestCart.find((item) => item.id === id);
+  //     if (!already) {
+  //       guestCart.push({ id, quantity: 1 });
+  //       localStorage.setItem("guest_cart", JSON.stringify(guestCart));
+  //       alert("Item added to local cart");
+  //     } else {
+  //       alert("Item already in local cart");
+  //     }
+  //   }
+  // };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (formData.captchaInput !== captchaCode) {
-    alert("Invalid captcha");
-    return;
-  }
-
-  try {
-    const res = await fetch("https://e-com-customizer.onrender.com/api/v1/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: formData.emailOrPhone,
-        password: formData.password,
-      }),
-    });
-
-    const data = await res.json();
-    console.log(data)
-    if (!data.token) {
-      alert("Login failed: " + data.message);
+    if (formData.captchaInput !== captchaCode) {
+      alert("Invalid captcha");
       return;
     }
 
-    localStorage.setItem("user_token", data.token);
-    localStorage.setItem("user_ID",data.user._id,);
-    console.log("Login successful");
+    try {
+      const res = await fetch("https://e-com-customizer.onrender.com/api/v1/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: formData.emailOrPhone,
+          password: formData.password,
+        }),
+      });
 
-    // ✅ Sync guest cart to server
-    const guestCart = JSON.parse(localStorage.getItem("guest_cart")) || [];
+      const data = await res.json();
 
-    if (guestCart.length > 0) {
-      for (const item of guestCart) {
-        await fetch(`https://e-com-customizer.onrender.com/api/v1/addToCart/${item._id}`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${data.token}`,
-          },
-          body: JSON.stringify({
-            quantity: item.quantity || 1, // in case quantity exists
-          }),
-        });
+      console.log(data)
+      if (!data.token) {
+        alert("Login failed: " + data.message);
+        return;
       }
-      console.log("Guest cart synced to server");
-      localStorage.removeItem("guest_cart"); // ✅ Clear guest cart after sync
+
+      localStorage.setItem("user_token", data.token);
+      localStorage.setItem("user_ID", data.user._id,);
+      setUser(data.user._id);
+      console.log("Login successful");
+
+      // ✅ Sync guest cart to server
+      const guestCart = JSON.parse(localStorage.getItem("guest_cart")) || [];
+
+      if (guestCart.length > 0) {
+        for (const item of guestCart) {
+          await fetch(`https://e-com-customizer.onrender.com/api/v1/addToCart/${item._id}`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${data.token}`,
+            },
+            body: JSON.stringify({
+              quantity: item.quantity || 1, // in case quantity exists
+            }),
+          });
+        }
+        console.log("Guest cart synced to server");
+        localStorage.removeItem("guest_cart"); // ✅ Clear guest cart after sync
+      }
+
+      const guestWishlist = JSON.parse(localStorage.getItem("guest_wishlist")) || [];
+
+      if (guestWishlist.length > 0) {
+        for (const item of guestWishlist) {
+          await fetch(`https://e-com-customizer.onrender.com/api/v1/addToWishlist/${item._id}`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${data.token}`, // token from login response
+            },
+          });
+        }
+
+        console.log("Guest wishlist synced to server");
+        localStorage.removeItem("guest_wishlist"); // ✅ Correct key
+      }
+      alert("Login successful!");
+      navigation.push("/");
+
+    } catch (error) {
+      alert("Login error: " + error.message);
+      console.error(error);
     }
-
-const guestWishlist = JSON.parse(localStorage.getItem("guest_wishlist")) || [];
-
-if (guestWishlist.length > 0) {
-  for (const item of guestWishlist) {
-    await fetch(`https://e-com-customizer.onrender.com/api/v1/addToWishlist/${item._id}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${data.token}`, // token from login response
-      },
-    });
-  }
-
-  console.log("Guest wishlist synced to server");
-  localStorage.removeItem("guest_wishlist"); // ✅ Correct key
-}
-    alert("Login successful!");
-    navigation.push("/");
-
-  } catch (error) {
-    alert("Login error: " + error.message);
-    console.error(error);
-  }
-};
+  };
 
 
   return (
@@ -151,7 +160,7 @@ if (guestWishlist.length > 0) {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Email or Phone
@@ -209,7 +218,7 @@ if (guestWishlist.length > 0) {
             </div>
           </div>
 
-        
+
           <button
             type="submit"
             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded transition duration-200"
@@ -218,7 +227,7 @@ if (guestWishlist.length > 0) {
           </button>
         </form>
 
-      
+
         <p className="text-sm text-center text-gray-500 dark:text-gray-400 mt-6">
           Don't have an account?{" "}
           <a href="/signup" className="text-blue-600 hover:underline font-medium">

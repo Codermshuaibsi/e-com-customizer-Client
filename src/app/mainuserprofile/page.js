@@ -1,18 +1,16 @@
 "use client";
-import Navbar from "../COMMON/Navbar";
 
 const { default: UserProfilePage } = require("./userProfileuuuu/page");
 
 
-   function UserDetailPage() {       
-return(
-    <>
-    <Navbar />
-    <UserProfilePage /> 
-    
-    </>
-)
+function UserDetailPage() {
+   return (
+      <>
+         <UserProfilePage />
 
-   }
+      </>
+   )
 
-   export default UserDetailPage;
+}
+
+export default UserDetailPage;

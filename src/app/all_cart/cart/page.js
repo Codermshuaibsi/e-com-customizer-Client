@@ -3,15 +3,18 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 
-const FetchCartItems11 = () => {
+
+
+const CartPage = () => {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const fetchCartItems = async () => {
     try {
       const token = localStorage.getItem('user_token');
       const res = await fetch(
-        ' https://e-com-customizer.onrender.com/api/v1/fetchAllCartItems',
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/fetchAllCartItems`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -21,15 +24,14 @@ const FetchCartItems11 = () => {
       );
 
       const data = await res.json();
-      console.log(data);
-
       if (data.success) {
         setCartItems(data.cartItems || []);
       } else {
-        console.error('Cart fetch failed:', data.message);
+        setError(data.message || 'Failed to fetch cart items.');
       }
-    } catch (error) {
-      console.error('Error fetching cart items:', error);
+    } catch (err) {
+      console.error('Error fetching cart items:', err);
+      setError('Something went wrong. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -40,6 +42,7 @@ const FetchCartItems11 = () => {
   }, []);
 
   if (loading) return <p className="p-4 text-gray-600">Loading cart items...</p>;
+  if (error) return <p className="p-4 text-red-500">⚠️ {error}</p>;
 
   const totalAmount = cartItems.reduce(
     (acc, item) => acc + item.price * item.quantity,
@@ -62,8 +65,12 @@ const FetchCartItems11 = () => {
               >
                 <div className="w-20 h-20 flex-shrink-0">
                   <Image
-                    src={item.thumbnail?.[0] || '/placeholder.jpg'}
-                    alt={item.title}
+                    src={
+                      item.thumbnail?.[0]
+                        ? item.thumbnail[0]
+                        : '/placeholder.jpg'
+                    }
+                    alt={item.title || 'Product Image'}
                     width={80}
                     height={80}
                     className="rounded-md object-cover w-full h-full"
@@ -95,4 +102,4 @@ const FetchCartItems11 = () => {
   );
 };
 
-export default FetchCartItems11;
+export default CartPage;

@@ -4,8 +4,7 @@ import OrderHistoryPage from "./userorderhistory/page";
 
 function OrderHistory() {
   return (
-    <div>
-      <Navbar />
+    <div>\
       <OrderHistoryPage />
     </div>
   );

@@ -1,98 +1,136 @@
 "use client";
-import React from "react";
+import Link from "next/link";
+import React, { useEffect, useState } from "react";
 import { FaFacebookF, FaInstagram, FaTwitter } from "react-icons/fa";
-// import "./footer.css";
 
 export default function Footer() {
+  const [categories, setCategories] = useState([]);
+  const [subcategories, setSubcategories] = useState({});
+
   const cards = [
-    {
-      img: "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751269647/179431_1_cfedfv.png",
-    },
-    {
-      img: "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751269647/Layer_1_2_xisnnr.png",
-    },
-    {
-      img: "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751269647/jcb-512_1_yrnpe1.png",
-    },
-    {
-      img: "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751269647/Group_71967_bvqxxf.png",
-    },
-    {
-      img: "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751269647/Group_71970_zuzfza.png",
-    },
-    {
-      img: "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751269647/Group_71968_ndgnfz.png",
-    },
+    { img: "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751269647/179431_1_cfedfv.png" },
+    { img: "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751269647/Layer_1_2_xisnnr.png" },
+    { img: "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751269647/jcb-512_1_yrnpe1.png" },
+    { img: "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751269647/Group_71967_bvqxxf.png" },
+    { img: "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751269647/Group_71970_zuzfza.png" },
+    { img: "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751269647/Group_71968_ndgnfz.png" },
   ];
 
+  const socialLinks = [
+    { icon: <FaFacebookF />, href: "https://facebook.com", label: "Facebook" },
+    { icon: <FaTwitter />, href: "https://twitter.com", label: "Twitter" },
+    { icon: <FaInstagram />, href: "https://instagram.com", label: "Instagram" },
+  ];
+
+  // Fetch categories on mount
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch("https://e-com-customizer.onrender.com/api/v1/showAllCategory");
+        const data = await res.json();
+        setCategories(data.data || []);
+      } catch (err) {
+        console.error("Failed to fetch categories:", err);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  // Fetch subcategories for all categories
+  useEffect(() => {
+    const fetchAllSubcategories = async () => {
+      const subs = {};
+      for (const cat of categories) {
+        try {
+          const res = await fetch(
+            `https://e-com-customizer.onrender.com/api/v1/fetchAllSubCategoryOfCategory/${cat._id}`
+          );
+          const data = await res.json();
+          subs[cat.title] = data.categoryDetails?.subCategory || [];
+        } catch (err) {
+          console.error(`Error fetching subcategories for ${cat.title}:`, err);
+          subs[cat.title] = [];
+        }
+      }
+      setSubcategories(subs);
+    };
+
+    if (categories.length > 0) {
+      fetchAllSubcategories();
+    }
+  }, [categories]);
+
   return (
-    <section className="mt-10 px-4 sm:px-6 lg:px-16">
-      <div className="flex flex-col lg:flex-row justify-between gap-10 p-6 border-b border-gray-300">
-        <div className="flex flex-col gap-3">
-          <p className="text-4xl sm:text-5xl text-[#333] lg:text-start text-center font-bold">
-            BRAND
-          </p>
-          <p className="text-base lg:text-start text-center text-gray-600">
-            Lorem Ipsum is a Dummy
-          </p>
+    <footer className="bg-white mt-10 px-4 sm:px-6 lg:px-16 border-t border-gray-200">
+      <div className="flex flex-col lg:flex-row justify-between gap-10 py-10 border-b border-gray-300">
+        {/* Brand Info */}
+        <div className="flex flex-col gap-3 text-center lg:text-start">
+          <Link href="/">
+            <img src="/Logo.png" alt="Logo" className="w-36 mx-auto lg:mx-0" />
+          </Link>
+          <p className="text-base text-center text-xl text-gray-800">Fashion that fits you.</p>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-10 w-full lg:w-[60%] justify-evenly ">
-          <div className="flex gap-10 ext-class-foot">
-            <div className="flex flex-col gap-3">
-              <h3 className="text-lg font-bold mb-2">Hats & Cap</h3>
-              <p className="text-sm sm:text-base font-medium">Lorem Ipsum</p>
-              <p className="text-sm sm:text-base font-medium">Lorem Ipsum</p>
-              <p className="text-sm sm:text-base font-medium">Lorem Ipsum</p>
+        {/* Dynamic Category Columns */}
+        <div className="grid grid-cols-2 sm:flex gap-8 w-full lg:w-[60%] justify-evenly">
+          {categories.slice(0, 4).map((cat, idx) => (
+            <div className="flex flex-col gap-2" key={idx}>
+              <h3 className="text-lg font-semibold text-gray-800">{cat.title}</h3>
+              {subcategories[cat.title]?.slice(0, 5).map((subcat, i) => (
+                <Link
+                  key={i}
+                  href={`/subCategoryPage/${subcat._id}`}
+                  className="text-sm text-gray-600 hover:text-black transition"
+                >
+                  {subcat.title}
+                </Link>
+              ))}
             </div>
-            <div className="flex flex-col gap-3">
-              <h3 className="text-lg font-bold mb-2">T-SHIRT</h3>
-              <p className="text-sm sm:text-base font-medium">Lorem Ipsum</p>
-              <p className="text-sm sm:text-base font-medium">Lorem Ipsum</p>
-              <p className="text-sm sm:text-base font-medium">Lorem Ipsum</p>
-            </div>
-          </div>
-          <div className="flex flex-col ext-class-foot2 gap-3">
-            <h3 className="text-lg font-bold mb-2">CONTACT US</h3>
-            <p className="text-sm sm:text-base font-medium">
-              10 AM - 6 PM, Monday - Saturday
-            </p>
-            <p className="text-sm sm:text-base font-medium">1234567889</p>
-            <p className="text-sm sm:text-base font-medium">Lorem Ipsum</p>
+          ))}
+
+          {/* Contact Info */}
+          <div className="flex flex-col gap-2 col-span-2 sm:col-span-1">
+            <h3 className="text-lg font-semibold text-gray-800">Contact Us</h3>
+            <p className="text-sm text-gray-600">Mon–Sat: 10 AM - 6 PM</p>
+            <a href="tel:1234567890" className="text-sm text-gray-600 hover:text-black transition">
+              1234567890
+            </a>
+            <p className="text-sm text-gray-600">support@brand.com</p>
           </div>
         </div>
       </div>
 
-      <div className="flex flex-col mx-6 sm:flex-row justify-between items-center gap-6 py-6">
+      {/* Bottom Bar */}
+      <div className="flex flex-col sm:flex-row justify-between items-center gap-6 py-6">
         <div className="flex flex-col sm:flex-row items-center gap-4">
-          <p className="text-sm sm:text-base font-semibold text-center sm:text-center">
-            © Brand 2025
-          </p>
+          <p className="text-sm text-gray-700">© Brand 2025. All rights reserved.</p>
           <div className="flex gap-3">
-            <div className="bg-[#333] p-2  text-white">
-              <FaFacebookF />
-            </div>
-            <div className="bg-[#333] p-2  text-white">
-              <FaTwitter />
-            </div>
-            <div className="bg-[#333] p-2  text-white">
-              <FaInstagram />
-            </div>
+            {socialLinks.map((social, idx) => (
+              <a
+                key={idx}
+                href={social.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={social.label}
+                className="bg-gray-800 p-2 rounded-full text-white hover:bg-black transition"
+              >
+                {social.icon}
+              </a>
+            ))}
           </div>
         </div>
-
         <div className="flex flex-wrap justify-center sm:justify-end gap-3">
           {cards.map((card, id) => (
             <div className="w-12 h-8 flex items-center justify-center" key={id}>
               <img
                 src={card.img}
-                alt={`card-${id}`}
+                alt={`Payment card ${id}`}
                 className="max-h-full max-w-full object-contain"
               />
             </div>
           ))}
         </div>
       </div>
-    </section>
+    </footer>
   );
 }

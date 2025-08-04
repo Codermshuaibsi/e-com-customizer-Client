@@ -5,7 +5,6 @@ import CartPaymentPage from "./CheckoutForm/page";
 function MainOrder() {
   return (
     <>
-      <Navbar />
       <CartPaymentPage />
     </>
   );

@@ -11,7 +11,6 @@ function Product_Overview_AllSection() {
     
         
            <ProductDetailPage />
-        <Footer />
       
     </>
   );

@@ -4,7 +4,6 @@ import FitnessProducts from "./[id]/page";
 function CustomizerProducts() {
   return (
     <div>
-      <Navbar />
       <FitnessProducts />
     </div>
   );

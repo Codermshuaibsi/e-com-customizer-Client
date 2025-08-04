@@ -5,7 +5,6 @@ export default function Main_cart1(){
 
     return (
         <>
-        <Navbar />
         <FetchCartItems11 />
         </>
     )
