@@ -11,7 +11,7 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 
 const stripePromise = loadStripe(
-  "pk_test_51RsJEb3GsajO6t88ZKWvWWb0z8bkUlGGI9V2TCu4SmtHQjN4qRERfLwu0YStLwLpstX6u6d7CDU8kTr0gIjtc97E00z5dNj7WD"
+  "pk_test_51Rm7BZP6OLbhA2GAE6iiIBaOM3zPzfd8rkwpeKdQcKWpXm9upPXicQEIbJWHNTkBzth3lkHD0xtDDdodJnuA1I3400941lz5pp"
 );
 
 function PaymentCheckout() {
@@ -64,7 +64,8 @@ function PaymentCheckout() {
           const paymentData = await paymentRes.json();
           if (paymentRes.ok) {
             setClientSecret(paymentData.clientSecret);
-          } else {
+          }
+          else {
             setError("Failed to create payment intent: " + paymentData?.message);
           }
         }
@@ -298,8 +299,8 @@ const CheckoutForm = ({ id, totalp }) => {
 
       {message && (
         <div className={`p-4 rounded-lg border ${message.includes('successfully')
-            ? 'bg-green-50 border-green-200 text-green-800'
-            : 'bg-red-50 border-red-200 text-red-800'
+          ? 'bg-green-50 border-green-200 text-green-800'
+          : 'bg-red-50 border-red-200 text-red-800'
           }`}>
           <div className="flex items-center">
             <svg className={`w-5 h-5 mr-2 ${message.includes('successfully') ? 'text-green-600' : 'text-red-600'
@@ -319,8 +320,8 @@ const CheckoutForm = ({ id, totalp }) => {
         type="submit"
         disabled={!stripe || loading}
         className={`w-full py-4 px-6 rounded-lg font-semibold text-white transition-all duration-200 ${!stripe || loading
-            ? 'bg-gray-400 cursor-not-allowed'
-            : 'bg-blue-600 hover:bg-blue-700 hover:shadow-lg active:transform active:scale-[0.98]'
+          ? 'bg-gray-400 cursor-not-allowed'
+          : 'bg-blue-600 hover:bg-blue-700 hover:shadow-lg active:transform active:scale-[0.98]'
           }`}
       >
         {loading ? (
