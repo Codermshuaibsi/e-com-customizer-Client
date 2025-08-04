@@ -19,7 +19,6 @@ import User_profile_dero from "../userprofile/page";
 import Toastify from "toastify-js";
 import "toastify-js/src/toastify.css";
 import Image from "next/image";
-import { useAuth } from "../context/AuthContext";
 
 
 export const alert = (text, type = "success") => {
@@ -43,9 +42,6 @@ export const alert = (text, type = "success") => {
 
 
 export default function Navbar() {
-
-  const { user } = useAuth();
-  console.log(user)
   const navItems = [
 
 
@@ -54,9 +50,6 @@ export default function Navbar() {
     "CUSTOMIZER",
     "CLOTHES",
   ];
-
-  console.log(user);
-
   const [showMenu, setShowMenu] = useState(false);
   const navigation = useRouter();
   const [showCustomizer, setShowCustomizer] = useState(false);
@@ -64,8 +57,6 @@ export default function Navbar() {
   const [showCategories, setShowCategories] = useState([]);
   const [showBrand, setShowBrand] = useState(false);
   const [brands, setBrands] = useState([]);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
   const Goto_new_page = (index) => {
     const routes = [
       "/new_collection",
@@ -82,13 +73,17 @@ export default function Navbar() {
     // navigation.push(routes[index]);
   };
 
-
-
+  const [isLoggedIn, setIsLoggedIn] = useState(false);  
+  const token = typeof window !== "undefined" && localStorage.getItem("user_token");
 
 
   useEffect(() => {
-    const token = localStorage.getItem("user_token");
-    setIsLoggedIn(!!token);
+ 
+  }, [token])
+  
+
+  useEffect(() => {
+     setIsLoggedIn(!!token);
 
     const fetchAllCategories = async () => {
       try {
@@ -115,11 +110,11 @@ export default function Navbar() {
 
     fetchBrands();
     fetchAllCategories();
-  }, []);
+  }, [token]);
 
   const handleLogout = () => {
     localStorage.removeItem("user_token");
-    // setIsLoggedIn(false);
+    setIsLoggedIn(false);
     navigation.push("/login");
   };
   const pathname = usePathname();
@@ -156,7 +151,7 @@ export default function Navbar() {
   }, []);
 
   return (
-
+   
     <header>
       <div className="bg-black text-white text-sm px-4 md:px-10 py-3 flex flex-row md:flex-row justify-between items-center gap-3">
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-6 items-center">
@@ -198,7 +193,7 @@ export default function Navbar() {
 
             {/* Auth section for mobile */}
             <div className="flex gap-2 items-center">
-              {user ? (
+              {token ? (
                 <span className="text-[#3559C7] font-semibold text-sm underline">
                   <User_profile_dero />
                 </span>
