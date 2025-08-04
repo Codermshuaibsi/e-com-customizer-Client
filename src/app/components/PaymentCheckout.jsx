@@ -90,9 +90,9 @@ function PaymentCheckout() {
       borderRadius: "8px",
     },
   };
-  
-  const options = { 
-    clientSecret, 
+
+  const options = {
+    clientSecret,
     appearance,
     layout: {
       type: "tabs",
@@ -134,7 +134,7 @@ function PaymentCheckout() {
             </div>
             <h3 className="text-lg font-semibold text-gray-900 mb-2">Payment Error</h3>
             <p className="text-red-600 text-sm">{error}</p>
-            <button 
+            <button
               onClick={() => window.location.reload()}
               className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
@@ -234,7 +234,7 @@ const CheckoutForm = ({ id, totalp }) => {
           }
         );
         const data = await res.json();
-        console.log("hkghjgjhghgjg",data)
+        console.log("hkghjgjhghgjg", data)
         if (data.success) {
           const verifyRes = await fetch(
             "https://e-com-customizer.onrender.com/api/v1/payment/verifySignature",
@@ -254,7 +254,7 @@ const CheckoutForm = ({ id, totalp }) => {
           );
 
           const verifyData = await verifyRes.json();
-          
+
           if (verifyData.success) {
             setSuccess(true);
             setMessage("Order placed successfully!");
@@ -280,8 +280,8 @@ const CheckoutForm = ({ id, totalp }) => {
         </div>
         <h3 className="text-lg font-semibold text-gray-900 mb-2">Payment Successful!</h3>
         <p className="text-green-600 mb-4">{message}</p>
-     <Link href={"/orderhistory"}>   <button 
-        
+        <Link href={"/orderhistory"}>   <button
+
           className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
         >
           View Orders
@@ -297,15 +297,13 @@ const CheckoutForm = ({ id, totalp }) => {
       </div>
 
       {message && (
-        <div className={`p-4 rounded-lg border ${
-          message.includes('successfully') 
-            ? 'bg-green-50 border-green-200 text-green-800' 
+        <div className={`p-4 rounded-lg border ${message.includes('successfully')
+            ? 'bg-green-50 border-green-200 text-green-800'
             : 'bg-red-50 border-red-200 text-red-800'
-        }`}>
+          }`}>
           <div className="flex items-center">
-            <svg className={`w-5 h-5 mr-2 ${
-              message.includes('successfully') ? 'text-green-600' : 'text-red-600'
-            }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className={`w-5 h-5 mr-2 ${message.includes('successfully') ? 'text-green-600' : 'text-red-600'
+              }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               {message.includes('successfully') ? (
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               ) : (
@@ -320,11 +318,10 @@ const CheckoutForm = ({ id, totalp }) => {
       <button
         type="submit"
         disabled={!stripe || loading}
-        className={`w-full py-4 px-6 rounded-lg font-semibold text-white transition-all duration-200 ${
-          !stripe || loading
+        className={`w-full py-4 px-6 rounded-lg font-semibold text-white transition-all duration-200 ${!stripe || loading
             ? 'bg-gray-400 cursor-not-allowed'
             : 'bg-blue-600 hover:bg-blue-700 hover:shadow-lg active:transform active:scale-[0.98]'
-        }`}
+          }`}
       >
         {loading ? (
           <div className="flex items-center justify-center">
