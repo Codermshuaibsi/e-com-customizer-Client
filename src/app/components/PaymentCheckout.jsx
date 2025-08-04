@@ -11,7 +11,7 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 
 const stripePromise = loadStripe(
-  "pk_test_51Rm7LMKrBuN4n379bFWTajo1bMz0MwERwGDQmV9wjKTyZL8RjWn80xxtNG6SmsHPiyi2Eh8ZNKN4vpUUSDP1z1nW00AOHfcqdX"
+  "pk_test_51RsJEb3GsajO6t88ZKWvWWb0z8bkUlGGI9V2TCu4SmtHQjN4qRERfLwu0YStLwLpstX6u6d7CDU8kTr0gIjtc97E00z5dNj7WD"
 );
 
 function PaymentCheckout() {
