@@ -5,7 +5,7 @@ import { IoIosArrowForward, IoIosArrowBack } from "react-icons/io";
 import { IoRepeatOutline } from "react-icons/io5";
 import { LuCircleCheckBig, LuTrello } from "react-icons/lu";
 import { HiMenu, HiX } from "react-icons/hi";
-// import { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export default function Hero() {
   // const navItems = ["TSHIRT", "HATS", "NEW COLLECTIONS", "BRAND", "ABOUT"];
@@ -13,13 +13,18 @@ export default function Hero() {
   // const router = useRouter();
 
   const sliderImages = [
-    "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751104298/Group_505_zbfxcq.png",
-    "https://res.cloudinary.com/dknrega1a/image/upload/v1751346425/image_dglpve.png",
-    "https://res.cloudinary.com/dknrega1a/image/upload/v1746336727/cld-sample-2.jpg",
-    "https://res.cloudinary.com/dknrega1a/image/upload/v1746336726/samples/cup-on-a-table.jpg",
-    "https://res.cloudinary.com/dknrega1a/image/upload/v1746336726/samples/man-on-a-street.jpg",
+    // Plain T-shirt
+    "https://media.powerlook.in/catalog/category/plain_t_shirt_1__2.jpg?aio=w-3840",
+    // Plain Shirt
+    "https://media.powerlook.in/catalog/category/5_12_.jpg?aio=w-3840",
+    // Plain Ladies Kurta
+    "https://images.unsplash.com/photo-1561052967-61fc91e48d79?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    // Plain Polo T-shirt
+    // Plain Men's Kurta
   ];
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  const router = useRouter();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -71,12 +76,12 @@ export default function Hero() {
       </div> */}
 
       <section
-        className="w-full h-[350px] mt-4 bg-cover bg-center flex items-center relative transition-all duration-500 ease-in-out"
+        className="w-full h-[500px] mt-4 bg-cover bg-center flex items-center relative transition-all duration-700 ease-in-out"
         style={{
           backgroundImage: `url(${sliderImages[currentIndex]})`,
         }}
       >
-       
+
 
         <div className="max-w-7xl w-full px-4 sm:px-8 text-white">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
@@ -94,7 +99,7 @@ export default function Hero() {
                 <br className="hidden sm:block" />
                 Limited time only!
               </p>
-              <button className="flex items-center gap-2 bg-white text-black px-4 py-3 w-fit text-sm font-bold border border-black shadow hover:scale-105 transition">
+              <button onClick={() => router.push('/new_collection')} className="flex cursor-pointer items-center gap-2 bg-white text-black px-4 py-3 w-fit text-sm font-bold border border-black shadow hover:scale-105 transition">
                 SHOP NOW
                 <IoIosArrowForward className="bg-black text-white rounded-full" />
               </button>
@@ -107,9 +112,8 @@ export default function Hero() {
             <button
               key={index}
               onClick={() => setCurrentIndex(index)}
-              className={`h-2.5 transition-all duration-300 rounded-full ${
-                currentIndex === index ? "bg-white w-8" : "bg-white/50 w-2.5"
-              }`}
+              className={`h-2.5 transition-all duration-300 rounded-full ${currentIndex === index ? "bg-white w-8" : "bg-white/50 w-2.5"
+                }`}
               style={{
                 height: "10px",
                 borderRadius: "9999px",

@@ -14,7 +14,7 @@ import Newsletter from "./Newsletter/page";
 function AllSection() {
   return (
     <>
-      <div className=" mx-auto max-w-[1720px]">\
+      <div className=" mx-auto max-w-[1720px]">
         <Hero />
         <Product />
         <HatsSection />

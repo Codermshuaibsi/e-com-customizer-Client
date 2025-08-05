@@ -18,7 +18,8 @@ import Link from "next/link";
 import User_profile_dero from "../userprofile/page";
 import Toastify from "toastify-js";
 import "toastify-js/src/toastify.css";
-import Image from "next/image";
+import clsx from 'clsx'
+// import Image from "next/image";
 
 
 export const alert = (text, type = "success") => {
@@ -42,14 +43,13 @@ export const alert = (text, type = "success") => {
 
 
 export default function Navbar() {
-  const navItems = [
 
-
-    "NEW COLLECTIONS",
-    "ABOUT",
-    "CUSTOMIZER",
-    "CLOTHES",
-  ];
+  const routeMap = {
+    "NEW COLLECTIONS": "/new_collection",
+    "ABOUT": "/About",
+    "CUSTOMIZE": "/customizer",
+    "CLOTHES": "/clothes",
+  };
   const [showMenu, setShowMenu] = useState(false);
   const navigation = useRouter();
   const [showCustomizer, setShowCustomizer] = useState(false);
@@ -57,33 +57,27 @@ export default function Navbar() {
   const [showCategories, setShowCategories] = useState([]);
   const [showBrand, setShowBrand] = useState(false);
   const [brands, setBrands] = useState([]);
-  const Goto_new_page = (index) => {
-    const routes = [
-      "/new_collection",
-      "/About"
-    ];
+  const navItems = ["NEW COLLECTIONS", "ABOUT", "CUSTOMIZE", "CLOTHES"];
 
-    if (index === 5) {
-      // CUSTOMIZER clicked
-      setShowCustomizer(true); // trigger a state
-    } else {
-      navigation.push(routes[index]);
+  const pathname = usePathname();
+  const Goto_new_page = (item) => {
+    if (item === "CUSTOMIZER") {
+      setShowCustomizer(true);
+    } else if (routeMap[item]) {
+      navigation.push(routeMap[item]);
     }
-
-    // navigation.push(routes[index]);
   };
-
-  const [isLoggedIn, setIsLoggedIn] = useState(false);  
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const token = typeof window !== "undefined" && localStorage.getItem("user_token");
 
 
   useEffect(() => {
- 
+
   }, [token])
-  
+
 
   useEffect(() => {
-     setIsLoggedIn(!!token);
+    setIsLoggedIn(!!token);
 
     const fetchAllCategories = async () => {
       try {
@@ -117,7 +111,6 @@ export default function Navbar() {
     setIsLoggedIn(false);
     navigation.push("/login");
   };
-  const pathname = usePathname();
 
   useEffect(() => {
     console.log("📍 Current route:", pathname);
@@ -151,7 +144,7 @@ export default function Navbar() {
   }, []);
 
   return (
-   
+
     <header>
       <div className="bg-black text-white text-sm px-4 md:px-10 py-3 flex flex-row md:flex-row justify-between items-center gap-3">
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-6 items-center">
@@ -188,7 +181,7 @@ export default function Navbar() {
               className="text-2xl sm:text-3xl font-bold text-[#333333] cursor-pointer"
               onClick={() => navigation.push("/")}
             >
-              <img src="/Logo.png" alt="" className="w-lg" />
+              <img src="/Logo.png" alt="" className="w-[100px] lg:w-lg xl:w-lg sm:w-sm" />
             </div>
 
             {/* Auth section for mobile */}
@@ -246,7 +239,7 @@ export default function Navbar() {
               className="text-red-500"
               onClick={() => navigation.push("/wishlist")}
             >
-              {true ? <HiHeart size={32} /> : <HiOutlineHeart size={32} />}
+              {!true ? <HiHeart size={32} /> : <HiOutlineHeart size={32} />}
             </button>
           </div>
         </div>
@@ -286,7 +279,7 @@ export default function Navbar() {
               </Link>
 
               <button
-                className="text-red-500"
+                className="text-red-500 cursor-pointer"
                 onClick={() => navigation.push("/wishlist")}
               >
                 {true ? <HiHeart size={30} /> : <HiOutlineHeart size={30} />}
@@ -295,9 +288,10 @@ export default function Navbar() {
           </div>
 
           {/* Right: Auth */}
-          <div className="flex gap-4 items-center whitespace-nowrap">
+          <div className="flex gap-4 items-center cursor-pointer
+             whitespace-nowrap">
             {isLoggedIn ? (
-              <span className="text-[#3559C7] font-semibold text-base xl:text-lg underline">
+              <span className="text-[#3559C7] cursor-pointer font-semibold text-base xl:text-lg underline">
                 <User_profile_dero />
               </span>
             ) : (
@@ -337,7 +331,11 @@ export default function Navbar() {
         className={`${showMenu ? "" : "hidden"
           } md:flex flex-wrap gap-4 sm:gap-8 justify-center mt-3 mb-3 px-5 relative`}
       >
-        {navItems.map((item, index) => {
+        {navItems.map((item) => {
+          const currentPath = routeMap[item];
+          const isActive = pathname === currentPath;
+
+          // CLOTHES Dropdown
           if (item === "CLOTHES") {
             return (
               <div
@@ -346,7 +344,12 @@ export default function Navbar() {
                 onMouseEnter={() => setShowCLOTHES(true)}
                 onMouseLeave={() => setShowCLOTHES(false)}
               >
-                <a className="uppercase text-base sm:text-md font-semibold cursor-pointer hover:text-gray-600 transition-colors">
+                <a
+                  className={clsx(
+                    "uppercase text-base sm:text-md font-semibold cursor-pointer transition-colors",
+                    isActive ? "text-blue-600" : "text-[#333333] hover:text-gray-600"
+                  )}
+                >
                   {item}
                 </a>
 
@@ -376,11 +379,16 @@ export default function Navbar() {
               </div>
             );
           }
+
+          // CUSTOMIZER Dropdown
           if (item === "CUSTOMIZER") {
             return (
               <div key={item} className="relative group mb-2" ref={dropdownRef}>
                 <a
-                  className="uppercase text-base sm:text-md font-semibold text-[#333333] cursor-pointer"
+                  className={clsx(
+                    "uppercase text-base sm:text-md font-semibold cursor-pointer transition-colors",
+                    isActive ? "text-blue-600" : "text-[#333333] hover:text-gray-600"
+                  )}
                   onMouseEnter={() => setShowCustomizer(true)}
                   onMouseLeave={() => setShowCustomizer(false)}
                 >
@@ -415,66 +423,27 @@ export default function Navbar() {
                       ))}
                     </div>
                   </div>
-                )
-                }
+                )}
               </div>
             );
           }
 
-          if (item === "BRAND") {
-            return (
-              <div
-                key="brand"
-                className="relative group mb-2"
-                ref={dropdownRef}
-                onMouseEnter={() => setShowBrand(true)}
-                onMouseLeave={() => setShowBrand(false)}
-              >
-                <a className="uppercase text-base sm:text-md font-semibold cursor-pointer hover:text-gray-600 transition-colors">
-                  {item}
-                </a>
-
-                {showBrand && (
-                  <div className="absolute left-1/2 top-full w-[90vw] max-w-[350px] -translate-x-1/2 bg-white p-6 border border-gray-200 shadow-xl rounded-md z-50 animate-fadeIn">
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
-                      {brands.map((brand) => (
-                        <div key={brand._id} className="flex flex-col items-center group/brand transition-transform duration-200">
-                          <Link href={`/getbrandsproduct/${slugify(brand.name, { lower: true })}`}>
-                            <div className="transition-transform hover:scale-105 w-[60px]">
-                              <img
-                                src={brand.logoUrl}
-                                alt={`${brand.name} logo`}
-                                className="h-14 w-20 object-scale-down mb-2 rounded-lg shadow-sm"
-                                loading="lazy"
-                              />
-                            </div>
-                          </Link>
-                          <span className="text-[9px] font-bold text-center group-hover/brand:text-blue-600 transition-colors">
-                            {brand.name}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                )
-                }
-              </div>
-            );
-          }
-
-          // For other nav items
+          // Default Nav Items (NEW COLLECTIONS, ABOUT)
           return (
             <div key={item} className="relative mb-3">
               <a
-                className="uppercase text-base sm:text-md font-semibold text-[#333333] cursor-pointer hover:text-blue-600 transition-colors"
-                onClick={() => Goto_new_page(index)}
+                className={clsx(
+                  "uppercase text-base sm:text-md font-semibold cursor-pointer transition-colors",
+                  isActive ? "text-blue-600" : "text-[#333333] hover:text-blue-600"
+                )}
+                onClick={() => Goto_new_page(item)}
               >
                 {item}
               </a>
             </div>
           );
         })}
+
       </div>
     </header >
   );

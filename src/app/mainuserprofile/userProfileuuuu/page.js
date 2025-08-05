@@ -355,6 +355,7 @@ const UserProfilePage = () => {
       }
 
       const token = localStorage.getItem("user_token");
+      
       const url = isEditingAddress
         ? `https://e-com-customizer.onrender.com/api/v1/updateAddress/${editingAddress._id}`
         : "https://e-com-customizer.onrender.com/api/v1/createAddress";
@@ -451,7 +452,7 @@ const UserProfilePage = () => {
 
       const token = localStorage.getItem("user_token");
 
-      const res = await fetch("http://localhost:4000/api/v1/updateThumbnail", {
+      const res = await fetch("https://e-com-customizer.onrender.com/api/v1/updateThumbnail", {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -800,8 +801,8 @@ const UserProfilePage = () => {
                           </p>
                           <span
                             className={`text-sm px-2 py-1 rounded-full ${order.orderStatus === "Delivered"
-                                ? "bg-green-100 text-green-800"
-                                : "bg-blue-100 text-blue-800"
+                              ? "bg-green-100 text-green-800"
+                              : "bg-blue-100 text-blue-800"
                               }`}
                           >
                             {order.orderStatus}

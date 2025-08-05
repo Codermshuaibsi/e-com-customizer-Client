@@ -13,7 +13,7 @@ const CartPaymentPage = () => {
   const [loading, setLoading] = useState(true);
   const [paymentMethod, setPaymentMethod] = useState("online"); // "online" or "cod"
   const [placingOrder, setPlacingOrder] = useState(false);
-  
+
   const [address, setAddress] = useState({
     fullName: "",
     phone: "",
@@ -101,7 +101,7 @@ const CartPaymentPage = () => {
         }
       );
       const data = await res.json();
-      
+
       if (res.ok) {
         setSelecte(addressId);
       }
@@ -174,17 +174,19 @@ const CartPaymentPage = () => {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          products: cartItems.map((item) => item._id),
+          products: cartItems.map((item) => ({
+            productId: item.productId || item._id, // Ensure productId is sent
+            quantity: item.quantity || 1,
+          })),
           amount: totalAmount,
           addressId: selectedAddressId,
         }),
       });
 
       const data = await res.json();
-      
+
       if (data.success) {
         alert(`Order placed successfully! Order ID: ${data.orderId}`);
-        // Redirect to success page or order details
         window.location.href = `/orders/${data.orderId}`;
       } else {
         alert(data.message || "Failed to place order");
@@ -196,6 +198,7 @@ const CartPaymentPage = () => {
       setPlacingOrder(false);
     }
   };
+
 
   // Validate if order can be placed
   const canPlaceOrder = () => {
@@ -380,7 +383,7 @@ const CartPaymentPage = () => {
                 </span>
                 Payment Method
               </h2>
-              
+
               <div className="space-y-3">
                 <div className="flex items-center p-4 border-2 border-gray-200 rounded-lg hover:border-blue-300 transition-colors">
                   <input
@@ -461,7 +464,7 @@ const CartPaymentPage = () => {
           <div className="lg:col-span-1">
             <div className="bg-white rounded-lg shadow-sm p-6 sticky top-8">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Price Details</h3>
-              
+
               <div className="space-y-3 pb-4 border-b border-gray-200">
                 <div className="flex justify-between text-gray-600">
                   <span>Subtotal ({cartItems.length} items)</span>
@@ -472,7 +475,7 @@ const CartPaymentPage = () => {
                   <span className="text-green-600">Free</span>
                 </div>
               </div>
-              
+
               <div className="flex justify-between text-lg font-semibold text-gray-900 mt-4 mb-6">
                 <span>Total Amount</span>
                 <span>₹{totalAmount}</span>
@@ -482,11 +485,10 @@ const CartPaymentPage = () => {
                 <button
                   onClick={handleCodOrder}
                   disabled={!canPlaceOrder()}
-                  className={`w-full font-semibold py-3 rounded-lg transition ${
-                    canPlaceOrder()
+                  className={`w-full font-semibold py-3 rounded-lg transition ${canPlaceOrder()
                       ? "bg-green-600 text-white hover:bg-green-700"
                       : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                  }`}
+                    }`}
                 >
                   {placingOrder ? (
                     <span className="flex items-center justify-center">
@@ -510,11 +512,10 @@ const CartPaymentPage = () => {
                 >
                   <button
                     disabled={!canPlaceOrder()}
-                    className={`w-full font-semibold py-3 rounded-lg transition ${
-                      canPlaceOrder()
+                    className={`w-full font-semibold py-3 rounded-lg transition ${canPlaceOrder()
                         ? "bg-blue-600 text-white hover:bg-blue-700"
                         : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                    }`}
+                      }`}
                   >
                     Proceed to Payment
                   </button>

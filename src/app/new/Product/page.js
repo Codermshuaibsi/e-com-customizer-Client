@@ -1,25 +1,33 @@
 "use client";
+import { useRouter } from "next/navigation";
 import React from "react";
 import { IoIosArrowForward } from "react-icons/io";
 
 export default function Product() {
+  const router = useRouter();
   const sliderItems = [
     {
-      title: "TRUCKERS",
+      title: " T-Shirts",
       image:
         "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751113640/Group_72626_c80lwx.png",
     },
     {
-      title: "CLASSICS",
+      title: " Shirt",
       image:
         "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751113653/Group_72627_lntamr.png",
     },
     {
-      title: "FLATCAPS",
+      title: "  Cap",
       image:
         "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751113662/Group_514_b8jobe.png",
     },
   ];
+
+  const redirect = [
+    "/Catalog_page/6889c710437a7923050d9630",
+    "/Catalog_page/6890ac148bdc0af1632302c4",
+    "/Catalog_page/6889bfcb437a7923050d9467",
+  ]
   return (
     <>
       <section className="flex flex-col mt-20 ">
@@ -64,12 +72,16 @@ export default function Product() {
                     <h2 className="text-3xl font-extrabold tracking-wide">
                       {item.title}
                     </h2>
-                    <button className="mt-4 px-6 py-3 bg-white text-black text-lg font-bold flex items-center gap-2 hover:bg-gray-100 transition">
+                    <button
+                      onClick={() => router.push(redirect[idx])}
+                      className="mt-4 px-6 py-3 hover:scale-125 cursor-pointer bg-white text-black text-lg font-bold flex items-center gap-2 hover:bg-gray-100 transition"
+                    >
                       SHOP NOW
                       <span className="text-black text-xl">
-                        <IoIosArrowForward className="bg-black text-white rounded-4xl  " />
+                        <IoIosArrowForward className="bg-black text-white rounded-4xl" />
                       </span>
                     </button>
+
                   </div>
                 </div>
               ))}

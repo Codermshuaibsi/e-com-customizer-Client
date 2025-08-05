@@ -80,7 +80,7 @@ export default function Footer() {
                 <Link
                   key={i}
                   href={`/subCategoryPage/${subcat._id}`}
-                  className="text-sm text-gray-600 hover:text-black transition"
+                  className="text-sm text-gray-600 hover:font-semibold hover:text-black transition"
                 >
                   {subcat.title}
                 </Link>
@@ -92,10 +92,12 @@ export default function Footer() {
           <div className="flex flex-col gap-2 col-span-2 sm:col-span-1">
             <h3 className="text-lg font-semibold text-gray-800">Contact Us</h3>
             <p className="text-sm text-gray-600">Mon–Sat: 10 AM - 6 PM</p>
-            <a href="tel:1234567890" className="text-sm text-gray-600 hover:text-black transition">
+            <a href="tel:1234567890" className="text-sm text-gray-600 hover:text-black hover:font-semibold transition-all">
               1234567890
             </a>
-            <p className="text-sm text-gray-600">support@brand.com</p>
+            <a href="mailto:support@gmail.com">
+              <p className="text-sm transition-all  hover:font-semibold text-gray-600">support@gmail.com</p>
+            </a>
           </div>
         </div>
       </div>
@@ -112,7 +114,7 @@ export default function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={social.label}
-                className="bg-gray-800 p-2 rounded-full text-white hover:bg-black transition"
+                className="bg-gray-800 p-2 rounded-full text-white  transition-all"
               >
                 {social.icon}
               </a>

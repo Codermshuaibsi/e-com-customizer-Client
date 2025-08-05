@@ -31,7 +31,7 @@ export default function ProductPage() {
     const fetchColor = async () => {
       try {
 
-        const res = await fetch('http://localhost:4000/api/v1/get/color', param);
+        const res = await fetch('/api/v1/get/color', param);
         const data = await res.json();
         setColor(data.data);
         console.log(data.data)

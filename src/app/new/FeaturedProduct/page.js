@@ -8,6 +8,8 @@ import Link from "next/link";
 import Toastify from "toastify-js";
 import "toastify-js/src/toastify.css";
 
+
+
 export default function FeaturePro() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -108,10 +110,10 @@ export default function FeaturePro() {
   return (
     <section>
       <div className="mb-6 mt-6">
-        <p className="text-[56px] font-bold text-[#333333] text-center">
+        <p className="sm:text-lg lg:text-xl xl:text-4xl p-2 font-bold text-[#333333] text-center">
           FEATURED PRODUCTS
         </p>
-        <p className="text-center text-lg max-w-3xl mx-auto">
+        <p className="text-center lg:text-lg xl:text-xl sm:text-sm  max-w-3xl mx-auto">
           Explore our top picks—crafted with precision and passion for the creators of style.
         </p>
       </div>

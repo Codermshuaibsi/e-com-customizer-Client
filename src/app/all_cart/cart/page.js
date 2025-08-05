@@ -14,7 +14,7 @@ const CartPage = () => {
     try {
       const token = localStorage.getItem('user_token');
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/fetchAllCartItems`,
+        `https://e-com-customizer.onrender.com/api/v1/fetchAllCartItems`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

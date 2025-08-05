@@ -2,10 +2,13 @@
 import React, { useRef } from "react";
 import { IoIosArrowForward } from "react-icons/io";
 import { motion, useInView } from "framer-motion";
+import { useRouter } from "next/navigation";
+
 
 export default function ShirtSection() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-100px" }); // Animate once when near viewport
+  const router = useRouter();
 
   return (
     <section
@@ -23,7 +26,7 @@ export default function ShirtSection() {
           transition={{ duration: 1, delay: 0.2 }}
           className="text-white rounded-2xl max-w-auto p-5 backdrop-blur-2xl"
         >
-          <motion.h1
+          <motion.h1  
             initial={{ opacity: 0, y: -30 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8 }}
@@ -47,7 +50,8 @@ export default function ShirtSection() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={inView ? { opacity: 1, scale: 1 } : {}}
             transition={{ duration: 0.6, delay: 0.8 }}
-            className="mt-8 px-6 py-3 bg-white text-black font-bold flex items-center gap-2 hover:bg-gray-100 transition mx-auto lg:mx-0"
+            onClick={()=> router.push('/Catalog_page/6890ac148bdc0af1632302c4')}
+            className="mt-8 px-6 py-3 cursor-pointer hover:scale-105 transition-all bg-white text-black font-bold flex items-center gap-2 hover:bg-gray-100  mx-auto lg:mx-0"
           >
             EXPLORE COLLECTION
             <IoIosArrowForward className="text-white bg-black rounded-full p-1 text-2xl" />

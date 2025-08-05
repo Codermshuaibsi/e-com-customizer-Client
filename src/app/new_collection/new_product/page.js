@@ -1,9 +1,10 @@
 "use client";
 import React, { useEffect, useState, useMemo } from "react";
 import { LiaShoppingBagSolid } from "react-icons/lia";
-import { FaRegHeart } from "react-icons/fa";
-
+import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { useRouter } from "next/navigation";
+import clsx from "clsx";
+import { toast } from "react-toastify";
 
 export default function New_Product() {
   // State management
@@ -14,6 +15,9 @@ export default function New_Product() {
   const [expandedCategories, setExpandedCategories] = useState([]);
   const [sortBy, setSortBy] = useState("featured");
   const [currentPage, setCurrentPage] = useState(1);
+
+  const [clickedButtons, setClickedButtons] = useState({});
+  const [wishlistedItems, setWishlistedItems] = useState({});
   const [loading, setLoading] = useState({ products: true, categories: true });
   const router = useRouter();
 
@@ -48,44 +52,52 @@ export default function New_Product() {
 
   // Wishlist Function
   async function AddToWishlist(item) {
-    console.log("AddToWishlist called with:", item);
     const token = localStorage.getItem("user_token");
+
+    // ✅ Toggle heart icon
+    setWishlistedItems((prev) => ({
+      ...prev,
+      [item._id]: !prev[item._id],
+    }));
 
     if (token) {
       // ✅ Logged-in user: send API request
       try {
-        const res = await fetch(`https://e-com-customizer.onrender.com/api/v1/addToWishlist/${item._id}`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const res = await fetch(
+          `https://e-com-customizer.onrender.com/api/v1/addToWishlist/${item._id}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
         const data = await res.json();
 
         if (res.ok) {
-          alert("Item added to Wishlist successfully");
+          toast.success("Item added to Wishlist successfully");
         } else {
-          alert(data.message || "Failed to add item to Wishlist");
+          toast.error("Failed to add item to Wishlist");
         }
       } catch (error) {
         console.error("Error adding to wishlist:", error);
-        alert("Something went wrong!");
+        toast.warning("Something went wrong!");
       }
     } else {
       // ✅ Guest wishlist: store in localStorage
-      let guestWishlist = JSON.parse(localStorage.getItem("guest_wishlist")) || [];
+      let guestWishlist =
+        JSON.parse(localStorage.getItem("guest_wishlist")) || [];
 
-      // Check if item already exists by _id
       const alreadyExists = guestWishlist.find((p) => p._id === item._id);
 
       if (!alreadyExists) {
         guestWishlist.push(item);
         localStorage.setItem("guest_wishlist", JSON.stringify(guestWishlist));
-        alert("Item added to local wishlist");
+        toast.success("Item added to local wishlist");
       } else {
-        alert("Item already in local wishlist");
+        toast.success("Item already in local wishlist");
       }
     }
   }
@@ -129,7 +141,6 @@ export default function New_Product() {
   };
 
   const addToCart = async (item) => {
-    // console.log(id)
     const token = localStorage.getItem("user_token");
 
     if (token) {
@@ -149,9 +160,7 @@ export default function New_Product() {
         const data = await res.json();
         console.log("Server Cart:", data);
         if (res.ok) {
-          alert("Item added to cart successfully");
-        } else {
-          alert(data.message || "Failed to add item to cart");
+          toast.success("Item added to cart successfully");
         }
       } catch (error) {
         console.error("Error adding to server cart:", error);
@@ -168,13 +177,12 @@ export default function New_Product() {
         // guestCart.push({ item, quantity: 1 });
         guestCart.push(item);
         localStorage.setItem("guest_cart", JSON.stringify(guestCart));
-        alert("Item added to local cart");
+        toast.success("Item added to local cart");
       } else {
-        alert("Item already in local cart");
+        toast.info("Item already in local cart");
       }
     }
   };
-
   // Filter and sort products
   const filteredAndSortedProducts = useMemo(() => {
     let filtered = selectedSubcategories.length === 0
@@ -436,8 +444,19 @@ export default function New_Product() {
                     </div>
                     <div className="flex items-center gap-2 px-4 pb-4">
                       <button
-                        onClick={() => addToCart(item)}
-                        className="flex-1 bg-[#3559C7] text-white font-bold text-sm py-3 px-4 flex items-center justify-center gap-2 hover:bg-blue-800 transition"
+                        onClick={() => {
+                          addToCart(item);
+                          setClickedButtons((prev) => ({ ...prev, [item._id]: true }));
+                          setTimeout(() => {
+                            setClickedButtons((prev) => ({ ...prev, [item._id]: false }));
+                          }, 1000);
+                        }}
+                        className={clsx(
+                          "flex-1 cursor-pointer hover:scale-110 font-bold text-sm py-[17px] px-4 flex items-center justify-center gap-2 transition",
+                          clickedButtons[item._id]
+                            ? "bg-green-600 text-white"
+                            : "bg-[#3559C7] text-white hover:bg-blue-800"
+                        )}
                       >
                         <LiaShoppingBagSolid />
                         ADD TO CART
@@ -446,7 +465,11 @@ export default function New_Product() {
                         onClick={() => AddToWishlist(item)}
                         className="ml-2 border border-gray-300 w-12 h-12 flex items-center justify-center hover:bg-gray-100"
                       >
-                        <FaRegHeart size={18} />
+                        {wishlistedItems[item._id] ? (
+                          <FaHeart size={18} color="red" />
+                        ) : (
+                          <FaRegHeart size={18} color="gray" />
+                        )}
                       </button>
                     </div>
                   </div>

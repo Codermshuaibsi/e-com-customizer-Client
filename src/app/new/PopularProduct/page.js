@@ -1,47 +1,23 @@
 "use client";
+import { Shirt } from "lucide-react";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
-import { FaRegHeart } from "react-icons/fa";
+import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { LiaShoppingBagSolid } from "react-icons/lia";
+import clsx from "clsx";
+import { toast } from "react-toastify";
+
+
+
 
 export default function PopularPro() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [clickedButtons, setClickedButtons] = useState({});
+  const [wishlistedItems, setWishlistedItems] = useState({});
+
   const [error, setError] = useState(null);
-  const hats = [
-    {
-      img: "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751116991/101-0378-YEL-F01_750x_1_tweatg.png",
-      sale: true,
-    },
-    {
-      img: "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751116991/101-0391-BLK-F01_750x_1_woo9r9.png",
-      sale: false,
-    },
-    {
-      img: "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751116990/101-0378-YA-BLK-F01_750x_1_sp0dgy.png",
-      sale: false,
-    },
-    {
-      img: "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751116990/101-0378-YEL-F01_750x_1_2_hqnoo3.png",
-      sale: false,
-    },
-    {
-      img: "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751116990/101-0378-YA-RED-F01_750x_1_jqz2si.png",
-      sale: false,
-    },
-    {
-      img: "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751116990/101-0378-YEL-F01_750x_1_1_zhc0mr.png",
-      sale: false,
-    },
-    {
-      img: "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751116990/101-0512-RUS_750x_1_r1ryco.png",
-      sale: true,
-    },
-    {
-      img: "https://res.cloudinary.com/dxlykgx6w/image/upload/v1751116990/101-0512-WIN-F01_750x_1_u5i4af.png",
-      sale: true,
-    },
-  ];
+
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -51,12 +27,14 @@ export default function PopularPro() {
         );
         const data = await res.json();
 
+
         const filteredProducts = (data.AllProduct || []).filter(
-          (product) => product.subCategory?.title === "T-Shirts"
+          (product) => product.subCategory?.title === "Shirts" || "T-Shirt"
         );
-// product.subCategory?.title === "T-Shirts"
+
+        // product.subCategory?.title === "Shirts"
         setProducts(filteredProducts);
-        console.log(data);
+        console.log(Products);
         // setProducts(data.AllProduct || []);
       } catch (err) {
         setError("Failed to fetch products");
@@ -88,7 +66,7 @@ export default function PopularPro() {
         const data = await res.json();
         console.log("Server Cart:", data);
         if (!res.ok) {
-          alert(data.message || "Item added to cart successfully");
+          toast.success("Item added to cart successfully");
         }
       } catch (error) {
         console.error("Error adding to server cart:", error);
@@ -105,16 +83,21 @@ export default function PopularPro() {
         // guestCart.push({ item, quantity: 1 });
         guestCart.push(item);
         localStorage.setItem("guest_cart", JSON.stringify(guestCart));
-        alert("Item added to local cart");
+        toast.success("Item added to local cart");
       } else {
-        alert("Item already in local cart");
+        toast.info("Item already in local cart");
       }
     }
   };
 
   async function AddToWishlist(item) {
-    console.log("AddToWishlist called with:", item);
     const token = localStorage.getItem("user_token");
+
+    // ✅ Toggle heart icon
+    setWishlistedItems((prev) => ({
+      ...prev,
+      [item._id]: !prev[item._id],
+    }));
 
     if (token) {
       // ✅ Logged-in user: send API request
@@ -133,28 +116,27 @@ export default function PopularPro() {
         const data = await res.json();
 
         if (res.ok) {
-          alert("Item added to Wishlist successfully");
+          toast.success("Item added to Wishlist successfully");
         } else {
-          alert(data.message || "Failed to add item to Wishlist");
+          toast.error("Failed to add item to Wishlist");
         }
       } catch (error) {
         console.error("Error adding to wishlist:", error);
-        alert("Something went wrong!");
+        toast.warning("Something went wrong!");
       }
     } else {
       // ✅ Guest wishlist: store in localStorage
       let guestWishlist =
         JSON.parse(localStorage.getItem("guest_wishlist")) || [];
 
-      // Check if item already exists by _id
       const alreadyExists = guestWishlist.find((p) => p._id === item._id);
 
       if (!alreadyExists) {
         guestWishlist.push(item);
         localStorage.setItem("guest_wishlist", JSON.stringify(guestWishlist));
-        alert("Item added to local wishlist");
+        toast.success("Item added to local wishlist");
       } else {
-        alert("Item already in local wishlist");
+        toast.success("Item already in local wishlist");
       }
     }
   }
@@ -163,75 +145,87 @@ export default function PopularPro() {
     <>
       <section>
         <div className="mb-6 mt-6">
-          <p className="text-[56px] font-bold text-[#333333] text-center">
+          <p className=" sm:text-sm lg:text-2xl mb-2 xl:text-4xl font-bold pb-2 text-[#333333] text-center">
             OUR MOST POPULAR PRODUCTS
           </p>
-          <p className="text-center text-lg">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
-            tincidunt leo et leo tincidun vel efficitur mi egestas curabitur.
+          <p className="text-center px-6 sm:text-sm lg:text-lg xl:text-lg">
+            Discover the latest trends and best-selling items loved by our customers. From stylish designs to unbeatable quality, these popular products are handpicked to elevate your wardrobe. Shop now and find your new favorites among our top-rated selections!
           </p>
         </div>
         <section className="bg-white py-10 px-4">
           <div className="max-w-[1330px] mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-7">
             {products
-              .sort(() => 0.5 - Math.random())
-              .slice(0, 8)
-              .map((hat, idx) => (
+
+              .slice(0, 4)
+              .map((Shirt, idx) => (
                 <div
                   key={idx}
                   className="border border-gray-200  rounded shadow-sm overflow-hidden  group"
                 >
                   <div className="p-4 h-[380px]">
-                    <Link href={`/PDP_page/${hat?._id}`}>
-                      <div className="p-1.5 relative border border-gray-300">
+                    <Link href={`/PDP_page/${Shirt?._id}`}>
+                      <div className="p-1.5 hover: relative border border-gray-300">
                         <img
-                          src={hat.thumbnail}
-                          alt="Hat"
+                          src={Shirt.thumbnail}
+                          alt="Shirt"
                           className="w-full h-52 object-contain mb-4"
                         />
-                        {hat.sale && (
-                          <div className="absolute top-0 left-0 bg-[#539C27] text-white px-6 tracking-widest py-1 text-xs font-bold z-10">
-                            SALE
-                          </div>
-                        )}
+
                       </div>
                     </Link>
                     <h3 className="text-[17px] font-semibold mt-4">
-                      {hat.title}
+                      {Shirt.title}
                     </h3>
                     <p className="text-lg font-bold mt-1 text-gray-800">
-                      {hat.isDiscounted ? (
+                      {Shirt.isDiscounted ? (
                         <>
-                          ₹{hat.discountedPrice.toFixed(2)}
+                          ₹{Shirt.discountedPrice.toFixed(2)}
                           <span className="line-through text-sm text-gray-500 ml-2">
-                            ₹{hat.price.toFixed(2)}
+                            ₹{Shirt.price.toFixed(2)}
                           </span>
                         </>
                       ) : (
-                        <>₹{hat.price.toFixed(2)}</>
+                        <>₹{Shirt.price.toFixed(2)}</>
                       )}
                     </p>
                   </div>
                   <div className="flex items-center justify-between px-4 pb-4">
                     <button
-                      onClick={() => addToCart(hat)}
-                      className="flex-1 bg-[#3559C7] text-white font-bold text-sm py-[17px] px-4 flex items-center justify-center gap-2 hover:bg-blue-800 transition"
+                      onClick={() => {
+                        addToCart(Shirt);
+                        setClickedButtons((prev) => ({ ...prev, [Shirt._id]: true }));
+                        setTimeout(() => {
+                          setClickedButtons((prev) => ({ ...prev, [Shirt._id]: false }));
+                        }, 1000);
+                      }}
+                      className={clsx(
+                        "flex-1 cursor-pointer hover:scale-110 font-bold text-sm py-[17px] px-4 flex items-center justify-center gap-2 transition",
+                        clickedButtons[Shirt._id]
+                          ? "bg-green-600 text-white"
+                          : "bg-[#3559C7] text-white hover:bg-blue-800"
+                      )}
                     >
                       <LiaShoppingBagSolid />
                       Add to Cart
                     </button>
+
                     <button
-                      onClick={() => AddToWishlist(hat)}
-                      className="ml-2 border border-gray-300 w-14 h-14 flex items-center justify-center hover:bg-gray-100 "
+                      onClick={() => AddToWishlist(Shirt)}
+                      className="ml-2 border cursor-pointer border-gray-300 w-14 h-14 flex items-center justify-center hover:bg-gray-100"
                     >
-                      <FaRegHeart size={18} />
+                      {wishlistedItems[Shirt._id] ? (
+                        <FaHeart size={18} color="red" />
+                      ) : (
+                        <FaRegHeart size={18} color="gray" />
+                      )}
                     </button>
+
                   </div>
                 </div>
               ))}
           </div>
         </section>
-      </section>
+      </section >
     </>
   );
 }

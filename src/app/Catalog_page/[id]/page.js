@@ -108,20 +108,26 @@ const Catalog = () => {
                             "Content-Type": "application/json",
                             Authorization: `Bearer ${token}`,
                         },
+                        body: JSON.stringify({
+                            quantity: 1, // or let user choose
+                            productId: item._id, // optional but likely required
+                        }),
                     }
                 );
 
                 const data = await res.json();
+
                 if (res.ok) {
                     alert("Item added to cart successfully");
                 } else {
-                    alert( "Failed to add item to cart");
+                    alert(data.message || "Failed to add item to cart");
                 }
             } catch (error) {
                 console.error("Error adding to server cart:", error);
                 alert("Failed to add item to cart");
             }
         } else {
+            // Guest cart logic
             let guestCart = JSON.parse(localStorage.getItem("guest_cart")) || [];
             const already = guestCart.find((items) => items._id === item._id);
 
@@ -135,91 +141,12 @@ const Catalog = () => {
         }
     };
 
-    // Wishlist function
-    const AddToWishlist = async (item) => {
-        const token = localStorage.getItem("user_token");
+    const sortedProducts = [...subCategoryData].sort((a, b) => {
+        if (sortOption === "lowToHigh") return a.price - b.price;
+        if (sortOption === "highToLow") return b.price - a.price;
+        return 0;
+    });
 
-        if (token) {
-            try {
-                const res = await fetch(
-                    `https://e-com-customizer.onrender.com/api/v1/addToWishlist/${item._id}`,
-                    {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            Authorization: `Bearer ${token}`,
-                        },
-                    }
-                );
-
-                const data = await res.json();
-                if (res.ok) {
-                    alert("Item added to Wishlist successfully");
-                } else {
-                    alert(data.message || "Failed to add item to Wishlist");
-                }
-            } catch (error) {
-                console.error("Error adding to wishlist:", error);
-                alert("Something went wrong!");
-            }
-        } else {
-            let guestWishlist = JSON.parse(localStorage.getItem("guest_wishlist")) || [];
-            const alreadyExists = guestWishlist.find((p) => p._id === item._id);
-
-            if (!alreadyExists) {
-                guestWishlist.push(item);
-                localStorage.setItem("guest_wishlist", JSON.stringify(guestWishlist));
-                alert("Item added to local wishlist");
-            } else {
-                alert("Item already in local wishlist");
-            }
-        }
-    };
-
-    // Early return for loading state
-    if (loading) {
-        return (
-            <div className="flex-1">
-                <p className="text-center py-10">Loading...</p>
-            </div>
-        );
-    }
-
-    // Early return for error state
-    if (error) {
-        return (
-            <div className="flex-1">
-                <p className="text-center py-10 text-red-500">Error: {error}</p>
-            </div>
-        );
-    }
-
-    // Early return for empty data
-    if (!Array.isArray(subCategoryData) || subCategoryData.length === 0) {
-        return (
-            <div className="flex-1">
-                <p className="text-center py-10">No products found.</p>
-            </div>
-        );
-    }
-
-
-
-    // Sort products
-    let sortedProducts = [...subCategoryData];
-    if (sortOption === "lowToHigh") {
-        sortedProducts.sort((a, b) => {
-            const priceA = a.discountedPrice || a.price || 0;
-            const priceB = b.discountedPrice || b.price || 0;
-            return priceA - priceB;
-        });
-    } else if (sortOption === "highToLow") {
-        sortedProducts.sort((a, b) => {
-            const priceA = a.discountedPrice || a.price || 0;
-            const priceB = b.discountedPrice || b.price || 0;
-            return priceB - priceA;
-        });
-    }
 
     // Pagination
     const totalPages = Math.ceil(sortedProducts.length / itemsPerPage);
