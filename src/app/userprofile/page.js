@@ -8,8 +8,10 @@ import {
   ChevronDown,
   ShoppingBag,
   Loader2,
+  Heart,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { HiHeart, HiOutlineHeart } from "react-icons/hi";
 
 const User_profile_dero = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -168,32 +170,42 @@ const User_profile_dero = () => {
   return (
     <div className="relative" ref={dropdownRef}>
       {/* Profile Button */}
+
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center space-x-3 bg-white rounded-full p-2 shadow-sm hover:shadow-md transition-shadow duration-200 border border-gray-100"
+
+        className="flex flex-row-reverse gap-2 cursor-pointer items-center space-x-3 bg-white rounded-full p-2 shadow-sm hover:shadow-md transition-shadow duration-200 border border-gray-100"
       >
-        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center text-white font-semibold overflow-hidden">
-          {thumbnail ? (
-            <img
-              src={thumbnail}
-              alt="Profile"
-              className="w-full h-full object-cover rounded-full"
-            />
-          ) : (
-            userInitials
-          )}
-        </div>
         <div className="flex items-center space-x-2">
           <ChevronDown
             className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${isOpen ? "rotate-180" : ""
               }`}
           />
         </div>
+        <p className="cursor-pointer text-lg text-gray-500 underline-2">My Account</p>
+
+        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center text-white font-semibold overflow-hidden">
+          {thumbnail ? (
+            <>
+              <img
+                src={thumbnail}
+                alt="Profile"
+                className="w-full h-full object-cover rounded-full"
+              />
+
+            </>
+
+          ) : (
+            userInitials
+          )}
+        </div>
+
       </button>
 
       {/* Dropdown Menu */}
       {isOpen && (
         <div className="absolute right-0 mt-2 w-72 bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden z-50">
+
           {/* Profile Header */}
           <div className="bg-gradient-to-r from-gray-50 to-blue-50 p-4">
             <div className="flex items-center space-x-3">
@@ -240,6 +252,14 @@ const User_profile_dero = () => {
             >
               <ShoppingBag className="w-5 h-5 text-gray-500 mr-3" />
               <span className="text-gray-700 font-medium">Order History</span>
+
+            </button>
+            <button
+              className="w-full flex items-center px-4  py-3 text-left hover:bg-gray-50 transition-colors duration-150"
+              onClick={() => router.push("/wishlist")}
+            >
+              <Heart size={23} />
+              <span className="text-gray-700 mx-3 font-medium">Wishlist</span>
 
             </button>
 

@@ -57,11 +57,13 @@ export default function Navbar() {
   const [showCategories, setShowCategories] = useState([]);
   const [showBrand, setShowBrand] = useState(false);
   const [brands, setBrands] = useState([]);
+  const [cartCount, setCartCount] = useState(0);
+
   const navItems = ["NEW COLLECTIONS", "ABOUT", "CUSTOMIZE", "CLOTHES"];
 
   const pathname = usePathname();
   const Goto_new_page = (item) => {
-    if (item === "CUSTOMIZER") {
+    if (item === "CUSTOMIZE") {
       setShowCustomizer(true);
     } else if (routeMap[item]) {
       navigation.push(routeMap[item]);
@@ -69,11 +71,40 @@ export default function Navbar() {
   };
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const token = typeof window !== "undefined" && localStorage.getItem("user_token");
+  const Id = typeof window !== "undefined" && localStorage.getItem("user_Id")
+
 
 
   useEffect(() => {
+    const fetchCartCount = async () => {
+      try {
+        if (!token) return;
 
-  }, [token])
+        const res = await fetch(
+          `https://e-com-customizer.onrender.com/api/v1//AllCartItems/${Id}`, // Replace ":id" with actual user id if needed
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const data = await res.json();
+        if (res.ok && data?.cartItems) {
+          const total = data.cartItems.reduce((acc, item) => acc + item.quantity, 0);
+          setCartCount(total);
+        } else {
+          console.warn("Could not fetch cart items:", data.message);
+        }
+      } catch (error) {
+        console.error("Error fetching cart count:", error);
+      }
+    };
+
+    fetchCartCount();
+  }, []);
+
+
 
 
   useEffect(() => {
@@ -228,20 +259,18 @@ export default function Navbar() {
               <Link href={"/get_all_cart"}>
                 <LiaShoppingBagSolid className="text-3xl text-[#424241]" />
               </Link>
-              <span className="absolute -top-1 -right-1 h-3 w-3 bg-blue-600 rounded-full"></span>
+              <span className="absolute -top-2 -right-2  text-white text-xs font-semibold h-5 w-5 flex items-center justify-center rounded-full bg-blue-600">
+                {cartCount}
+              </span>
+
+
             </div>
 
             <Link href={"/mainuserprofile"}>
               <FiMail className="text-3xl text-[#424241]" />
             </Link>
-
-            <button
-              className="text-red-500"
-              onClick={() => navigation.push("/wishlist")}
-            >
-              {!true ? <HiHeart size={32} /> : <HiOutlineHeart size={32} />}
-            </button>
           </div>
+
         </div>
 
         {/* Desktop Layout */}
@@ -267,23 +296,19 @@ export default function Navbar() {
             </div>
 
             <div className="flex gap-6 items-center">
-              <div className="relative">
+              <div className="flex cursor-pointer flex-col relative ">
                 <Link href={"/get_all_cart"}>
                   <LiaShoppingBagSolid className="text-3xl text-[#424241]" />
+                  <span className="absolute -top-2 -right-2  text-white text-xs font-semibold h-5 w-5 flex items-center justify-center rounded-full bg-blue-600">
+                    {cartCount}
+                  </span>
+
                 </Link>
-                <span className="absolute top-0 right-0 h-2 w-2 bg-blue-600 rounded-full"></span>
+                <p className="hover:font-medium cursor-pointer">Cart</p>
               </div>
 
-              <Link href={"/mainuserprofile"}>
-                <FiMail className="text-3xl text-[#424241]" />
-              </Link>
 
-              <button
-                className="text-red-500 cursor-pointer"
-                onClick={() => navigation.push("/wishlist")}
-              >
-                {true ? <HiHeart size={30} /> : <HiOutlineHeart size={30} />}
-              </button>
+             
             </div>
           </div>
 
@@ -381,7 +406,7 @@ export default function Navbar() {
           }
 
           // CUSTOMIZER Dropdown
-          if (item === "CUSTOMIZER") {
+          if (item === "CUSTOMIZE") {
             return (
               <div key={item} className="relative group mb-2" ref={dropdownRef}>
                 <a

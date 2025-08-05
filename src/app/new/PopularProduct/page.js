@@ -65,7 +65,7 @@ export default function PopularPro() {
 
         const data = await res.json();
         console.log("Server Cart:", data);
-        if (!res.ok) {
+        if (res.ok) {
           toast.success("Item added to cart successfully");
         }
       } catch (error) {
