@@ -66,7 +66,7 @@ export default function Footer() {
         {/* Brand Info */}
         <div className="flex flex-col gap-3 text-center lg:text-start">
           <Link href="/">
-            <img src="/Logo.png" alt="Logo" className="w-36 mx-auto lg:mx-0" />
+           <h1 className="text-3xl font-bold underline-offset-4 underline">DesignTailor</h1>
           </Link>
           <p className="text-base text-center text-xl text-gray-800">Fashion that fits you.</p>
         </div>

@@ -196,9 +196,9 @@ export default function Navbar() {
             Read our Blog
           </a>
           <div className="flex gap-4">
-            <FaFacebookF className="text-lg" />
-            <FaTwitter className="text-lg" />
-            <FaInstagram className="text-lg" />
+            <a href="https://www.facebook.com" target="_blank"> <FaFacebookF className="text-lg" /></a>
+            <a href="https://www.twitter.com" target="_blank"><FaTwitter className="text-lg" /></a>
+            <a href="https://www.instagram.com" target="_blank"> <FaInstagram className="text-lg" /></a>
           </div>
         </div>
       </div>
@@ -213,7 +213,7 @@ export default function Navbar() {
               className="text-2xl sm:text-3xl font-bold text-[#333333] cursor-pointer"
               onClick={() => navigation.push("/")}
             >
-              <img src="/Logo.png" alt="" className="w-[100px] lg:w-lg xl:w-lg sm:w-sm" />
+            <h1>DesignTailor</h1>
             </div>
 
             {/* Auth section for mobile */}
@@ -267,7 +267,7 @@ export default function Navbar() {
 
             </div>
 
-           
+
           </div>
 
         </div>
@@ -280,7 +280,7 @@ export default function Navbar() {
               className="text-4xl xl:text-5xl font-bold text-[#333333] cursor-pointer whitespace-nowrap"
               onClick={() => navigation.push("/")}
             >
-              <img src="/Logo.png" alt="" className="w-lg" />
+            <h1>DesignTailor</h1>
             </div>
 
             <div className="flex w-full max-w-lg">
@@ -307,7 +307,7 @@ export default function Navbar() {
               </div>
 
 
-             
+
             </div>
           </div>
 

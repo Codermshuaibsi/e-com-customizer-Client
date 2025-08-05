@@ -301,12 +301,16 @@ export default function ProductPage({ params }) {
                       <h3 className="text-[17px] font-semibold mt-4">
                         {item.title}
                       </h3>
-                      <p className="text-lg font-bold mt-1">
-                        ₹{item.price}
-                        {item.oldPrice && (
-                          <span className="line-through text-xs text-gray-500 ml-2">
-                            ₹{item.oldPrice}
-                          </span>
+                      <p className="text-lg font-bold mt-1 text-gray-800">
+                        {item.discountedPrice && item.discountedPrice < item.price ? (
+                          <>
+                            ₹{Number(item.discountedPrice).toFixed(2)}
+                            <span className="line-through text-sm text-gray-500 ml-2">
+                              ₹{Number(item.price).toFixed(2)}
+                            </span>
+                          </>
+                        ) : (
+                          <>₹{Number(item.price || 0).toFixed(2)}</>
                         )}
                       </p>
                     </div>

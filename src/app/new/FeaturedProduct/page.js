@@ -141,15 +141,15 @@ export default function FeaturePro() {
                   </Link>
                   <h3 className="text-[17px] font-semibold mt-4">{hat.title}</h3>
                   <p className="text-lg font-bold mt-1 text-gray-800">
-                    {hat.discountedPrice && hat.discountedPrice < hat.price ? (
+                    {item.discountedPrice && item.discountedPrice < item.price ? (
                       <>
-                        ₹{Number(hat.discountedPrice).toFixed(2)}
+                        ₹{Number(item.discountedPrice).toFixed(2)}
                         <span className="line-through text-sm text-gray-500 ml-2">
-                          ₹{Number(hat.price).toFixed(2)}
+                          ₹{Number(item.price).toFixed(2)}
                         </span>
                       </>
                     ) : (
-                      <>₹{Number(hat.price).toFixed(2)}</>
+                      <>₹{Number(item.price || 0).toFixed(2)}</>
                     )}
                   </p>
                 </div>

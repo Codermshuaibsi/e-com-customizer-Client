@@ -4,8 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { LiaShoppingBagSolid } from "react-icons/lia";
-import { FaRegHeart } from "react-icons/fa";
+import { FaHeart, FaRegHeart } from "react-icons/fa";
 
+import clsx from "clsx";
 import { toast } from "react-toastify";
 
 
@@ -16,6 +17,8 @@ const Catalog = () => {
     const [error, setError] = useState(null);
     const [sortOption, setSortOption] = useState("featured");
 
+    const [clickedButtons, setClickedButtons] = useState({});
+    const [wishlistedItems, setWishlistedItems] = useState({});
     const itemsPerPage = 6;
     const [currentPage, setCurrentPage] = useState(1);
 
@@ -102,7 +105,7 @@ const Catalog = () => {
                 if (res.ok) {
                     toast.success("Item added to cart successfully");
                 } else {
-                    toast.error( "Failed to add item to cart");
+                    toast.error("Failed to add item to cart");
                 }
             } catch (error) {
                 console.error("Error adding to server cart:", error);
@@ -145,6 +148,57 @@ const Catalog = () => {
         );
         setCurrentPage(1);
     };
+
+    async function AddToWishlist(item) {
+        const token = localStorage.getItem("user_token");
+
+        // ✅ Toggle heart icon
+        setWishlistedItems((prev) => ({
+            ...prev,
+            [item._id]: !prev[item._id],
+        }));
+
+        if (token) {
+            // ✅ Logged-in user: send API request
+            try {
+                const res = await fetch(
+                    `https://e-com-customizer.onrender.com/api/v1/addToWishlist/${item._id}`,
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    toast.success("Item added to Wishlist successfully");
+                } else {
+                    toast.error("Failed to add item to Wishlist");
+                }
+            } catch (error) {
+                console.error("Error adding to wishlist:", error);
+                toast.warning("Something went wrong!");
+            }
+        } else {
+            // ✅ Guest wishlist: store in localStorage
+            let guestWishlist =
+                JSON.parse(localStorage.getItem("guest_wishlist")) || [];
+
+            const alreadyExists = guestWishlist.find((p) => p._id === item._id);
+
+            if (!alreadyExists) {
+                guestWishlist.push(item);
+                localStorage.setItem("guest_wishlist", JSON.stringify(guestWishlist));
+                toast.success("Item added to local wishlist");
+            } else {
+                toast.success("Item already in local wishlist");
+            }
+        }
+    }
 
     return (
         <>
@@ -235,33 +289,49 @@ const Catalog = () => {
                                                 {item.title || "Untitled Product"}
                                             </h3>
                                             <p className="text-lg font-bold mt-1 text-gray-800">
-                                                {item.discountedPrice && item.discountedPrice < item.price ? (
-                                                    <>
-                                                        ₹{Number(item.discountedPrice).toFixed(2)}
-                                                        <span className="line-through text-sm text-gray-500 ml-2">
-                                                            ₹{Number(item.price).toFixed(2)}
-                                                        </span>
-                                                    </>
-                                                ) : (
-                                                    <>₹{Number(item.price || 0).toFixed(2)}</>
-                                                )}
+                                                    {item.discountedPrice && item.discountedPrice < item.price ? (
+                                                        <>
+                                                            ₹{Number(item.discountedPrice).toFixed(2)}
+                                                            <span className="line-through text-sm text-gray-500 ml-2">
+                                                                ₹{Number(item.price).toFixed(2)}
+                                                            </span>
+                                                        </>
+                                                    ) : (
+                                                        <>₹{Number(item.price || 0).toFixed(2)}</>
+                                                    )}
                                             </p>
                                         </div>
                                         <div className="flex items-center justify-between px-4 pb-4">
                                             {(item.quantity || 0) > 0 ? (
                                                 <>
                                                     <button
-                                                        onClick={() => addToCart(item)}
-                                                        className="flex-1 bg-[#3559C7] text-white font-bold text-sm py-3 px-4 flex items-center justify-center gap-2 hover:bg-blue-800 transition"
+                                                        onClick={() => {
+                                                            addToCart(item);
+                                                            setClickedButtons((prev) => ({ ...prev, [item._id]: true }));
+                                                            setTimeout(() => {
+                                                                setClickedButtons((prev) => ({ ...prev, [item._id]: false }));
+                                                            }, 1000);
+                                                        }}
+                                                        className={clsx(
+                                                            "flex-1 cursor-pointer hover:scale-110 font-bold text-sm py-[17px] px-4 flex items-center justify-center gap-2 transition",
+                                                            clickedButtons[item._id]
+                                                                ? "bg-green-600 text-white"
+                                                                : "bg-[#3559C7] text-white hover:bg-blue-800"
+                                                        )}
                                                     >
                                                         <LiaShoppingBagSolid />
-                                                        ADD TO CART
+                                                        Add to Cart
                                                     </button>
+
                                                     <button
                                                         onClick={() => AddToWishlist(item)}
-                                                        className="ml-2 border border-gray-300 w-12 h-12 flex items-center justify-center hover:bg-gray-100"
+                                                        className="ml-2 border cursor-pointer border-gray-300 w-14 h-14 flex items-center justify-center hover:bg-gray-100"
                                                     >
-                                                        <FaRegHeart size={18} />
+                                                        {wishlistedItems[item._id] ? (
+                                                            <FaHeart size={18} color="red" />
+                                                        ) : (
+                                                            <FaRegHeart size={18} color="gray" />
+                                                        )}
                                                     </button>
                                                 </>
                                             ) : (

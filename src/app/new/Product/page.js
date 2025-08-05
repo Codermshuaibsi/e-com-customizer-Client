@@ -32,19 +32,19 @@ export default function Product() {
     <>
       <section className="flex flex-col mt-20 ">
         <div className="flex lg:flex-row md:flex-row sm:flex-row flex-col pr-[36px] gap-10 justify-between md:mx-15 mx-10 sm:mx-10  lg:mx-26 ">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center justify-center gap-3">
             <img
               src="https://res.cloudinary.com/dxlykgx6w/image/upload/v1751111518/Asset_2_apr3sr.png"
               alt=""
             />
-            <p className="lg:text-5xl md:text-5xl text-2xl sm:text-5xl font-bold ">
+            <p className="lg:text-5xl  md:text-5xl text-2xl sm:text-5xl font-bold ">
               EXPLORE OUR PRODUCTS
             </p>
           </div>
           <div className="flex items-center">
-            <button className="bg-[#3559C7] text-white px-6  h-[50px]">
+            <p className="bg-[#1539a5] text-white text-center py-2 px-6  h-10">
               BROWSE OUR SELECTION
-            </button>
+            </p>
           </div>
         </div>
         <section className="w-full bg-white py-8">

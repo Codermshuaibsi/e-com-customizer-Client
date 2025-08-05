@@ -9,7 +9,7 @@ const FitnessProducts = () => {
   const [subCategoryData, setSubCategoryData] = useState([]);
   const [loading, setLoading] = useState(true);
 
-    const router = useRouter();
+  const router = useRouter();
 
   useEffect(() => {
     const fetchSubCategoryDetails = async () => {
@@ -57,7 +57,7 @@ const FitnessProducts = () => {
             className="border border-gray-200 rounded shadow-sm overflow-hidden group bg-white"
           >
             <div className="p-4">
-              <div  onClick={() => router.push(`/PDP_page/${product._id}`)}  className="p-1.5 relative border border-gray-300">
+              <div onClick={() => router.push(`/PDP_page/${product._id}`)} className="p-1.5 relative border border-gray-300">
 
                 {" "}
                 <img
@@ -71,16 +71,15 @@ const FitnessProducts = () => {
                 {product.title}
               </h3>
               <p className="text-lg font-bold mt-1 text-gray-800">
-                {product.discountedPrice &&
-                  product.discountedPrice < product.price ? (
+                {item.discountedPrice && item.discountedPrice < item.price ? (
                   <>
-                    ₹{Number(product.discountedPrice).toFixed(2)}
+                    ₹{Number(item.discountedPrice).toFixed(2)}
                     <span className="line-through text-sm text-gray-500 ml-2">
-                      ₹{Number(product.price).toFixed(2)}
+                      ₹{Number(item.price).toFixed(2)}
                     </span>
                   </>
                 ) : (
-                  <>₹{Number(product.price).toFixed(2)}</>
+                  <>₹{Number(item.price || 0).toFixed(2)}</>
                 )}
               </p>
             </div>

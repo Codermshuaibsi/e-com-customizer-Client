@@ -110,7 +110,7 @@ export default function productDetailPage() {
         const res = await fetch("https://e-com-customizer.onrender.com/api/v1/totalproduct");
         const data = await res.json();
         console.log(data)
-        setproducts4(data.Allproduct || []);
+        setproducts4(data.Allproduct || []);  
         console.log(data.Allproduct);
       } catch (err) {
         setError("Failed to fetch products");
@@ -259,7 +259,7 @@ export default function productDetailPage() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                GET PRICE alertS
+                GET PRICE alert
               </motion.button>
             </motion.div>
 
@@ -529,7 +529,7 @@ export default function productDetailPage() {
                 </div>
               </motion.div>
             )}
-          </AnimatePresence>
+          </AnimatePresence> 
         </motion.div>
       </motion.div>
 
@@ -600,7 +600,7 @@ export default function productDetailPage() {
                         <>
                           ₹{Number(hat.discountedPrice).toFixed(2)}
                           <span className="line-through text-sm text-gray-500 ml-2">
-                            ₹{Number(hat.price).toFixed(2)}
+                          ₹{Number(hat.price).toFixed(2)}
                           </span>
                         </>
                       ) : (

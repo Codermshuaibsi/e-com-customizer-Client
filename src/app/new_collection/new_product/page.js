@@ -443,8 +443,17 @@ export default function New_Product() {
                           ? item.title.slice(0, 50) + "..."
                           : item.title || "Untitled Product"}
                       </h3>
-                      <p className="text-lg font-bold mt-2 text-[#2e2e2e]">
-                        ₹{item.price ? item.price.toLocaleString("en-IN") : "N/A"}
+                      <p className="text-lg font-bold mt-1 text-gray-800">
+                        {item.discountedPrice && item.discountedPrice < item.price ? (
+                          <>
+                            ₹{Number(item.discountedPrice).toFixed(2)}
+                            <span className="line-through text-sm text-gray-500 ml-2">
+                              ₹{Number(item.price).toFixed(2)}
+                            </span>
+                          </>
+                        ) : (
+                          <>₹{Number(item.price || 0).toFixed(2)}</>
+                        )}
                       </p>
                     </div>
                     <div className="flex items-center gap-2 px-4 pb-4">

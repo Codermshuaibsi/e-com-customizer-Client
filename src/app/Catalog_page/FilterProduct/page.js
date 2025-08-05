@@ -5,6 +5,7 @@ import { FaRegHeart } from "react-icons/fa";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { toast } from "react-toastify";
+import clsx from "clsx";
 
 
 export default function ProductPage() {
@@ -16,6 +17,10 @@ export default function ProductPage() {
     console.log("no params")
   }
   const [products, setProducts] = useState([]);
+
+  const [clickedButtons, setClickedButtons] = useState({});
+  const [wishlistedItems, setWishlistedItems] = useState({});
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [sortOption, setSortOption] = useState("featured");
@@ -134,9 +139,9 @@ export default function ProductPage() {
         const data = await res.json();
         console.log("Server Cart:", data);
         if (res.ok) {
-        toast.success("Item added to cart successfully");
+          toast.success("Item added to cart successfully");
         } else {
-          toast.error( "Failed to add item to cart");
+          toast.error("Failed to add item to cart");
         }
       } catch (error) {
         console.error("Error adding to server cart:", error);
@@ -310,17 +315,32 @@ export default function ProductPage() {
                       {item.quantity > 0 ? (
                         <>
                           <button
-                            onClick={() => addToCart(item)}
-                            className="flex-1 bg-[#3559C7] text-white font-bold text-sm py-3 px-4 flex items-center justify-center gap-2 hover:bg-blue-800 transition"
+                            onClick={() => {
+                              addToCart(Shirt);
+                              setClickedButtons((prev) => ({ ...prev, [Shirt._id]: true }));
+                              setTimeout(() => {
+                                setClickedButtons((prev) => ({ ...prev, [Shirt._id]: false }));
+                              }, 1000);
+                            }}
+                            className={clsx(
+                              "flex-1 cursor-pointer hover:scale-110 font-bold text-sm py-[17px] px-4 flex items-center justify-center gap-2 transition",
+                              clickedButtons[Shirt._id]
+                                ? "bg-green-600 text-white"
+                                : "bg-[#3559C7] text-white hover:bg-blue-800"
+                            )}
                           >
                             <LiaShoppingBagSolid />
-                            ADD TO CART
+                            Add to Cart
                           </button>
                           <button
-                            onClick={() => AddToWishlist(item)}
-                            className="ml-2 border border-gray-300 w-12 h-12 flex items-center justify-center hover:bg-gray-100"
+                            onClick={() => AddToWishlist(Shirt)}
+                            className="ml-2 border cursor-pointer border-gray-300 w-14 h-14 flex items-center justify-center hover:bg-gray-100"
                           >
-                            <FaRegHeart size={18} />
+                            {wishlistedItems[Shirt._id] ? (
+                              <FaHeart size={18} color="red" />
+                            ) : (
+                              <FaRegHeart size={18} color="gray" />
+                            )}
                           </button>
                         </>
                       ) : (

@@ -88,7 +88,7 @@ export default function ProductPage() {
         }
       } catch (error) {
         console.error("Error adding to wishlist:", error);
-    
+
       }
     } else {
       // ✅ Guest wishlist: store in localStorage
@@ -129,7 +129,7 @@ export default function ProductPage() {
         const data = await res.json();
         console.log("Server Cart:", data);
         if (res.ok) {
-        toast.success("Item added to cart successfully");
+          toast.success("Item added to cart successfully");
         } else {
           toast.error("Failed to add item to cart");
         }
@@ -215,7 +215,7 @@ export default function ProductPage() {
             </div>
 
             <ul className="space-y-8 border-b border-gray-300 pb-3">
-             {colors.map((color, idx) => (
+              {colors.map((color, idx) => (
                 <li key={idx} className="flex items-center justify-between">
                   <label
                     htmlFor={color.colorname}
@@ -287,9 +287,9 @@ export default function ProductPage() {
                       <h3 className="text-[17px] font-semibold mt-4">
                         {item.title}
                       </h3>
+
                       <p className="text-lg font-bold mt-1 text-gray-800">
-                        {item.discountedPrice &&
-                          item.discountedPrice < item.price ? (
+                        {item.discountedPrice && item.discountedPrice < item.price ? (
                           <>
                             ₹{Number(item.discountedPrice).toFixed(2)}
                             <span className="line-through text-sm text-gray-500 ml-2">
@@ -297,7 +297,7 @@ export default function ProductPage() {
                             </span>
                           </>
                         ) : (
-                          <>₹{Number(item.price).toFixed(2)}</>
+                          <>₹{Number(item.price || 0).toFixed(2)}</>
                         )}
                       </p>
                     </div>

@@ -177,15 +177,15 @@ export default function PopularPro() {
                       {Shirt.title}
                     </h3>
                     <p className="text-lg font-bold mt-1 text-gray-800">
-                      {Shirt.isDiscounted ? (
+                      {item.discountedPrice && item.discountedPrice < item.price ? (
                         <>
-                          ₹{Shirt.discountedPrice.toFixed(2)}
+                          ₹{Number(item.discountedPrice).toFixed(2)}
                           <span className="line-through text-sm text-gray-500 ml-2">
-                            ₹{Shirt.price.toFixed(2)}
+                            ₹{Number(item.price).toFixed(2)}
                           </span>
                         </>
                       ) : (
-                        <>₹{Shirt.price.toFixed(2)}</>
+                        <>₹{Number(item.price || 0).toFixed(2)}</>
                       )}
                     </p>
                   </div>
