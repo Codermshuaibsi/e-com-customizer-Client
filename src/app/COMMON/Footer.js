@@ -79,7 +79,7 @@ export default function Footer() {
               {subcategories[cat.title]?.slice(0, 5).map((subcat, i) => (
                 <Link
                   key={i}
-                  href={`/subCategoryPage/${subcat._id}`}
+                  href={`/Catalog_page/${subcat._id}`}
                   className="text-sm text-gray-600 hover:font-semibold hover:text-black transition"
                 >
                   {subcat.title}

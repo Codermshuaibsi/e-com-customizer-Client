@@ -173,34 +173,33 @@ const User_profile_dero = () => {
 
       <button
         onClick={() => setIsOpen(!isOpen)}
-
-        className="flex flex-row-reverse gap-2 cursor-pointer items-center space-x-3 bg-white rounded-full p-2 shadow-sm hover:shadow-md transition-shadow duration-200 border border-gray-100"
+        className="flex flex-row-reverse gap-2 cursor-pointer items-center bg-white rounded-full p-2 shadow-sm hover:shadow-md transition-shadow duration-200 border border-gray-100"
       >
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center">
           <ChevronDown
             className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${isOpen ? "rotate-180" : ""
               }`}
           />
         </div>
-        <p className="cursor-pointer text-lg text-gray-500 underline-2">My Account</p>
+
+        {/* This text will be hidden on mobile */}
+        <p className="hidden sm:block cursor-pointer text-lg text-gray-500 underline-2">
+          My Account
+        </p>
 
         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center text-white font-semibold overflow-hidden">
           {thumbnail ? (
-            <>
-              <img
-                src={thumbnail}
-                alt="Profile"
-                className="w-full h-full object-cover rounded-full"
-              />
-
-            </>
-
+            <img
+              src={thumbnail}
+              alt="Profile"
+              className="w-full h-full object-cover rounded-full"
+            />
           ) : (
             userInitials
           )}
         </div>
-
       </button>
+
 
       {/* Dropdown Menu */}
       {isOpen && (

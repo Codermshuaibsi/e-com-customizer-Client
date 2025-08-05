@@ -8,9 +8,7 @@ const OrderPage = () => {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
 const token = localStorage.getItem("user_token");
-  if(!token){
-     alert("login")
-  }
+
 
   useEffect(() => {
     const fetchCart = async () => {

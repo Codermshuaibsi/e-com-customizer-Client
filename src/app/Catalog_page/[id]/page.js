@@ -6,25 +6,7 @@ import { useParams } from "next/navigation";
 import { LiaShoppingBagSolid } from "react-icons/lia";
 import { FaRegHeart } from "react-icons/fa";
 
-import Toastify from "toastify-js";
-import "toastify-js/src/toastify.css";
-
-// export const alert = (text, type = "success") => {
-//     Toastify({
-//         text: text,
-//         duration: 3000,
-//         close: true,
-//         gravity: "top", // top or bottom
-//         position: "right", // left, center or right
-//         backgroundColor:
-//             type === "success"
-//                 ? "linear-gradient(to right, #00b09b, #96c93d)"
-//                 : type === "error"
-//                     ? "linear-gradient(to right, #ff5f6d, #ffc371)"
-//                     : "#333",
-//     }).;
-// };
-
+import { toast } from "react-toastify";
 
 
 const Catalog = () => {
@@ -118,13 +100,13 @@ const Catalog = () => {
                 const data = await res.json();
 
                 if (res.ok) {
-                    alert("Item added to cart successfully");
+                    toast.success("Item added to cart successfully");
                 } else {
-                    alert(data.message || "Failed to add item to cart");
+                    toast.error( "Failed to add item to cart");
                 }
             } catch (error) {
                 console.error("Error adding to server cart:", error);
-                alert("Failed to add item to cart");
+                toast.error("Failed to add item to cart");
             }
         } else {
             // Guest cart logic
@@ -134,9 +116,9 @@ const Catalog = () => {
             if (!already) {
                 guestCart.push(item);
                 localStorage.setItem("guest_cart", JSON.stringify(guestCart));
-                alert("Item added to local cart");
+                toast.success("Item added to local cart");
             } else {
-                alert("Item already in local cart");
+                toast.success("Item already in local cart");
             }
         }
     };

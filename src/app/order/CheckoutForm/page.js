@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { toast } from "react-toastify";
+
 
 const CartPaymentPage = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -136,7 +138,7 @@ const CartPaymentPage = () => {
 
       const data = await res.json();
       if (data.success) {
-        alert("Address saved successfully");
+        toast.success("Address saved successfully");
         // Refresh addresses
         const addressRes = await fetch(
           `https://e-com-customizer.onrender.com/api/v1/getAllAddresses`,
@@ -148,18 +150,18 @@ const CartPaymentPage = () => {
         setSavedAddresses(addressData?.data || []);
         setShowAddressForm(false);
       } else {
-        alert(data.message);
+        console.log(data.message);
       }
     } catch (error) {
       console.error("Error creating address:", error);
-      alert("Failed to save address");
+      toast.error("Failed to save address");
     }
   };
 
   // Handle COD Order Placement
   const handleCodOrder = async () => {
     if (!selectedAddressId) {
-      alert("Please select a delivery address");
+      toast.info("Please select a delivery address");
       return;
     }
 
@@ -186,14 +188,14 @@ const CartPaymentPage = () => {
       const data = await res.json();
 
       if (data.success) {
-        alert(`Order placed successfully! Order ID: ${data.orderId}`);
+        toast.success(`Order placed successfully! Order ID: ${data.orderId}`);
         window.location.href = `/orders/${data.orderId}`;
       } else {
-        alert(data.message || "Failed to place order");
+        toast.error("Failed to place order");
       }
     } catch (error) {
       console.error("Error placing COD order:", error);
-      alert("Failed to place order. Please try again.");
+      toast.error("Failed to place order. Please try again.");
     } finally {
       setPlacingOrder(false);
     }

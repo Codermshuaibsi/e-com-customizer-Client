@@ -6,6 +6,8 @@ import {
   ShoppingBag, Palette, Users, Zap, Award, Globe,
   Target, Heart, TrendingUp, Shield, Sparkles, CheckCircle
 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -33,6 +35,7 @@ const hoverVariants = {
 };
 
 const AboutPage = () => {
+  const router = useRouter();
   const stats = [
     { icon: Users, number: '10,000+', label: 'Happy Customers' },
     { icon: ShoppingBag, number: '50,000+', label: 'Products Customized' },
@@ -99,7 +102,7 @@ const AboutPage = () => {
         </motion.div>
       </section>
 
-      {/* Stats Section */}o
+      {/* Stats Section */}
       <section className="py-16 px-6 bg-gray-50">
         <div className="max-w-6xl mx-auto grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-6">
           {stats.map(({ icon: Icon, number, label }, idx) => (
@@ -233,13 +236,15 @@ const AboutPage = () => {
           >
             <motion.button
               whileHover={{ scale: 1.05 }}
-              className="px-6 py-3 bg-white text-blue-600 rounded-lg font-bold text-base hover:bg-gray-100 transition"
+              onClick={() => router.push('/customizerProducts/6890ac148bdc0af1632302c4')}
+              className="px-6 py-3 bg-white text-blue-600 cursor-pointer rounded-lg font-bold text-base hover:bg-gray-100 transition"
             >
               Start Customizing Now
             </motion.button>
             <motion.button
               whileHover={{ scale: 1.05 }}
-              className="px-6 py-3 border-2 border-white text-white rounded-lg font-bold text-base hover:bg-white hover:text-blue-600 transition"
+              onClick={() => router.push('/new_collection')}
+              className="px-6 py-3 border-2 border-white text-white cursor-pointer rounded-lg font-bold text-base hover:bg-white hover:text-blue-600 transition"
             >
               View Our Products
             </motion.button>

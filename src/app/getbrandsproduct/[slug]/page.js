@@ -6,6 +6,8 @@ import Link from "next/link";
 import { use } from "react";
 import { useRouter } from "next/navigation"
 import slugify from "slugify";
+import { toast } from "react-toastify";
+
 
 export default function ProductPage({ params }) {
   const { slug } = use(params);
@@ -85,13 +87,12 @@ export default function ProductPage({ params }) {
         const data = await res.json();
 
         if (res.ok) {
-          alert("Item added to Wishlist successfully");
+          toast.success("Item added to Wishlist successfully");
         } else {
-          alert(data.message || "Failed to add item to Wishlist");
+          toast.error("Failed to add item to Wishlist");
         }
       } catch (error) {
         console.error("Error adding to wishlist:", error);
-        alert("Something went wrong!");
       }
     } else {
       // ✅ Guest wishlist: store in localStorage
@@ -103,9 +104,9 @@ export default function ProductPage({ params }) {
       if (!alreadyExists) {
         guestWishlist.push(item);
         localStorage.setItem("guest_wishlist", JSON.stringify(guestWishlist));
-        alert("Item added to local wishlist");
+        toast.success("Item added in wishlist");
       } else {
-        alert("Item already in local wishlist");
+        toast.warning("Item already in wishlist");
       }
     }
   }
@@ -132,9 +133,9 @@ export default function ProductPage({ params }) {
         const data = await res.json();
         console.log("Server Cart:", data);
         if (res.ok) {
-          alert("Item added to cart successfully");
+          toast.success("Item added to cart successfully");
         } else {
-          alert(data.message || "Failed to add item to cart");
+          toast.error("Failed to add item to cart");
         }
       } catch (error) {
         console.error("Error adding to server cart:", error);
@@ -151,9 +152,9 @@ export default function ProductPage({ params }) {
         // guestCart.push({ item, quantity: 1 });
         guestCart.push(item);
         localStorage.setItem("guest_cart", JSON.stringify(guestCart));
-        alert("Item added to local cart");
+        toast.success("Item added in cart");
       } else {
-        alert("Item already in local cart");
+        toast.success("Item already in cart");
       }
     }
   };

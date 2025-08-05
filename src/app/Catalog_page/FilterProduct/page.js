@@ -4,14 +4,15 @@ import { LiaShoppingBagSolid } from "react-icons/lia";
 import { FaRegHeart } from "react-icons/fa";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { toast } from "react-toastify";
+
 
 export default function ProductPage() {
   const params = useParams();
-  if(params)
-  {
-  console.log("param", params)
+  if (params) {
+    console.log("param", params)
   }
-  else{
+  else {
     console.log("no params")
   }
   const [products, setProducts] = useState([]);
@@ -86,13 +87,13 @@ export default function ProductPage() {
         const data = await res.json();
 
         if (res.ok) {
-          alert("Item added to Wishlist successfully");
+          toast.success("Item added to Wishlist successfully");
         } else {
-          alert(data.message || "Failed to add item to Wishlist");
+          toast.error("Failed to add item to Wishlist");
         }
       } catch (error) {
         console.error("Error adding to wishlist:", error);
-        alert("Something went wrong!");
+
       }
     } else {
       // ✅ Guest wishlist: store in localStorage
@@ -104,9 +105,9 @@ export default function ProductPage() {
       if (!alreadyExists) {
         guestWishlist.push(item);
         localStorage.setItem("guest_wishlist", JSON.stringify(guestWishlist));
-        alert("Item added to local wishlist");
+        toast.success("Item added in wishlist");
       } else {
-        alert("Item already in local wishlist");
+        toast.success("Item already in wishlist");
       }
     }
   }
@@ -133,9 +134,9 @@ export default function ProductPage() {
         const data = await res.json();
         console.log("Server Cart:", data);
         if (res.ok) {
-          alert("Item added to cart successfully");
+        toast.success("Item added to cart successfully");
         } else {
-          alert(data.message || "Failed to add item to cart");
+          toast.error( "Failed to add item to cart");
         }
       } catch (error) {
         console.error("Error adding to server cart:", error);
@@ -152,9 +153,9 @@ export default function ProductPage() {
         // guestCart.push({ item, quantity: 1 });
         guestCart.push(item);
         localStorage.setItem("guest_cart", JSON.stringify(guestCart));
-        alert("Item added to local cart");
+        toast.success("Item added in cart");
       } else {
-        alert("Item already in local cart");
+        toast.info("Item already in cart");
       }
     }
   };
@@ -265,7 +266,7 @@ export default function ProductPage() {
               <p className="text-center text-gray-600">No products found</p>
             ) : (
               <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-5">
-             
+
                 {currentProducts.map((item, idx) => (
                   <div
                     key={idx}

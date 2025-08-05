@@ -16,6 +16,8 @@ import {
   FaSignOutAlt,
   FaUserTimes,
 } from "react-icons/fa";
+import { toast } from "react-toastify";
+
 
 const UserProfilePage = () => {
   const [darkMode, setDarkMode] = useState(false);
@@ -197,7 +199,6 @@ const UserProfilePage = () => {
         });
       } catch (error) {
         console.error("Error fetching user:", error.message);
-        alert("Error fetching user: " + error.message);
       }
     };
 
@@ -289,9 +290,9 @@ const UserProfilePage = () => {
       setIsEditModalOpen(false);
       setEditingUser({});
       console.log("User updated successfully:", data);
-      alert("Profile updated successfully!");
+      toast.success("Profile updated successfully!");
     } catch (error) {
-      alert("Error updating user: " + error.message);
+      toast.error("Can't update profile right now ")
     }
   };
 
@@ -350,12 +351,12 @@ const UserProfilePage = () => {
         !editingAddress.state ||
         !editingAddress.pincode
       ) {
-        alert("Please fill all required fields");
+        toast.warning("Please fill all required fields");
         return;
       }
 
       const token = localStorage.getItem("user_token");
-      
+
       const url = isEditingAddress
         ? `https://e-com-customizer.onrender.com/api/v1/updateAddress/${editingAddress._id}`
         : "https://e-com-customizer.onrender.com/api/v1/createAddress";
@@ -384,10 +385,10 @@ const UserProfilePage = () => {
             addr._id === editingAddress._id ? editingAddress : addr
           )
         );
-        alert("Address updated successfully!");
+        toast.success("Address updated successfully!");
       } else {
         setUserShipingAddresses((prev) => [...prev, data.data]);
-        alert("Address added successfully!");
+        toast.success("Address added successfully!");
       }
 
       setIsAddressModalOpen(false);
@@ -395,7 +396,7 @@ const UserProfilePage = () => {
       setIsEditingAddress(false);
       console.log("Address saved successfully:", data);
     } catch (error) {
-      alert("Error saving address: " + error.message);
+      toast.error("Can't update address right now");
     }
   };
 
@@ -428,10 +429,10 @@ const UserProfilePage = () => {
       setUserShipingAddresses((prev) =>
         prev.filter((addr) => addr._id !== addressId)
       );
-      alert("Address deleted successfully!");
+      toast.success("Address deleted successfully!");
       console.log("Address deleted successfully");
     } catch (error) {
-      alert("Error deleting address: " + error.message);
+      toast.error("Error deleting address");
     }
   };
 
@@ -441,7 +442,7 @@ const UserProfilePage = () => {
     if (!file) return;
 
     if (file.size > 2 * 1024 * 1024) {
-      alert("Max file size is 2MB");
+      toast.info("Max file size is 2MB");
       return;
     }
 
@@ -463,13 +464,13 @@ const UserProfilePage = () => {
       const data = await res.json();
 
       if (res.ok) {
-        alert("Profile photo updated successfully");
+        toast.success("Profile photo updated successfully");
       } else {
-        alert(data.message || "Something went wrong");
+        console.log(data.message || "Something went wrong");
       }
     } catch (err) {
       console.error(err);
-      alert("Image upload failed");
+      console.log("Image upload failed");
     } finally {
       setUploading(false);
     }

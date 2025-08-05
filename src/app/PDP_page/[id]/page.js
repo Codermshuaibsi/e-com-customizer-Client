@@ -7,7 +7,8 @@ import { FaRegHeart, FaStar } from "react-icons/fa";
 import { BiMinus, BiPlus } from "react-icons/bi";
 import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
 import Link from "next/link";
-import Navbar from "../../COMMON/Navbar";
+import { toast } from "react-toastify";
+
 
 export default function productDetailPage() {
   const { id } = useParams();
@@ -47,7 +48,7 @@ export default function productDetailPage() {
         const data = await res.json();
         console.log("Server Cart:", data);
         if (!res.ok) {
-          alert(data.message || "Item added to cart successfully");
+          toast.success("Item added to cart successfully");
         }
       } catch (error) {
         console.error("Error adding to server cart:", error);
@@ -61,9 +62,9 @@ export default function productDetailPage() {
       if (!already) {
         guestCart.push(item);
         localStorage.setItem("guest_cart", JSON.stringify(guestCart));
-        alert("Item added to local cart");
+        toast.success("Item added in cart");
       } else {
-        alert("Item already in local cart");
+        toast.info("Item already in cart");
       }
     }
   };

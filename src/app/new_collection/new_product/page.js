@@ -280,13 +280,13 @@ export default function New_Product() {
     <div className="min-h-screen bg-gray-100 p-4 sm:p-6 md:p-[60px]">
       <div className="flex flex-col md:flex-row gap-6">
         {/* Sidebar Filter */}
-        <aside className="w-full md:w-64 bg-white p-4 shadow-sm rounded-lg">
-          <div className="flex justify-between items-center border-b pb-2 mb-4">
-            <h3 className="text-[18px] font-extrabold text-[#2e2e2e] uppercase">
+        <aside className="w-full md:w-64  bg-white p-5 shadow-md rounded-2xl border border-gray-100">
+          <div className="flex justify-between items-center border-b pb-3 mb-5">
+            <h3 className="text-lg font-extrabold text-[#2e2e2e] uppercase tracking-wide">
               Filter By
             </h3>
             <button
-              className="text-[#3559C7] text-sm font-bold uppercase hover:underline transition-colors"
+              className={`text-[#3559C7] text-xs font-bold uppercase hover:underline transition-colors disabled:opacity-40 disabled:cursor-not-allowed`}
               onClick={clearAllFilters}
               disabled={selectedSubcategories.length === 0}
             >
@@ -295,38 +295,42 @@ export default function New_Product() {
           </div>
 
           {loading.categories ? (
-            <div className="text-center text-gray-500 py-4">Loading categories...</div>
+            <div className="text-center text-gray-500 py-4">
+              Loading categories...
+            </div>
           ) : categories.length > 0 ? (
             <>
               <div className="mb-4">
-                <h4 className="text-sm font-bold text-[#2e2e2e] uppercase mb-3">
+                <h4 className="text-[13px] font-bold text-[#2e2e2e] uppercase mb-3 tracking-wider">
                   Categories
                 </h4>
               </div>
 
-              <div className="space-y-3 border-b border-gray-300 pb-4">
+              <div className="space-y-4 border-b border-gray-200 pb-4">
                 {categories.map((category, idx) => (
                   <div key={category._id || idx} className="space-y-2">
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-cente cursor-pointer justify-between">
                       <button
                         onClick={() => handleCategoryToggle(category)}
-                        className="flex items-center gap-2 text-[14px] text-[#2e2e2e] font-medium hover:text-[#3559C7] transition-colors w-full text-left"
+                        className="flex justify-between items-center cursor-pointer w-full text-left group"
                       >
-                        <span className="text-[12px] font-mono w-3 text-center">
+                        <span className="text-sm text-[#2e2e2e] font-semibold group-hover:text-[#3559C7] transition-colors">
+                          {category.title}
+                        </span>
+                        <span className="text-2xl font-mono text-[#555]">
                           {expandedCategories.includes(category.title) ? '−' : '+'}
                         </span>
-                        {category.title}
                       </button>
                     </div>
 
                     {expandedCategories.includes(category.title) && (
-                      <div className="ml-4 space-y-2 border-l-2 border-gray-200 pl-3">
+                      <div className="ml-2 space-y-2 border-l-2 border-gray-200 pl-3">
                         {subcategories[category.title]?.length > 0 ? (
                           subcategories[category.title].map((subcategory, subIdx) => (
                             <div key={subcategory._id || subIdx} className="flex items-center justify-between">
                               <label
                                 htmlFor={`sub-${subcategory._id}`}
-                                className="text-[13px] text-[#555] font-normal cursor-pointer hover:text-[#3559C7] transition-colors flex-1"
+                                className="text-sm text-[#555] font-normal cursor-pointer hover:text-[#3559C7] transition-colors flex-1"
                               >
                                 {subcategory.title}
                               </label>
@@ -335,7 +339,7 @@ export default function New_Product() {
                                 id={`sub-${subcategory._id}`}
                                 checked={selectedSubcategories.includes(subcategory.title)}
                                 onChange={() => handleSubcategoryToggle(subcategory.title)}
-                                className="w-4 h-4 border border-[#a0a0a0] rounded-sm cursor-pointer checked:bg-[#3559C7] checked:border-[#3559C7] transition-all"
+                                className="w-5 h-5 border border-gray-300 rounded-sm cursor-pointer checked:bg-[#3559C7] checked:border-[#3559C7] transition-all"
                               />
                             </div>
                           ))
@@ -356,18 +360,18 @@ export default function New_Product() {
 
           {/* Active Filters */}
           {selectedSubcategories.length > 0 && (
-            <div className="mt-4 pt-4 border-t border-gray-200">
-              <h5 className="text-sm font-bold text-[#2e2e2e] mb-2">Active Filters:</h5>
+            <div className="mt-6 pt-5 border-t border-gray-200">
+              <h5 className="text-sm font-bold text-[#2e2e2e] mb-3">Active Filters:</h5>
               <div className="flex flex-wrap gap-2">
                 {selectedSubcategories.map((subcategory, idx) => (
                   <span
                     key={idx}
-                    className="inline-flex items-center gap-1 bg-[#3559C7] text-white text-xs px-2 py-1 rounded-full"
+                    className="inline-flex items-center gap-1 bg-[#3559C7] text-white text-xs px-3 py-1.5 rounded-full shadow-sm"
                   >
                     {subcategory}
                     <button
                       onClick={() => handleSubcategoryToggle(subcategory)}
-                      className="ml-1 text-white hover:text-gray-200 transition-colors"
+                      className="ml-1 text-white hover:text-gray-200 transition-colors text-lg"
                       aria-label={`Remove ${subcategory} filter`}
                     >
                       ×
@@ -378,6 +382,7 @@ export default function New_Product() {
             </div>
           )}
         </aside>
+
 
         {/* Main Content */}
         <div className="flex-1">

@@ -4,6 +4,8 @@
 import { useAuth } from "../../context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+
 
 
 
@@ -76,7 +78,7 @@ const Login = () => {
     e.preventDefault();
 
     if (formData.captchaInput !== captchaCode) {
-      alert("Invalid captcha");
+      toast.warning("Invalid captcha");
       return;
     }
 
@@ -94,7 +96,7 @@ const Login = () => {
 
       console.log(data)
       if (!data.token) {
-        alert("Login failed: " + data.message);
+        toast.error("Login failed: " + data.message);
         return;
       }
 
@@ -139,11 +141,11 @@ const Login = () => {
         console.log("Guest wishlist synced to server");
         localStorage.removeItem("guest_wishlist"); // ✅ Correct key
       }
-      alert("Login successful!");
+      toast.success("Login successful!");
       navigation.push("/");
 
     } catch (error) {
-      alert("Login error: " + error.message);
+      toast.error("Login error: " + error.message);
       console.error(error);
     }
   };

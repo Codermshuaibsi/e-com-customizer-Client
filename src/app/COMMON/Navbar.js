@@ -10,7 +10,7 @@ import {
 import slugify from "slugify";
 import { HiHeart, HiOutlineHeart } from "react-icons/hi";
 import { FiMail } from "react-icons/fi";
-import { IoCallOutline } from "react-icons/io5";
+import { IoCallOutline, IoNotificationsCircle } from "react-icons/io5";
 import { LiaShoppingBagSolid } from "react-icons/lia";
 import { HiMenu, HiX } from "react-icons/hi";
 import { usePathname, useRouter } from "next/navigation";
@@ -19,6 +19,7 @@ import User_profile_dero from "../userprofile/page";
 import Toastify from "toastify-js";
 import "toastify-js/src/toastify.css";
 import clsx from 'clsx'
+import { BiNotification } from "react-icons/bi";
 // import Image from "next/image";
 
 
@@ -266,9 +267,7 @@ export default function Navbar() {
 
             </div>
 
-            <Link href={"/mainuserprofile"}>
-              <FiMail className="text-3xl text-[#424241]" />
-            </Link>
+           
           </div>
 
         </div>
