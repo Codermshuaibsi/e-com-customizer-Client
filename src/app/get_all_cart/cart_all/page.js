@@ -4,11 +4,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import { useAuth } from "../../context/AuthContext"
 
 const FetchCartItems11 = () => {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
+  const { setCartCount } = useAuth();
   const router = useRouter();
 
   const handleCheckout = () => {
@@ -78,6 +80,7 @@ const FetchCartItems11 = () => {
 
         if (res.ok) {
           toast.success("Item removed successfully.");
+          setCartCount(prev => prev - 1)
           fetchCartItems();
         } else {
           toast.error("Failed to remove item.");
@@ -188,6 +191,7 @@ const FetchCartItems11 = () => {
         if (res.ok && data.success) {
           toast.success("Saved for later!");
           removeFromCart(item); // remove from cart after saving
+          setCartCount(prev => prev)
         } else {
           toast.error(data.message || "Failed to save item.");
         }
@@ -328,7 +332,7 @@ const FetchCartItems11 = () => {
                               ₹{((item.price || 0) * 1.2).toLocaleString()}
                             </span>
                             <span className="text-xs sm:text-sm text-green-600 font-medium">
-                              17% off
+                              {item.discount}
                             </span>
                           </div>
 
@@ -390,7 +394,7 @@ const FetchCartItems11 = () => {
 
                               <button
                                 onClick={() => removeFromCart(item)}
-                                className="text-xs sm:text-sm font-medium text-gray-700 hover:text-red-600 flex items-center gap-1 transition-colors"
+                                className="text-xs cursor-pointer sm:text-sm font-medium text-gray-700 hover:text-red-600 flex items-center gap-1 transition-colors"
                               >
                                 <svg
                                   className="w-3 h-3 sm:w-4 sm:h-4"

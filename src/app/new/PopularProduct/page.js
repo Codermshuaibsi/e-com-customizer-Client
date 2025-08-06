@@ -5,6 +5,7 @@ import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { LiaShoppingBagSolid } from "react-icons/lia";
 import { toast } from "react-toastify";
 import clsx from "clsx";
+import { useAuth } from "../../context/AuthContext";
 
 export default function PopularPro() {
   const [products, setProducts] = useState([]);
@@ -12,6 +13,7 @@ export default function PopularPro() {
   const [clickedButtons, setClickedButtons] = useState({});
   const [wishlistedItems, setWishlistedItems] = useState({});
   const [error, setError] = useState(null);
+  const { setCartCount } = useAuth()
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -56,6 +58,7 @@ export default function PopularPro() {
 
         if (res.ok) {
           toast.success("Item added to cart successfully");
+          setCartCount(prev => prev + 1)
         }
       } catch (error) {
         console.error("Error adding to server cart:", error);
@@ -156,7 +159,7 @@ export default function PopularPro() {
                 </h3>
                 <p className="text-lg font-bold mt-1 text-gray-800">
                   {item.discountedPrice &&
-                  item.discountedPrice < item.price ? (
+                    item.discountedPrice < item.price ? (
                     <>
                       ₹{Number(item.discountedPrice).toFixed(2)}
                       <span className="line-through text-sm text-gray-500 ml-2">

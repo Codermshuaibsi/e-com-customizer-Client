@@ -20,6 +20,9 @@ import Toastify from "toastify-js";
 import "toastify-js/src/toastify.css";
 import clsx from 'clsx'
 import { BiNotification } from "react-icons/bi";
+import { toast } from "react-toastify";
+import { useAuth } from "../context/AuthContext";
+
 // import Image from "next/image";
 
 
@@ -51,14 +54,18 @@ export default function Navbar() {
     "CUSTOMIZE": "/customizer",
     "CLOTHES": "/clothes",
   };
+
+
   const [showMenu, setShowMenu] = useState(false);
   const navigation = useRouter();
   const [showCustomizer, setShowCustomizer] = useState(false);
   const [showCLOTHES, setShowCLOTHES] = useState(false);
   const [showCategories, setShowCategories] = useState([]);
-  const [showBrand, setShowBrand] = useState(false);
   const [brands, setBrands] = useState([]);
-  const [cartCount, setCartCount] = useState(0);
+  const [Search, setSearch] = useState("")
+  const { cartCount } = useAuth();
+
+  const { setsearchResults } = useAuth();
 
   const navItems = ["NEW COLLECTIONS", "ABOUT", "CUSTOMIZE", "CLOTHES"];
 
@@ -74,36 +81,6 @@ export default function Navbar() {
   const token = typeof window !== "undefined" && localStorage.getItem("user_token");
   const Id = typeof window !== "undefined" && localStorage.getItem("user_Id")
 
-
-
-  useEffect(() => {
-    const fetchCartCount = async () => {
-      try {
-        if (!token) return;
-
-        const res = await fetch(
-          `https://e-com-customizer.onrender.com/api/v1//AllCartItems/${Id}`, // Replace ":id" with actual user id if needed
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        const data = await res.json();
-        if (res.ok && data?.cartItems) {
-          const total = data.cartItems.reduce((acc, item) => acc + item.quantity, 0);
-          setCartCount(total);
-        } else {
-          console.warn("Could not fetch cart items:", data.message);
-        }
-      } catch (error) {
-        console.error("Error fetching cart count:", error);
-      }
-    };
-
-    fetchCartCount();
-  }, []);
 
 
 
@@ -175,10 +152,54 @@ export default function Navbar() {
     };
   }, []);
 
+  const handleOnChange = (e) => {
+    setSearch(e.target.value);
+  };
+
+
+
+
+  const handleSearch = async () => {
+    if (!Search || Search.trim() === "") {
+      toast.message("Please enter a search term")
+      return;
+    }
+
+    try {
+      // localStorage.removeItem("searchResults")
+      const res = await fetch(`https://e-com-customizer.onrender.com/api/v1/search/product/?query=${Search}`);
+      const data = await res.json();
+
+      if (res.ok) {
+        console.log("Search Results:", data.data); // ✅ You can navigate or display it here
+        // For example, store in localStorage or redirect:
+        // localStorage.setItem("searchResults", JSON.stringify(data.data));
+
+        navigation.push('/Search')
+      } else {
+        alert(data.message || "Product not found");
+      }
+    } catch (err) {
+      console.error("Search error:", err);
+      alert("Something went wrong with the search");
+    }
+  };
+
+  const handlekey = (e) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+    else {
+      return
+    }
+  }
+
+
+
   return (
 
-    <header>
-      <div className="bg-black text-white text-sm px-4 md:px-10 py-3 flex flex-row md:flex-row justify-between items-center gap-3">
+    <header className="sticky top-0 left-0 right-0 bg-white z-20">
+      <div className="bg-black  text-white text-sm px-4 md:px-10 py-3 flex flex-row md:flex-row justify-between items-center gap-3">
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-6 items-center">
           <div className="flex items-center gap-2">
             <IoCallOutline />
@@ -213,7 +234,7 @@ export default function Navbar() {
               className="text-2xl sm:text-3xl font-bold text-[#333333] cursor-pointer"
               onClick={() => navigation.push("/")}
             >
-            <h1>DesignTailor</h1>
+              <h1>DesignTailor</h1>
             </div>
 
             {/* Auth section for mobile */}
@@ -247,9 +268,11 @@ export default function Navbar() {
             <input
               type="text"
               placeholder="Search here"
+              value={Search}
+              onChange={handleOnChange}
               className="w-full px-4 py-3 bg-gray-100 border border-gray-300 rounded-l-md text-base"
             />
-            <button className="bg-[#3559C7] text-white px-4 rounded-r-md flex items-center justify-center min-w-[50px]">
+            <button onClick={handleSearch} className="bg-[#3559C7] cursor-pointer text-white px-4 rounded-r-md flex items-center justify-center min-w-[50px]">
               <FaSearch />
             </button>
           </div>
@@ -280,16 +303,19 @@ export default function Navbar() {
               className="text-4xl xl:text-5xl font-bold text-[#333333] cursor-pointer whitespace-nowrap"
               onClick={() => navigation.push("/")}
             >
-            <h1>DesignTailor</h1>
+              <h1>DesignTailor</h1>
             </div>
 
             <div className="flex w-full max-w-lg">
               <input
                 type="text"
+                value={Search}
+                onChange={handleOnChange}
+                onKeyDown={handlekey}
                 placeholder="Search here"
                 className="w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-l-md"
               />
-              <button className="bg-[#3559C7] text-white px-4 rounded-r-md">
+              <button onClick={handleSearch} className="bg-[#3559C7] cursor-pointer text-white px-4 rounded-r-md">
                 <FaSearch />
               </button>
             </div>
@@ -303,7 +329,7 @@ export default function Navbar() {
                   </span>
 
                 </Link>
-                <p className="hover:font-medium cursor-pointer">Cart</p>
+                <Link href={"/get_all_cart"}> <p className="hover:font-medium cursor-pointer">Cart</p></Link>
               </div>
 
 
@@ -414,7 +440,7 @@ export default function Navbar() {
                     isActive ? "text-blue-600" : "text-[#333333] hover:text-gray-600"
                   )}
                   onMouseEnter={() => setShowCustomizer(true)}
-                  onMouseLeave={() => setShowCustomizer(false)}
+                  onMouseLeave={() => setShowCustomizer(true)}
                 >
                   {item}
                 </a>

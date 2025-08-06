@@ -5,6 +5,7 @@ import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import clsx from "clsx";
 import { toast } from "react-toastify";
+import { useAuth } from "../../context/AuthContext";
 
 export default function New_Product() {
   // State management
@@ -15,6 +16,7 @@ export default function New_Product() {
   const [expandedCategories, setExpandedCategories] = useState([]);
   const [sortBy, setSortBy] = useState("featured");
   const [currentPage, setCurrentPage] = useState(1);
+  const { setclicked } = useAuth();
 
   const [clickedButtons, setClickedButtons] = useState({});
   const [wishlistedItems, setWishlistedItems] = useState({});
@@ -156,11 +158,12 @@ export default function New_Product() {
             },
           }
         );
-
+        setclicked(true)
         const data = await res.json();
         console.log("Server Cart:", data);
         if (res.ok) {
           toast.success("Item added to cart successfully");
+          setclicked(false)
         }
       } catch (error) {
         console.error("Error adding to server cart:", error);
