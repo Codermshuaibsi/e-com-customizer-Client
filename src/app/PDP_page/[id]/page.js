@@ -48,26 +48,32 @@ export default function ProductDetailPage() {
         const alreadyInCart = cartData.cartItems?.some(cartItem => cartItem.productId === item._id);
 
         if (alreadyInCart) {
-          // ✅ Send update request with additional quantity
-          const updateRes = await fetch(`https://e-com-customizer.onrender.com/api/v1/updateCartQuantity/${item._id}`, {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({ quantity }), // This is now "increment by" not "replace with"
-          });
+          toast.info("Item already in cart");
+          if (alreadyInCart) {
+            // Increase quantity if already in cart
+            const updateRes = await fetch(`https://e-com-customizer.onrender.com/api/v1/updateCartQuantity/${item._id}`, {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({
+                quantity: quantity,
+              }),
+            });
 
-          if (updateRes.ok) {
-            toast.success("Cart quantity increased");
-            setCartCount(prev => prev + quantity);
-          } else {
-            toast.error("Failed to update quantity");
+            if (updateRes.ok) {
+              toast.success("Cart updated with additional quantity");
+            
+            } else {
+              toast.error("Failed to update quantity");
+            }
+            return;
           }
+
           return;
         }
 
-        // 🆕 Not in cart yet — add to cart
         const res = await fetch(`https://e-com-customizer.onrender.com/api/v1/addToCart/${item._id}`, {
           method: "POST",
           headers: {
@@ -75,14 +81,14 @@ export default function ProductDetailPage() {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            quantity,
+            quantity: quantity,
             productId: item._id,
           }),
         });
 
         if (res.ok) {
           toast.success("Item added to cart successfully");
-          setCartCount(prev => prev + quantity);
+          setCartCount(prev => prev + 1);
         } else {
           toast.error("Failed to add item to cart");
         }
@@ -91,22 +97,18 @@ export default function ProductDetailPage() {
         toast.error("Failed to add item to cart");
       }
     } else {
-      // 🔁 Guest cart logic
       let guestCart = JSON.parse(localStorage.getItem("guest_cart")) || [];
       const existingItemIndex = guestCart.findIndex((cartItem) => cartItem._id === item._id);
 
       if (existingItemIndex >= 0) {
-        guestCart[existingItemIndex].quantity += quantity;
-        toast.success("Increased quantity in guest cart");
+        toast.info("Item already in cart");
       } else {
         guestCart.push({ ...item, quantity });
-        toast.success("Item added to guest cart");
+        localStorage.setItem("guest_cart", JSON.stringify(guestCart));
+        toast.success("Item added to cart");
       }
-
-      localStorage.setItem("guest_cart", JSON.stringify(guestCart));
     }
   };
-
 
 
   const handleReviewSubmit = (e) => {
@@ -329,13 +331,7 @@ export default function ProductDetailPage() {
             >
               <span className="text-yellow-400 text-lg">★★★★★</span>
               <span className="sm:text-sm text-[9px] font-semibold">{reviews.length || 20} Reviews</span>
-              <motion.button
-                className="ml-auto text-xs font-bold text-[#333] uppercase underline"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                GET PRICE alert
-              </motion.button>
+              
             </motion.div>
 
             <motion.p

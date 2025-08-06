@@ -11,6 +11,7 @@ const FetchCartItems11 = () => {
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const { setCartCount } = useAuth();
+
   const router = useRouter();
 
   const handleCheckout = () => {
@@ -102,7 +103,7 @@ const FetchCartItems11 = () => {
 
     setUpdating(true);
 
-    const token = localStorage.getItem("user_token")?.replace(/^"|"$/g, "");
+    const token = localStorage.getItem("user_token");
 
     if (token) {
       try {
@@ -117,7 +118,6 @@ const FetchCartItems11 = () => {
             body: JSON.stringify({ quantity: newQuantity }),
           }
         );
-
         if (res.ok) {
           const updatedItems = cartItems.map((cartItem) =>
             cartItem.productId === id
@@ -126,12 +126,14 @@ const FetchCartItems11 = () => {
           );
           setCartItems(updatedItems);
         } else {
-          console.error("Failed to update quantity on server");
+          const errorData = await res.json();
+          console.error("Failed to update quantity on server:", errorData);
         }
       } catch (err) {
         console.error("Error updating quantity:", err);
       }
     } else {
+      // Guest cart logic
       let guestCart = JSON.parse(localStorage.getItem("guest_cart")) || [];
       guestCart = guestCart.map((cartItem) =>
         cartItem._id === item._id
@@ -144,6 +146,7 @@ const FetchCartItems11 = () => {
 
     setUpdating(false);
   };
+
 
   useEffect(() => {
     fetchCartItems();

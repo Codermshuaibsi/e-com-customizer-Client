@@ -63,9 +63,7 @@ export default function Navbar() {
   const [showCategories, setShowCategories] = useState([]);
   const [brands, setBrands] = useState([]);
   const [Search, setSearch] = useState("")
-  const { cartCount } = useAuth();
-
-  const { setsearchResults } = useAuth();
+  const { cartCount, setsearchResults } = useAuth();
 
   const navItems = ["NEW COLLECTIONS", "ABOUT", "CUSTOMIZE", "CLOTHES"];
 
@@ -169,12 +167,12 @@ export default function Navbar() {
       // localStorage.removeItem("searchResults")
       const res = await fetch(`https://e-com-customizer.onrender.com/api/v1/search/product/?query=${Search}`);
       const data = await res.json();
-
+      setsearchResults([])
       if (res.ok) {
         console.log("Search Results:", data.data); // ✅ You can navigate or display it here
         // For example, store in localStorage or redirect:
         // localStorage.setItem("searchResults", JSON.stringify(data.data));
-
+        setsearchResults(data.data)
         navigation.push('/Search')
       } else {
         alert(data.message || "Product not found");
