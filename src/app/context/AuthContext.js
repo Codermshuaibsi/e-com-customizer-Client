@@ -14,8 +14,8 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
 
-  const token = localStorage.getItem("user_token")
-  const Id = localStorage.getItem("user_Id");
+  const token = typeof window !== "undefined" ? localStorage.getItem("user_token") : null;
+  const Id = typeof window !== "undefined" ? localStorage.getItem("user_Id") : null;
 
 
 
@@ -65,7 +65,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider value={{ user, setUser, searchResults, setsearchResults, cartCount, setCartCount , setclicked
-      
+
      }}>
       {children}
     </AuthContext.Provider>
