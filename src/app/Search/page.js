@@ -32,7 +32,7 @@ function Searched_Items() {
 
     // Apply sorting and price filtering
     const getFilteredSortedResults = () => {
-        
+
         const filtered = results;
 
         const sorted = [...filtered].sort((a, b) => {
@@ -182,7 +182,7 @@ function Searched_Items() {
                                 >
                                     <div className="p-4">
                                         <div className="p-1.5 relative border border-gray-300">
-                                            <Link href={`/product/${item._id}`}>
+                                            <Link href={`/PDP_page/${item._id}`}>
                                                 <img
                                                     src={
                                                         item.thumbnail?.[0] ||
