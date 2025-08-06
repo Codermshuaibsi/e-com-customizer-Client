@@ -213,7 +213,7 @@ export default function ProductPage({ params }) {
               FILTER BY
             </h3>
             <button
-              className="text-[#3559C7] text-sm font-bold uppercase hover:underline"
+              className="text-[#3559C7]  cursor-pointer text-sm font-bold uppercase hover:underline"
               onClick={() => setSelectedColors([])}
             >
               CLEAR ALL

@@ -95,7 +95,7 @@ const User_profile_dero = () => {
   };
 
   const handleSettingsClick = () => {
-    console.log("Account Settings clicked");
+    router.push("/"); // Navigate to profile page
     setIsOpen(false);
   };
 

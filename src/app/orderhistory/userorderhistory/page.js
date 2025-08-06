@@ -30,14 +30,13 @@ const OrderHistoryPage = () => {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+          "Authorization": `Bearer ${token}`,
         },
       });
 
       // Handle different HTTP status codes
       if (!response.ok) {
         if (response.status === 401) {
-          localStorage.removeItem("user_token");
           throw new Error("Session expired. Please login again.");
         } else if (response.status === 404) {
           throw new Error("Order history not found");
@@ -53,7 +52,7 @@ const OrderHistoryPage = () => {
 
       if (data.success && Array.isArray(data.orderHistory)) {
         // Sort orders by date (newest first)
-        const sortedOrders = data.orderHistory.sort((a, b) => 
+        const sortedOrders = data.orderHistory.sort((a, b) =>
           new Date(b.orderDate || b.createdAt) - new Date(a.orderDate || a.createdAt)
         );
         setOrderHistory(sortedOrders);
@@ -67,7 +66,7 @@ const OrderHistoryPage = () => {
       setError(error.message);
 
       // Only show demo data in development or if explicitly requested
- 
+
     } finally {
       setLoading(false);
       setRetrying(false);
@@ -120,14 +119,15 @@ const OrderHistoryPage = () => {
     if (typeof price === 'number' && !isNaN(price)) {
       return price.toLocaleString('en-IN');
     }
-    return 'N/A';
+    return '₹0';
   };
+
 
   const calculateOrderTotal = (products) => {
     return products.reduce((total, product) => {
-      const price = typeof product.price === 'number' ? product.price : 0;
-      const quantity = typeof product.quantity === 'number' ? product.quantity : 1;
-      return total + (price * quantity);
+      const price = product.productId?.price || product.price || 0;
+      const quantity = product.quantity || 1;
+      return total + price * quantity;
     }, 0);
   };
 
@@ -237,7 +237,7 @@ const OrderHistoryPage = () => {
           {orderHistory.map((order) => {
             const orderTotal = order.totalAmount || calculateOrderTotal(order.products || []);
             const orderStatus = order.orderStatus || order.status || 'processing';
-            
+
             return (
               <div key={order._id} className="bg-white rounded-lg shadow-sm border hover:shadow-md transition-shadow">
                 {/* Order Header */}
@@ -261,7 +261,9 @@ const OrderHistoryPage = () => {
                       </div>
                       <div className="flex items-center gap-1 text-lg font-bold text-gray-900">
                         <IndianRupee className="w-4 h-4" />
-                        {formatPrice(orderTotal)}
+                        {formatPrice(calculateOrderTotal(order.products))}
+
+
                       </div>
                     </div>
                   </div>
@@ -282,10 +284,9 @@ const OrderHistoryPage = () => {
                       {selectedOrder === order._id ? 'Hide Details' : 'View Details'}
                     </button>
                   </div>
-                  
-                  <div className={`space-y-4 transition-all duration-300 ${
-                    selectedOrder === order._id ? 'max-h-none opacity-100' : 'max-h-32 overflow-hidden opacity-75'
-                  }`}>
+
+                  <div className={`space-y-4 transition-all duration-300 ${selectedOrder === order._id ? 'max-h-none opacity-100' : 'max-h-32 overflow-hidden opacity-75'
+                    }`}>
                     {order.products?.map((product, index) => (
                       <div key={product._id || index} className="flex gap-4 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                         <div className="flex-shrink-0">
@@ -298,7 +299,7 @@ const OrderHistoryPage = () => {
                             }}
                           />
                         </div>
-                        
+
                         <div className="flex-grow">
                           <h4 className="text-lg font-semibold text-gray-900 mb-1 line-clamp-2">
                             {product.productId.title || 'Untitled Product'}
@@ -306,7 +307,7 @@ const OrderHistoryPage = () => {
                           {product.productId.description && (
                             <p className="text-sm text-gray-600 mb-2 line-clamp-2">{product.description}</p>
                           )}
-                          
+
                           <div className="flex flex-wrap items-center gap-4 text-sm">
                             {product.color && (
                               <div className="flex items-center gap-1">
@@ -326,8 +327,8 @@ const OrderHistoryPage = () => {
                         </div>
                       </div>
                     )) || (
-                      <p className="text-gray-500 text-center py-4">No products found in this order</p>
-                    )}
+                        <p className="text-gray-500 text-center py-4">No products found in this order</p>
+                      )}
                   </div>
                 </div>
 
@@ -338,7 +339,7 @@ const OrderHistoryPage = () => {
                       <MapPin className="w-5 h-5" />
                       Delivery Address
                     </h3>
-                    
+
                     <div className="bg-white rounded-lg p-4 border">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
@@ -355,7 +356,7 @@ const OrderHistoryPage = () => {
                             </div>
                           )}
                         </div>
-                        
+
                         <div className="text-sm text-gray-700 leading-relaxed">
                           {order.shippingAddress.address && <p>{order.shippingAddress.address}</p>}
                           {order.shippingAddress.landmark && (

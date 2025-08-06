@@ -3,11 +3,12 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 
 const CartPaymentPage = () => {
   const [cartItems, setCartItems] = useState([]);
-  const [totalAmount, setTotalAmount] = useState(0);
+  const [totalamount, settotalamount] = useState(0);
   const [savedAddresses, setSavedAddresses] = useState([]);
   const [selectedAddressId, setSelectedAddressId] = useState("");
   const [showAddressForm, setShowAddressForm] = useState(false);
@@ -15,6 +16,7 @@ const CartPaymentPage = () => {
   const [loading, setLoading] = useState(true);
   const [paymentMethod, setPaymentMethod] = useState("online"); // "online" or "cod"
   const [placingOrder, setPlacingOrder] = useState(false);
+  const router = useRouter();
 
   const [address, setAddress] = useState({
     fullName: "",
@@ -46,7 +48,7 @@ const CartPaymentPage = () => {
           const total = data.cartItems.reduce((acc, item) => {
             return acc + (item.price || 0) * (item.quantity || 1);
           }, 0);
-          setTotalAmount(total);
+          settotalamount(total);
         }
       } catch (error) {
         console.error("Error fetching cart:", error);
@@ -180,7 +182,7 @@ const CartPaymentPage = () => {
             productId: item.productId || item._id, // Ensure productId is sent
             quantity: item.quantity || 1,
           })),
-          amount: totalAmount,
+          amount: totalamount,
           addressId: selectedAddressId,
         }),
       });
@@ -189,7 +191,7 @@ const CartPaymentPage = () => {
 
       if (data.success) {
         toast.success(`Order placed successfully! Order ID: ${data.orderId}`);
-        window.location.href = `/orders/${data.orderId}`;
+        router.push('/orderhistory')
       } else {
         toast.error("Failed to place order");
       }
@@ -470,7 +472,7 @@ const CartPaymentPage = () => {
               <div className="space-y-3 pb-4 border-b border-gray-200">
                 <div className="flex justify-between text-gray-600">
                   <span>Subtotal ({cartItems.length} items)</span>
-                  <span>₹{totalAmount}</span>
+                  <span>₹{totalamount}</span>
                 </div>
                 <div className="flex justify-between text-gray-600">
                   <span>Shipping</span>
@@ -480,7 +482,7 @@ const CartPaymentPage = () => {
 
               <div className="flex justify-between text-lg font-semibold text-gray-900 mt-4 mb-6">
                 <span>Total Amount</span>
-                <span>₹{totalAmount}</span>
+                <span>₹{totalamount}</span>
               </div>
 
               {paymentMethod === "cod" ? (
@@ -507,7 +509,7 @@ const CartPaymentPage = () => {
                     pathname: "/pay",
                     query: {
                       address: JSON.stringify(address),
-                      total: totalAmount,
+                      total: totalamount,
                       selectID: selectID,
                     },
                   }}

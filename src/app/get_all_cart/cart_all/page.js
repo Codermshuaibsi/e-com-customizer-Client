@@ -496,7 +496,7 @@ const FetchCartItems11 = () => {
                 <div className="p-3 sm:p-4 border-t">
                   <button
                     onClick={handleCheckout}
-                    className="w-full py-2 sm:py-3 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-sm transition-colors text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full py-2 sm:py-3 cursor-pointer bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-sm transition-colors text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={updating}
                   >
                     {updating ? "Updating..." : "Place Order"}

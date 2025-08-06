@@ -35,6 +35,7 @@ const UserProfilePage = () => {
     lastName: "",
     thumbnail: "",
   });
+  const [Loading, setLoading] = useState(false)
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -547,7 +548,7 @@ const UserProfilePage = () => {
             className={`${darkMode ? "bg-gray-800" : "bg-white"
               } rounded-lg shadow-sm p-4 h-fit`}
           >
-            <nav className="space-y-2">
+            <nav className="space-y-2 stickey top-0 left-0 right-0">
               {menuItems.map((item) => (
                 <button
                   key={item.id}
