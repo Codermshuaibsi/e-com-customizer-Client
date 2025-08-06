@@ -13,6 +13,7 @@ const FetchCartItems11 = () => {
 
   const handleCheckout = () => {
     const token = localStorage.getItem("user_token");
+    console.log()
     if (token) {
       router.push("/order");
     } else {
@@ -165,6 +166,52 @@ const FetchCartItems11 = () => {
     (acc, item) => acc + (item.quantity || 1),
     0
   );
+
+  const saveForLater = async (item) => {
+    const token = localStorage.getItem("user_token");
+
+    if (token) {
+      try {
+        const res = await fetch(
+          `https://e-com-customizer.onrender.com/api/v1/addToWishlist/${item.productId || item._id}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+
+        const data = await res.json();
+        if (res.ok && data.success) {
+          toast.success("Saved for later!");
+          removeFromCart(item); // remove from cart after saving
+        } else {
+          toast.error(data.message || "Failed to save item.");
+        }
+      } catch (err) {
+        console.error("Save for later failed:", err);
+        toast.error("Something went wrong.");
+      }
+    } else {
+      // For guest users - save to localStorage
+      const guestSaved =
+        JSON.parse(localStorage.getItem("guest_saved_items")) || [];
+      guestSaved.push(item);
+      localStorage.setItem("guest_saved_items", JSON.stringify(guestSaved));
+
+      // Remove from cart
+      let guestCart = JSON.parse(localStorage.getItem("guest_cart")) || [];
+      guestCart = guestCart.filter((cartItem) => cartItem._id !== item._id);
+      localStorage.setItem("guest_cart", JSON.stringify(guestCart));
+      setCartItems(guestCart);
+
+      toast.success("Saved for later!");
+    }
+  };
+
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -321,7 +368,10 @@ const FetchCartItems11 = () => {
 
                             {/* Action Buttons */}
                             <div className="flex flex-wrap gap-3 sm:gap-4">
-                              <button className="text-xs sm:text-sm font-medium text-gray-700 hover:text-gray-900 flex items-center gap-1 transition-colors">
+                              <button
+                                onClick={() => saveForLater(item)}
+                                className="text-xs cursor-pointer sm:text-sm font-medium text-gray-700 hover:text-gray-900 flex items-center gap-1 transition-colors"
+                              >
                                 <svg
                                   className="w-3 h-3 sm:w-4 sm:h-4"
                                   fill="none"
