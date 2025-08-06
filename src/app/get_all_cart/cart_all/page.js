@@ -302,7 +302,7 @@ const FetchCartItems11 = () => {
                       <div className="flex flex-col sm:flex-row gap-4">
                         {/* Product Image */}
                         <Link
-                          href={`/PDP_page/${item._id}`}
+                          href={`/PDP_page/${item.productId || item._id}`}
                           className="flex-shrink-0"
                         >
                           <div className="w-24 h-24 sm:w-32 sm:h-32 mx-auto sm:mx-0 border rounded overflow-hidden">
