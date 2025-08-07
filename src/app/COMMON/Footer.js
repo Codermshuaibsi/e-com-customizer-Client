@@ -92,8 +92,8 @@ export default function Footer() {
           <div className="flex flex-col gap-2 col-span-2 sm:col-span-1">
             <h3 className="text-lg font-semibold text-gray-800">Contact Us</h3>
             <p className="text-sm text-gray-600">Mon–Sat: 10 AM - 6 PM</p>
-            <a href="tel:1234567890" className="text-sm text-gray-600 hover:text-black hover:font-semibold transition-all">
-              1234567890
+            <a href="tel: 8979302837" className="text-sm text-gray-600 hover:text-black hover:font-semibold transition-all">
+              8979302837
             </a>
             <a href="mailto:support@gmail.com">
               <p className="text-sm transition-all  hover:font-semibold text-gray-600">support@gmail.com</p>

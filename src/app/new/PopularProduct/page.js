@@ -41,42 +41,114 @@ export default function PopularPro() {
   }, []);
 
   const addToCart = async (item) => {
+
     const token = localStorage.getItem("user_token");
 
     if (token) {
       try {
-        const res = await fetch(
-          `https://e-com-customizer.onrender.com/api/v1/addToCart/${item._id}`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
 
-        if (res.ok) {
-          toast.success("Item added to cart successfully");
-          setCartCount(prev => prev + 1)
+        const cartRes = await fetch("https://e-com-customizer.onrender.com/api/v1/fetchAllCartItems", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+
+        const cartData = await cartRes.json();
+
+        const cartItems = cartData.cartItems || [];
+
+
+        // 🧠 Check if item already in cart
+        const existingItem = cartItems.find((productsitem) => {
+          const cartProductId = productsitem.productId || productsitem._id;
+          const match = String(cartProductId) === String(item._id);
+          console.log(`Comparing cartProductId: ${cartProductId} with item._id: ${item._id} → Match: ${match}`);
+          return match;
+        });
+
+        if (existingItem) {
+          console.log("✅ Item already in cart, updating quantity...");
+
+          // ✅ Update quantity of existing item
+          const updateRes = await fetch(
+            `https://e-com-customizer.onrender.com/api/v1/updateCartQuantity/${item._id}`,
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({
+                quantity: existingItem.quantity + 1,
+              }),
+            }
+          );
+
+          if (updateRes.ok) {
+            toast.success("Quantity updated in cart");
+            setClickedButtons((prev) => ({
+              ...prev,
+              [item._id]: true,
+            }));
+          } else {
+            toast.error("Failed to update quantity");
+          }
+
+        } else {
+          console.log("🆕 Item not in cart, adding as new...");
+
+          // ✅ Add new item
+          const res = await fetch(
+            `https://e-com-customizer.onrender.com/api/v1/addToCart/${item._id}`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+
+          if (res.ok) {
+            toast.success("Item added to cart");
+            setclicked(prev => !prev);
+          } else {
+            toast.error("Failed to add item to cart");
+          }
         }
       } catch (error) {
-        console.error("Error adding to server cart:", error);
+        console.error("❌ Error adding to cart:", error);
+        toast.error("Something went wrong");
       }
     } else {
+      // ✅ Guest logic using localStorage
       let guestCart = JSON.parse(localStorage.getItem("guest_cart")) || [];
+      const existingItemIndex = guestCart.findIndex(
+        (p) => String(p._id) === String(item._id)
+      );
 
-      const already = guestCart.find((i) => i._id === item._id);
+      if (existingItemIndex !== -1) {
+        // ✅ Already in guest cart → update quantity
+        console.log("🛒 (Guest) Item already in cart, updating quantity");
+        guestCart[existingItemIndex].quantity =
+          (guestCart[existingItemIndex].quantity || 1) + 1;
 
-      if (!already) {
-        guestCart.push(item);
         localStorage.setItem("guest_cart", JSON.stringify(guestCart));
-        toast.success("Item added to local cart");
+        toast.success("Quantity updated in cart");
       } else {
-        toast.info("Item already in local cart");
+        // ✅ New guest item → add and increment count
+        console.log("🆕 (Guest) New item, adding to cart");
+        guestCart.push({ ...item, quantity: 1 });
+        localStorage.setItem("guest_cart", JSON.stringify(guestCart));
+        toast.success("Item added to cart");
+        setCartCount((prev) => prev + 1);
       }
     }
   };
+
+
 
   const AddToWishlist = async (item) => {
     const token = localStorage.getItem("user_token");
@@ -139,7 +211,7 @@ export default function PopularPro() {
 
       <section className="bg-white py-10 px-4">
         <div className="max-w-[1330px] mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-7">
-          {products.slice(0, 4).map((item, idx) => (
+          {products.slice(0, 5  ).map((item, idx) => (
             <div
               key={idx}
               className="border border-gray-200 rounded shadow-sm overflow-hidden group"

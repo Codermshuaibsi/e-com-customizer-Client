@@ -438,7 +438,7 @@ const UserProfilePage = () => {
   };
 
   const handleImageChange = async (e) => {
-    console.log("frffd"); // 👈 Debug log
+   
     const file = e.target.files[0];
     if (!file) return;
 
@@ -453,8 +453,9 @@ const UserProfilePage = () => {
       formData.append("thumbnail", file); // Make sure backend accepts this field name
 
       const token = localStorage.getItem("user_token");
+      const userId = localStorage.getItem("user_Id")
 
-      const res = await fetch("https://e-com-customizer.onrender.com/api/v1/updateThumbnail", {
+      const res = await fetch(`https://e-com-customizer.onrender.com/api/v1/updateprofile/${userId}`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -554,7 +555,7 @@ const UserProfilePage = () => {
                   key={item.id}
                   onClick={() => setActiveTab(item.id)}
                   className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-colors ${activeTab === item.id
-                    ? "bg-blue-50 text-blue-600 border-l-4 border-blue-600"
+                    ? "bg-blue-50 cursor-pointer text-blue-600 border-l-4 border-blue-600"
                     : darkMode
                       ? "hover:bg-gray-700 text-gray-300"
                       : "hover:bg-gray-50 text-gray-700"
@@ -570,12 +571,12 @@ const UserProfilePage = () => {
                   }`}
               />
 
-              <button className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-colors text-red-600 hover:bg-red-50">
+              <button className="w-full flex cursor-pointer items-center space-x-3 px-4 py-3 rounded-lg text-left transition-colors text-red-600 hover:bg-red-50">
                 <FaSignOutAlt className="w-5 h-5" />
                 <span className="font-medium">Logout</span>
               </button>
 
-              <button className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-colors text-red-600 hover:bg-red-50">
+              <button className="w-full flex cursor-pointer items-center space-x-3 px-4 py-3 rounded-lg text-left transition-colors text-red-600 hover:bg-red-50">
                 <FaUserTimes className="w-5 h-5" />
                 <span className="font-medium">Delete Account</span>
               </button>
@@ -595,7 +596,7 @@ const UserProfilePage = () => {
                   </h2>
                   <button
                     onClick={openEditModal}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+                    className="bg-blue-600 cursor-pointer hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
                   >
                     <FaEdit className="w-4 h-4" />
                     <span>Edit</span>
@@ -677,7 +678,7 @@ const UserProfilePage = () => {
                   <h2 className="text-xl font-semibold">Manage Addresses</h2>
                   <button
                     onClick={openAddAddressModal}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+                    className="bg-blue-600 cursor-pointer hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
                   >
                     <FaPlus className="w-4 h-4" />
                     <span>Add New Address</span>
@@ -737,13 +738,13 @@ const UserProfilePage = () => {
                           <div className="flex space-x-2">
                             <button
                               onClick={() => openEditAddressModal(addr)}
-                              className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                              className="p-2 text-blue-600 cursor-pointer hover:bg-blue-50 rounded-lg transition-colors"
                             >
                               <FaEdit className="w-4 h-4" />
                             </button>
                             <button
                               onClick={() => deleteAddress(addr._id)}
-                              className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                              className="p-2 text-red-600 cursor-pointer hover:bg-red-50 rounded-lg transition-colors"
                             >
                               <FaTrash className="w-4 h-4" />
                             </button>
@@ -763,7 +764,7 @@ const UserProfilePage = () => {
               >
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-semibold">My Orders</h2>
-                  <button className="text-blue-600 hover:text-blue-800 font-medium">
+                  <button className="text-blue-600 cursor-pointer hover:text-blue-800 font-medium">
                     View All Orders
                   </button>
                 </div>
@@ -846,10 +847,10 @@ const UserProfilePage = () => {
                         </div>
                       </div>
                       <div className="flex space-x-2 mt-4">
-                        <button className="flex-1 bg-orange-500 hover:bg-orange-600 text-white py-2 rounded-lg font-medium transition-colors">
+                        <button className="flex-1 bg-orange-500 cursor-pointer hover:bg-orange-600 text-white py-2 rounded-lg font-medium transition-colors">
                           Add to Cart
                         </button>
-                        <button className="px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                        <button className="px-4 py-2 text-red-600 cursor-pointer hover:bg-red-50 rounded-lg transition-colors">
                           <FaTrash className="w-4 h-4" />
                         </button>
                       </div>
@@ -934,7 +935,7 @@ const UserProfilePage = () => {
 
                   <button
                     type="submit"
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                    className="bg-blue-600 hover:bg-blue-700 cursor-pointer text-white px-6 py-3 rounded-lg font-medium transition-colors"
                   >
                     Update Password
                   </button>
@@ -1003,11 +1004,11 @@ const UserProfilePage = () => {
                     </div>
                     <button
                       onClick={toggleDarkMode}
-                      className={`relative w-12 h-6 rounded-full transition-colors ${darkMode ? "bg-blue-600" : "bg-gray-300"
+                      className={`relative w-12 h-6 rounded-full cursor-pointer transition-colors ${darkMode ? "bg-blue-600" : "bg-gray-300"
                         }`}
                     >
                       <div
-                        className={`absolute w-5 h-5 bg-white rounded-full top-0.5 transition-transform ${darkMode ? "translate-x-6" : "translate-x-0.5"
+                        className={`absolute w-5 h-5  bg-white rounded-full top-0.5 transition-transform ${darkMode ? "translate-x-6" : "translate-x-0.5"
                           }`}
                       />
                     </button>
@@ -1023,7 +1024,7 @@ const UserProfilePage = () => {
                         Receive order updates and offers via email
                       </p>
                     </div>
-                    <button className="relative w-12 h-6 rounded-full transition-colors bg-blue-600">
+                    <button className="relative w-12 h-6 cursor-pointer rounded-full transition-colors bg-blue-600">
                       <div className="absolute w-5 h-5 bg-white rounded-full top-0.5 translate-x-6 transition-transform" />
                     </button>
                   </div>
@@ -1046,7 +1047,7 @@ const UserProfilePage = () => {
                 <h2 className="text-2xl font-semibold">Edit Profile</h2>
                 <button
                   onClick={closeEditModal}
-                  className={`p-2 rounded-full ${darkMode ? "hover:bg-gray-700" : "hover:bg-gray-100"
+                  className={`p-2 rounded-full cursor-pointer ${darkMode ? "hover:bg-gray-700" : "hover:bg-gray-100"
                     } transition-colors`}
                 >
                   <svg
@@ -1197,7 +1198,7 @@ const UserProfilePage = () => {
                 <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
                   <button
                     onClick={closeEditModal}
-                    className={`px-6 py-3 rounded-lg font-medium transition-colors ${darkMode
+                    className={`px-6 py-3 rounded-lg  cursor-pointer font-medium transition-colors ${darkMode
                       ? "bg-gray-700 hover:bg-gray-600 text-white"
                       : "bg-gray-100 hover:bg-gray-200 text-gray-700"
                       }`}
@@ -1206,7 +1207,7 @@ const UserProfilePage = () => {
                   </button>
                   <button
                     onClick={saveUserChanges}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                    className="bg-blue-600 cursor-pointer hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
                   >
                     Save Changes
                   </button>
@@ -1231,7 +1232,7 @@ const UserProfilePage = () => {
                 </h2>
                 <button
                   onClick={closeAddressModal}
-                  className={`p-2 rounded-full ${darkMode ? "hover:bg-gray-700" : "hover:bg-gray-100"
+                  className={`p-2 cursor-pointer rounded-full ${darkMode ? "hover:bg-gray-700" : "hover:bg-gray-100"
                     } transition-colors`}
                 >
                   <svg
@@ -1497,7 +1498,7 @@ const UserProfilePage = () => {
                 <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
                   <button
                     onClick={closeAddressModal}
-                    className={`px-6 py-3 rounded-lg font-medium transition-colors ${darkMode
+                    className={`px-6 py-3 rounded-lg cursor-pointer font-medium transition-colors ${darkMode
                       ? "bg-gray-700 hover:bg-gray-600 text-white"
                       : "bg-gray-100 hover:bg-gray-200 text-gray-700"
                       }`}
@@ -1506,7 +1507,7 @@ const UserProfilePage = () => {
                   </button>
                   <button
                     onClick={saveAddress}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                    className="bg-blue-600 hover:bg-blue-700 cursor-pointer text-white px-6 py-3 rounded-lg font-medium transition-colors"
                   >
                     {isEditingAddress ? "Update Address" : "Save Address"}
                   </button>

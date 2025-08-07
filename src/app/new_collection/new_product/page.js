@@ -289,7 +289,7 @@ export default function New_Product() {
               Filter By
             </h3>
             <button
-              className={`text-[#3559C7] cursor-pointer  text-xs font-bold uppercase hover:underline transition-colors disabled:opacity-40 disabled:cursor-not-allowed`}
+              className={`text-[#3559C7] cursor-pointer text-xs font-bold uppercase hover:underline transition-colors disabled:opacity-40 disabled:cursor-not-allowed`}
               onClick={clearAllFilters}
               disabled={selectedSubcategories.length === 0}
             >

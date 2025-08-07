@@ -12,7 +12,7 @@ import { HiHeart, HiOutlineHeart } from "react-icons/hi";
 import { FiMail } from "react-icons/fi";
 import { IoCallOutline, IoNotificationsCircle } from "react-icons/io5";
 import { LiaShoppingBagSolid } from "react-icons/lia";
-import { HiMenu, HiX } from "react-icons/hi";
+  import { HiMenu, HiX, HiChevronDown, HiChevronUp } from "react-icons/hi";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import User_profile_dero from "../userprofile/page";
@@ -201,11 +201,11 @@ export default function Navbar() {
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-6 items-center">
           <div className="flex items-center gap-2">
             <IoCallOutline />
-            <a href="tel:+1234567890">+12 345 6789 0</a>
+            <a href="tel:+8979302837" className="hover:text-blue-500">+91-8979302837</a>
           </div>
           <div className="flex items-center gap-2">
             <FaEnvelope />
-            <a href="mailto:support@homie.com">support@homie.com</a>
+            <a href="mailto:support@homie.com" className="hover:text-blue-500">support@homie.com</a>
           </div>
         </div>
 
@@ -389,16 +389,20 @@ export default function Navbar() {
               <div
                 key="CLOTHES"
                 className="relative group mb-2"
-                onMouseEnter={() => setShowCLOTHES(true)}
-                onMouseLeave={() => setShowCLOTHES(false)}
+                onClick={() => setShowCLOTHES(showCLOTHES=> !showCLOTHES)}
               >
                 <a
                   className={clsx(
-                    "uppercase text-base sm:text-md font-semibold cursor-pointer transition-colors",
+                    "uppercase text-base sm:text-md font-semibold cursor-pointer transition-colors flex items-center gap-1",
                     isActive ? "text-blue-600" : "text-[#333333] hover:text-gray-600"
                   )}
                 >
                   {item}
+                  {showCLOTHES ? (
+                    <HiChevronUp className="ml-1 transition-transform duration-200" />
+                  ) : (
+                    <HiChevronDown className="ml-1 transition-transform duration-200" />
+                  )}
                 </a>
 
                 {showCLOTHES && (
@@ -413,7 +417,8 @@ export default function Navbar() {
                             <li key={sub._id}>
                               <Link
                                 href={`/Catalog_page/${sub._id}`}
-                                className="text-sm text-gray-600 hover:text-blue-600 transition-colors"
+                                className="text-sm sm:text-sm text-gray-600 hover:text-blue-600 transition-colors transform hover:scale-105 duration-200 font-normal"
+                                style={{ display: 'inline-block' }}
                               >
                                 {sub.title}
                               </Link>
@@ -434,13 +439,17 @@ export default function Navbar() {
               <div key={item} className="relative group mb-2" ref={dropdownRef}>
                 <a
                   className={clsx(
-                    "uppercase text-base sm:text-md font-semibold cursor-pointer transition-colors",
+                    "uppercase text-base sm:text-md font-semibold cursor-pointer transition-colors flex items-center gap-1",
                     isActive ? "text-blue-600" : "text-[#333333] hover:text-gray-600"
                   )}
-                  onMouseEnter={() => setShowCustomizer(true)}
-                  onMouseLeave={() => setShowCustomizer(true)}
+                  onClick={() => setShowCustomizer(showCustomizer => !showCustomizer)}
                 >
                   {item}
+                  {showCustomizer ? (
+                    <HiChevronUp className="ml-1 transition-transform duration-200" />
+                  ) : (
+                    <HiChevronDown className="ml-1 transition-transform duration-200" />
+                  )}
                 </a>
 
                 {showCustomizer && (
@@ -460,7 +469,8 @@ export default function Navbar() {
                               <li key={sub._id}>
                                 <Link
                                   href={`/customizerProducts/${sub._id}`}
-                                  className="text-sm text-gray-600 hover:text-blue-600 transition-colors"
+                                  className="text-sm sm:text-sm text-gray-600 hover:text-blue-600 transition-colors transform hover:scale-105 duration-200 font-normal"
+                                  style={{ display: 'inline-block' }}
                                 >
                                   {sub.title}
                                 </Link>
