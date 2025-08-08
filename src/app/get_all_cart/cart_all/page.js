@@ -311,7 +311,7 @@ const FetchCartItems11 = () => {
                           <div className="w-24 h-24 sm:w-32 sm:h-32 mx-auto sm:mx-0 border rounded overflow-hidden">
                             <Image
                               src={
-                                item.thumbnail?.[0] || "/placeholder-image.jpg"
+                                item.images?.[0] || "/placeholder-image.jpg"
                               }
                               alt={item.title || "Product image"}
                               width={128}
@@ -397,7 +397,7 @@ const FetchCartItems11 = () => {
 
                               <button
                                 onClick={() => removeFromCart(item)}
-                                className="text-xs cursor-pointer sm:text-sm font-medium text-gray-700 hover:text-red-600 flex items-center gap-1 transition-colors"
+                                className="text-xs cursor-pointer sm:text-sm font-medium  text-red-600 flex items-center gap-1 transition-colors"
                               >
                                 <svg
                                   className="w-3 h-3 sm:w-4 sm:h-4"

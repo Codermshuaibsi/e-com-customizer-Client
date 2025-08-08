@@ -66,8 +66,8 @@ const CartPage = () => {
                 <div className="w-20 h-20 flex-shrink-0">
                   <Image
                     src={
-                      item.thumbnail?.[0]
-                        ? item.thumbnail[0]
+                      item.images?.[0]
+                        ? item.images[0]
                         : '/placeholder.jpg'
                     }
                     alt={item.title || 'Product Image'}

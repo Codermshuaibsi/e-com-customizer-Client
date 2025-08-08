@@ -30,7 +30,32 @@ export default function ProductDetailPage() {
 
   const increaseQty = () => setQuantity(prev => prev + 1);
   const decreaseQty = () => setQuantity(prev => (prev > 1 ? prev - 1 : 1));
-  const { setCartCount } = useAuth();
+  const { setCartCount, updateCartCount } = useAuth();
+
+  const [images, setImages] = useState([]);
+  async function fetchImages() {
+    try {
+      const res = await fetch("https://e-com-customizer.onrender.com/api/v1/totalproduct");
+      const data = await res.json();
+      console.log("API data:", data); // Inspect structure
+
+     
+      if (Array.isArray(data)) {
+    
+        const allImages = data.flatMap((item) => item.images || []);
+        setImages(allImages);
+      } else {
+        setImages([]);
+      }
+    } catch (error) {
+      console.error("Error fetching images:", error);
+    }
+  }
+
+  useEffect(() => {
+    fetchImages();
+  }, []);
+
 
   const addToCart = async (item) => {
     const token = localStorage.getItem("user_token");
@@ -49,28 +74,24 @@ export default function ProductDetailPage() {
 
         if (alreadyInCart) {
           toast.info("Item already in cart");
-          if (alreadyInCart) {
-            // Increase quantity if already in cart
-            const updateRes = await fetch(`https://e-com-customizer.onrender.com/api/v1/updateCartQuantity/${item._id}`, {
-              method: "PUT",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-              },
-              body: JSON.stringify({
-                quantity: quantity,
-              }),
-            });
+          // Increase quantity if already in cart
+          const updateRes = await fetch(`https://e-com-customizer.onrender.com/api/v1/updateCartQuantity/${item._id}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              quantity: quantity,
+            }),
+          });
 
-            if (updateRes.ok) {
-              toast.success("Cart updated with additional quantity");
-            
-            } else {
-              toast.error("Failed to update quantity");
-            }
-            return;
+          if (updateRes.ok) {
+            toast.success("Cart updated with additional quantity");
+            await updateCartCount(); // Update cart count immediately
+          } else {
+            toast.error("Failed to update quantity");
           }
-
           return;
         }
 
@@ -88,7 +109,7 @@ export default function ProductDetailPage() {
 
         if (res.ok) {
           toast.success("Item added to cart successfully");
-          setCartCount(prev => prev + 1);
+          await updateCartCount(); // Update cart count immediately
         } else {
           toast.error("Failed to add item to cart");
         }
@@ -97,18 +118,53 @@ export default function ProductDetailPage() {
         toast.error("Failed to add item to cart");
       }
     } else {
+      // Handle guest cart
       let guestCart = JSON.parse(localStorage.getItem("guest_cart")) || [];
       const existingItemIndex = guestCart.findIndex((cartItem) => cartItem._id === item._id);
 
       if (existingItemIndex >= 0) {
-        toast.info("Item already in cart");
+        guestCart[existingItemIndex].quantity += quantity; // Update quantity for existing item
+        toast.info("Item quantity updated in cart");
       } else {
         guestCart.push({ ...item, quantity });
-        localStorage.setItem("guest_cart", JSON.stringify(guestCart));
         toast.success("Item added to cart");
       }
+
+      localStorage.setItem("guest_cart", JSON.stringify(guestCart));
+      await updateCartCount(); // Update cart count immediately
     }
   };
+
+  // Ensure cart count is initialized correctly on page load
+  useEffect(() => {
+    const token = localStorage.getItem("user_token");
+
+    if (token) {
+      // Fetch cart count for logged-in user
+      const fetchCartCount = async () => {
+        try {
+          const res = await fetch("https://e-com-customizer.onrender.com/api/v1/fetchAllCartItems", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          const data = await res.json();
+          const totalQuantity = data.cartItems.reduce((total, cartItem) => total + cartItem.quantity, 0);
+          console.log("Initial cart count (logged-in):", totalQuantity);
+          setCartCount(totalQuantity);
+        } catch (error) {
+          console.error("Error fetching cart count:", error);
+        }
+      };
+      fetchCartCount();
+    } else {
+      // Initialize cart count for guest user
+      const guestCart = JSON.parse(localStorage.getItem("guest_cart")) || [];
+      const totalQuantity = guestCart.reduce((total, cartItem) => total + cartItem.quantity, 0);
+      console.log("Initial cart count (guest):", totalQuantity);
+      setCartCount(totalQuantity);
+    }
+  }, [setCartCount]);
 
 
   const handleReviewSubmit = (e) => {
@@ -125,6 +181,12 @@ export default function ProductDetailPage() {
 
   const handleReviewInputChange = (e) => {
     const { name, value } = e.target;
+    if (name === "name") {
+      const regex = /^[A-Za-z\s]*$/; // allows letters and spaces only
+      if (!regex.test(value)) {
+        return; // ignore invalid input
+      }
+    }
     setReviewForm(prev => ({
       ...prev,
       [name]: value
@@ -141,8 +203,8 @@ export default function ProductDetailPage() {
         if (res.ok && data.data) {
           setProduct(data.data);
           // Set the first image as selected image
-          if (data.data.thumbnail && data.data.thumbnail.length > 0) {
-            setSelectedImage(data.data.thumbnail[0]);
+          if (data.data.images && data.data.images.length > 0) {
+            setSelectedImage(data.data.images[0]);
           }
         } else {
           setError("Product not found");
@@ -185,8 +247,7 @@ export default function ProductDetailPage() {
   const itemVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
-      opacity: 1,
-      y: 0,
+      opacity: 1, y: 0,
       transition: {
         duration: 0.5
       }
@@ -232,7 +293,7 @@ export default function ProductDetailPage() {
   return (
     <>
       <motion.div
-        className="p-6 py-10 px-15 max-w-full bg-white"
+        className="p-6 py-10 px-10 max-w-full bg-white"
         initial="hidden"
         animate="visible"
         variants={containerVariants}
@@ -252,6 +313,16 @@ export default function ProductDetailPage() {
               whileHover={{ scale: 1.02 }}
               transition={{ duration: 0.3 }}
             >
+              <div className="image-grid grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                {images.map((img, idx) => (
+                  <img
+                    key={idx}
+                    src={typeof img === "string" ? img : img.url}
+                    alt={typeof img === "object" && img.alt ? img.alt : `Image ${idx + 1}`}
+                    className="w-full h-48 object-cover rounded-md"
+                  />
+                ))}
+              </div>
               <AnimatePresence mode="wait">
                 <motion.img
                   key={selectedImage}
@@ -269,12 +340,12 @@ export default function ProductDetailPage() {
               </div>
             </motion.div>
 
-            {product.thumbnail && product.thumbnail.length > 1 && (
+            {product.images && product.images.length > 1 && (
               <motion.div
                 className="flex md:justify-center justify-start mt-4 gap-4 md:gap-6 overflow-x-auto flex-nowrap"
                 variants={itemVariants}
               >
-                {product.thumbnail.map((img, idx) => (
+                {product.images.map((img, idx) => (
                   <motion.div
                     key={idx}
                     className={`min-w-[80px] h-[90px] md:min-w-0 p-1 border rounded cursor-pointer ${selectedImage === img ? 'border-[#3559C7] border-2' : 'border-gray-300'
@@ -284,7 +355,7 @@ export default function ProductDetailPage() {
                     whileTap={{ scale: 0.95 }}
                     transition={{ duration: 0.2 }}
                   >
-                    <img src={img} alt={`Thumbnail ${idx}`} className="h-20 object-contain w-full" />
+                    <img src={img} alt={`images ${idx}`} className="h-20 object-contain w-full" />
                   </motion.div>
                 ))}
               </motion.div>
@@ -331,7 +402,7 @@ export default function ProductDetailPage() {
             >
               <span className="text-yellow-400 text-lg">★★★★★</span>
               <span className="sm:text-sm text-[9px] font-semibold">{reviews.length || 20} Reviews</span>
-              
+
             </motion.div>
 
             <motion.p
@@ -390,7 +461,7 @@ export default function ProductDetailPage() {
               </div>
               <div className="flex gap-3">
                 <motion.button
-                  className="bg-[#3559C7] text-white px-6 py-2 font-bold text-sm uppercase hover:bg-blue-800 cursor-pointer transition-colors"
+                  className="bg-[#3559C7] text-white px-4 py-2 font-bold text-[12px] lg:text-[13px] uppercase hover:bg-blue-800 cursor-pointer transition-colors"
                   variants={buttonVariants}
                   whileHover="hover"
                   whileTap="tap"
@@ -400,7 +471,7 @@ export default function ProductDetailPage() {
                 <motion.button
                   onClick={() => addToCart(product)}
                   disabled={product.quantity === 0}
-                  className={`border cursor-pointer border-[#3559C7] px-6 py-2 font-bold text-sm uppercase transition-colors ${product.quantity === 0
+                  className={`border cursor-pointer border-[#3559C7] px-4 py-2 font-bold text-[12px] lg:text-[13px] uppercase transition-colors ${product.quantity === 0
                     ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                     : 'text-[#3559C7] hover:bg-[#3559C7] hover:text-white'
                     }`}
@@ -429,7 +500,7 @@ export default function ProductDetailPage() {
         >
           <div className="flex gap-10 justify-center mb-4">
             <motion.button
-              className={`text-lg font-bold uppercase ${activeTab === "description"
+              className={`text-[14px] lg:text-[18px] font-bold uppercase ${activeTab === "description"
                 ? "text-[#3559C7] border-b-2 border-[#3559C7]"
                 : "text-gray-600"
                 }`}
@@ -440,7 +511,7 @@ export default function ProductDetailPage() {
               Description
             </motion.button>
             <motion.button
-              className={`text-lg font-bold uppercase ${activeTab === "reviews"
+              className={`text-[14px] lg:text-[18px] font-bold uppercase ${activeTab === "reviews"
                 ? "text-[#3559C7] border-b-2 border-[#3559C7]"
                 : "text-gray-600"
                 }`}
@@ -664,7 +735,7 @@ export default function ProductDetailPage() {
                         transition={{ duration: 0.2 }}
                       >
                         <img
-                          src={relatedProduct.thumbnail?.[0] || relatedProduct.thumbnail || "/no-image.png"}
+                          src={relatedProduct.images?.[0] || relatedProduct.images || "/no-image.png"}
                           alt={relatedProduct.title}
                           className="w-full h-52 object-contain mb-4"
                         />

@@ -430,7 +430,7 @@ export default function New_Product() {
 
                       <div className="p-1.5 relative border border-gray-300 rounded">
                         <img
-                          src={item.thumbnail?.[0] || "/no-image.png"}
+                          src={item.images?.[0] || "/no-image.png"}
                           alt={item.title || "Product image"}
                           className="w-full h-52 object-contain mb-4"
                           loading="lazy"

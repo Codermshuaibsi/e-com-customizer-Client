@@ -76,10 +76,10 @@ export default function Hero() {
       </div> */}
 
       <section
-        className="w-full h-[500px] mt-4 bg-cover bg-center flex items-center relative transition-all duration-700 ease-in-out"
-        style={{
-          backgroundImage: `url(${sliderImages[currentIndex]})`,
-        }}
+        className="w-full h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] mt-4 bg-cover bg-left md:bg-center bg-no-repeat flex items-center justify-center relative transition-all duration-700 ease-in-out"
+  style={{
+    backgroundImage: `url(${sliderImages[currentIndex]})`,
+  }}
       >
 
 

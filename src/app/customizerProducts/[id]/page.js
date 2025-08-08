@@ -61,7 +61,7 @@ const FitnessProducts = () => {
 
                 {" "}
                 <img
-                  src={product.thumbnail?.[0] || "/no-image.png"}
+                  src={product.images?.[0] || "/no-image.png"}
                   alt={product.title}
                   className="w-full h-52 object-contain mb-4"
                 />{" "}

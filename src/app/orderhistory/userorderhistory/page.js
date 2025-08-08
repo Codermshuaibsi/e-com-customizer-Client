@@ -93,7 +93,7 @@ const OrderHistoryPage = () => {
               productId: product.productId || {
                 title: 'Product title not available',
                 price: 0,
-                thumbnail: [],
+                images: [],
                 description: 'Product description not available'
               }
             }))
@@ -314,7 +314,7 @@ const OrderHistoryPage = () => {
                   className="flex gap-3 sm:gap-4 p-3 sm:p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors"
                 >
                   <img
-                    src={product.productId?.thumbnail?.[0] || 'https://images.unsplash.com/photo-1560472355-536de3962603?w=300&h=300&fit=crop'}
+                    src={product.productId?.images?.[0] || 'https://images.unsplash.com/photo-1560472355-536de3962603?w=300&h=300&fit=crop'}
                     alt={product.productId?.title || 'Product'}
                     className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-lg border-2 border-white shadow-sm"
                     onError={(e) => {
@@ -700,7 +700,7 @@ const OrderHistoryPage = () => {
                         >
                           <div className="flex-shrink-0">
                             <img
-                              src={product.productId?.thumbnail?.[0] || 'https://images.unsplash.com/photo-1560472355-536de3962603?w=300&h=300&fit=crop'}
+                              src={product.productId?.images?.[0] || 'https://images.unsplash.com/photo-1560472355-536de3962603?w=300&h=300&fit=crop'}
                               alt={product.productId?.title || 'Product'}
                               className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-xl border-2 border-white shadow-sm"
                               onError={(e) => {

@@ -188,7 +188,7 @@ export default function WishlistPage() {
                 {/* Product Image */}
                <div className="relative bg-gradient-to-br from-gray-50 to-gray-100 p-6">
              <img
-                    src={item.thumbnail[0]}
+                    src={item.images[0]}
                     alt={item.title}
                     className="w-full h-48 object-contain group-hover:scale-110 transition-transform duration-300"
                   /> 

@@ -276,7 +276,7 @@ const Catalog = () => {
                                             <div className="p-1.5 relative border border-gray-300">
                                                 <Link href={`/PDP_page/${item._id}`}>
                                                     <img
-                                                        src={item.thumbnail?.[0] || item.thumbnail || "/no-image.png"}
+                                                        src={item.images?.[0] || item.images || "/no-image.png"}
                                                         alt={item.title || "Product"}
                                                         className="w-full h-52 object-contain mb-4"
                                                     />

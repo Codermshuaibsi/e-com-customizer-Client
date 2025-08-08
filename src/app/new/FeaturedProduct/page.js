@@ -220,7 +220,7 @@ export default function FeaturePro() {
                 <Link href={`/PDP_page/${item?._id}`}>
                   <div className="p-1.5 hover: relative border border-gray-300">
                     <img
-                      src={item.thumbnail}
+                      src={item.images}
                       alt={item.title}
                       className="w-full h-52 object-contain mb-4"
                     />

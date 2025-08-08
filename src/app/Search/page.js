@@ -185,8 +185,8 @@ function Searched_Items() {
                                             <Link href={`/PDP_page/${item._id}`}>
                                                 <img
                                                     src={
-                                                        item.thumbnail?.[0] ||
-                                                        item.thumbnail ||
+                                                        item.images?.[0] ||
+                                                        item.images ||
                                                         "/no-image.png"
                                                     }
                                                     alt={item.title || "Product"}

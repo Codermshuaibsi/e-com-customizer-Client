@@ -33,7 +33,7 @@ const UserProfilePage = () => {
     email: "",
     phone: "",
     lastName: "",
-    thumbnail: "",
+    images: "",
   });
   const [Loading, setLoading] = useState(false)
   const [currentPassword, setCurrentPassword] = useState("");
@@ -116,7 +116,7 @@ const UserProfilePage = () => {
               color: "Black",
               price: 2499,
               quantity: 1,
-              thumbnail: [
+              images: [
                 "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300&h=300&fit=crop",
               ],
             },
@@ -196,7 +196,7 @@ const UserProfilePage = () => {
           email: data.data.email || "",
           phone: data.data.phoneNumber || "",
           lastName: data.data.lastName || "",
-          thumbnail: data.data.thumbnail || "",
+          images: data.data.images || "",
         });
       } catch (error) {
         console.error("Error fetching user:", error.message);
@@ -450,7 +450,7 @@ const UserProfilePage = () => {
     try {
       setUploading(true);
       const formData = new FormData();
-      formData.append("thumbnail", file); // Make sure backend accepts this field name
+      formData.append("images", file); // Make sure backend accepts this field name
 
       const token = localStorage.getItem("user_token");
       const userId = localStorage.getItem("user_Id")
@@ -501,9 +501,9 @@ const UserProfilePage = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center text-white text-2xl font-bold overflow-hidden">
-                {GetUserDetail?.thumbnail ? (
+                {GetUserDetail?.images ? (
                   <img
-                    src={GetUserDetail.thumbnail}
+                    src={GetUserDetail.images}
                     alt="User"
                     className="w-full h-full object-cover rounded-full"
                   />
@@ -1069,9 +1069,9 @@ const UserProfilePage = () => {
               <div className="space-y-6">
                 {/* Profile Picture Section */}
                 <div className="w-20 h-20 bg-blue-500 rounded-full flex items-center justify-center text-white text-3xl font-bold overflow-hidden">
-                  {GetUserDetail?.thumbnail ? (
+                  {GetUserDetail?.images ? (
                     <img
-                      src={GetUserDetail.thumbnail}
+                      src={GetUserDetail.images}
                       alt="Profile"
                       className="w-full h-full object-cover rounded-full"
                     />
