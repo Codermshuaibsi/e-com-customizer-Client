@@ -95,7 +95,7 @@ const User_profile_dero = () => {
   };
 
   const handleSettingsClick = () => {
-    router.push("/"); // Navigate to profile page
+    router.push("/mainuserprofile"); // Navigate to profile page
     setIsOpen(false);
   };
 
@@ -164,16 +164,17 @@ const User_profile_dero = () => {
   const userName =
     userData?.name || userData?.fullName || userData?.firstName || "User";
   const userEmail = userData?.email || "user@example.com";
-  const thumbnail = userData?.thumbnail || "https://via.placeholder.com/150";
+  const images = userData?.images || "https://via.placeholder.com/150";
   const userInitials = getUserInitials(userName);
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="relative " ref={dropdownRef}>
       {/* Profile Button */}
 
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex flex-row-reverse gap-2 cursor-pointer items-center bg-white rounded-full p-2 shadow-sm hover:shadow-md transition-shadow duration-200 border border-gray-100"
+        className="flex flex-row-reverse gap-2 cursor-pointer items-center bg-white rounded-full p-2 shadow-sm hover:bg-gray-100 hover:shadow-md 
+             transition-shadow duration-200 border border-gray-100"
       >
         <div className="flex items-center">
           <ChevronDown
@@ -188,9 +189,9 @@ const User_profile_dero = () => {
         </p>
 
         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center text-white font-semibold overflow-hidden">
-          {thumbnail ? (
+          {images ? (
             <img
-              src={thumbnail}
+              src={images}
               alt="Profile"
               className="w-full h-full object-cover rounded-full"
             />
@@ -209,9 +210,9 @@ const User_profile_dero = () => {
           <div className="bg-gradient-to-r from-gray-50 to-blue-50 p-4">
             <div className="flex items-center space-x-3">
               <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center text-white font-semibold text-lg shadow-lg">
-                {thumbnail ? (
+                {images ? (
                   <img
-                    src={thumbnail}
+                    src={images}
                     alt="Profile"
                     className="w-full h-full object-cover rounded-full"
                   />
@@ -250,7 +251,7 @@ const User_profile_dero = () => {
               className="w-full flex items-center px-4 py-3 text-left hover:bg-gray-50 transition-colors duration-150"
             >
               <ShoppingBag className="w-5 h-5 text-gray-500 mr-3" />
-              <span className="text-gray-700 font-medium">Order History</span>
+              <span className="text-gray-700 font-medium">My Orders</span>
 
             </button>
             <button
@@ -258,13 +259,15 @@ const User_profile_dero = () => {
               onClick={() => router.push("/wishlist")}
             >
               <Heart size={23} />
-              <span className="text-gray-700 mx-3 font-medium">Wishlist</span>
+              <span className="text-gray-700 mx-3 font-medium">
+                Wishlist</span>
 
             </button>
 
             <button
               onClick={handleSettingsClick}
               className="w-full flex items-center px-4 py-3 text-left hover:bg-gray-50 transition-colors duration-150"
+             
             >
               <Settings className="w-5 h-5 text-gray-500 mr-3" />
               <span className="text-gray-700 font-medium">

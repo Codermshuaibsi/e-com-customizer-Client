@@ -12,7 +12,7 @@ import { HiHeart, HiOutlineHeart } from "react-icons/hi";
 import { FiMail } from "react-icons/fi";
 import { IoCallOutline, IoNotificationsCircle } from "react-icons/io5";
 import { LiaShoppingBagSolid } from "react-icons/lia";
-  import { HiMenu, HiX, HiChevronDown, HiChevronUp } from "react-icons/hi";
+import { HiMenu, HiX, HiChevronDown, HiChevronUp } from "react-icons/hi";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import User_profile_dero from "../userprofile/page";
@@ -283,6 +283,7 @@ export default function Navbar() {
               </Link>
               <span className="absolute -top-2 -right-2  text-white text-xs font-semibold h-5 w-5 flex items-center justify-center rounded-full bg-blue-600">
                 {cartCount}
+                {console.log("Cart Count:", cartCount)}
               </span>
 
 
@@ -389,7 +390,11 @@ export default function Navbar() {
               <div
                 key="CLOTHES"
                 className="relative group mb-2"
-                onClick={() => setShowCLOTHES(showCLOTHES=> !showCLOTHES)}
+                onClick={() => {
+                  setShowCLOTHES(showCLOTHES => !showCLOTHES)
+
+                  setShowCustomizer(false)
+                }}
               >
                 <a
                   className={clsx(
@@ -406,7 +411,9 @@ export default function Navbar() {
                 </a>
 
                 {showCLOTHES && (
-                  <div className="absolute left-1/2 flex gap-15 top-full w-[600px] items-start -translate-x-1/2 bg-white p-4 border border-gray-200 shadow-xl rounded-md z-50">
+                  <div className="absolute left-1/2 top-full w-[80vw] max-w-2xl -translate-x-1/2 
+             bg-white p-6 border border-gray-200 shadow-2xl rounded-md z-50 
+             grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-3">
                     {showCategories.map((category) => (
                       <div key={category._id}>
                         <h3 className="text-lg font-semibold mb-2 text-gray-800">
@@ -440,9 +447,12 @@ export default function Navbar() {
                 <a
                   className={clsx(
                     "uppercase text-base sm:text-md font-semibold cursor-pointer transition-colors flex items-center gap-1",
-                    isActive ? "text-blue-600" : "text-[#333333] hover:text-gray-600"
+                    showCustomizer ? "text-blue-600" : "text-[#333333] hover:text-gray-600"
                   )}
-                  onClick={() => setShowCustomizer(showCustomizer => !showCustomizer)}
+                  onClick={() => {
+                    setShowCustomizer(showCustomizer => !showCustomizer)
+                    setShowCLOTHES(false)
+                  }}
                 >
                   {item}
                   {showCustomizer ? (
@@ -454,11 +464,11 @@ export default function Navbar() {
 
                 {showCustomizer && (
                   <div
-                    className="absolute left-1/2 top-full w-[95vw] max-w-2xl -translate-x-1/2 bg-white p-6 border border-gray-200 shadow-2xl rounded-md z-50"
+                    className="absolute left-1/2 top-full w-[95vw] max-w-2xl -translate-x-1/2 bg-white p-6 border border-gray-200 shadow-2xl rounded-md z-50 "
                     onMouseEnter={() => setShowCustomizer(true)}
                     onMouseLeave={() => setShowCustomizer(false)}
                   >
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-3">
                       {showCategories.map((category) => (
                         <div key={category._id}>
                           <h3 className="text-lg font-semibold mb-2 text-gray-800">

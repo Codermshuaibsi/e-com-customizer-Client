@@ -282,7 +282,7 @@ export default function ProductPage() {
                         <Link href={`PDP_page/${item._id}`}>
                           {" "}
                           <img
-                            src={item.thumbnail?.[0] || "/no-image.png"}
+                            src={item.images?.[0] || "/no-image.png"}
                             alt={item.title}
                             className="w-full h-52 object-contain mb-4"
                           />{" "}
