@@ -9,6 +9,7 @@ import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
 import Link from "next/link";
 import { toast } from "react-toastify";
 import { useAuth } from "../../context/AuthContext";
+import DOMPurify from "dompurify";
 
 export default function ProductDetailPage() {
   const { id } = useParams();
@@ -27,6 +28,7 @@ export default function ProductDetailPage() {
     rating: 5,
     comment: ''
   });
+  const [isZoomed, setIsZoomed] = useState(false);
 
   const increaseQty = () => setQuantity(prev => prev + 1);
   const decreaseQty = () => setQuantity(prev => (prev > 1 ? prev - 1 : 1));
@@ -39,9 +41,7 @@ export default function ProductDetailPage() {
       const data = await res.json();
       console.log("API data:", data); // Inspect structure
 
-     
       if (Array.isArray(data)) {
-    
         const allImages = data.flatMap((item) => item.images || []);
         setImages(allImages);
       } else {
@@ -56,8 +56,8 @@ export default function ProductDetailPage() {
     fetchImages();
   }, []);
 
-
   const addToCart = async (item) => {
+ 
     const token = localStorage.getItem("user_token");
 
     if (token) {
@@ -135,6 +135,26 @@ export default function ProductDetailPage() {
     }
   };
 
+  useEffect(() => {
+    const fetchCats = async () => {
+      try {
+        const res = await fetch('https://e-com-customizer.onrender.com/api/v1/showAllCategory');
+        const data = await res.json();
+        console.log('Category response:', data);
+        if (res.ok && data.categories) {
+          setCategories(data.categories);
+        } else {
+          console.error('Failed to load categories:', data.message);
+        }
+      } catch (err) {
+        console.error('Error fetching categories:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCats();
+  }, []);
+
   // Ensure cart count is initialized correctly on page load
   useEffect(() => {
     const token = localStorage.getItem("user_token");
@@ -165,7 +185,6 @@ export default function ProductDetailPage() {
       setCartCount(totalQuantity);
     }
   }, [setCartCount]);
-
 
   const handleReviewSubmit = (e) => {
     e.preventDefault();
@@ -199,6 +218,7 @@ export default function ProductDetailPage() {
         setLoading(true);
         const res = await fetch(`https://e-com-customizer.onrender.com/api/v1/getproductById/${id}`);
         const data = await res.json();
+        console.log("Full product response:", data);
 
         if (res.ok && data.data) {
           setProduct(data.data);
@@ -266,6 +286,10 @@ export default function ProductDetailPage() {
     }
   };
 
+  const handleZoomToggle = () => {
+    setIsZoomed(!isZoomed);
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -307,7 +331,7 @@ export default function ProductDetailPage() {
 
         <div className="flex flex-col md:flex-row gap-10">
           {/* Left: Images */}
-          <motion.div className="flex-[1.2]" variants={itemVariants}>
+          <motion.div className="flex-[1.2] sticky top-50 self-start h-fit" variants={itemVariants}>
             <motion.div
               className="border-2 rounded-lg p-4 relative border-[#3559C7] h-[300px] overflow-hidden"
               whileHover={{ scale: 1.02 }}
@@ -328,16 +352,20 @@ export default function ProductDetailPage() {
                   key={selectedImage}
                   src={selectedImage || "/no-image.png"}
                   alt={product.title}
-                  className="w-full object-contain h-full"
+                  className="w-full object-contain h-full cursor-pointer"
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.8 }}
                   transition={{ duration: 0.4 }}
+                  onClick={handleZoomToggle}
                 />
               </AnimatePresence>
-              <div className="absolute bottom-3 right-3 text-white text-xl bg-black bg-opacity-50 p-2 rounded-full">
-                ⤢
-              </div>
+              <button
+                className="absolute top-2 right-2 bg-gray-800 text-white px-3 py-1 rounded hover:bg-gray-700"
+                onClick={handleZoomToggle}
+              >
+                Expand
+              </button>
             </motion.div>
 
             {product.images && product.images.length > 1 && (
@@ -405,12 +433,28 @@ export default function ProductDetailPage() {
 
             </motion.div>
 
-            <motion.p
+            <motion.div
               className="mt-4 text-[15px] text-gray-700 leading-relaxed"
               variants={itemVariants}
             >
-              {product.description}
-            </motion.p>
+              <div dangerouslySetInnerHTML={{
+                __html: product.description
+              }}>
+                {/* {product.description} */}
+              </div>
+
+            </motion.div>
+
+            <motion.div
+              className="mt-4 text-[15px] text-gray-700 leading-relaxed"
+              variants={itemVariants}
+            >
+              <div dangerouslySetInnerHTML={{
+                __html: product.description
+              }}>
+                {/* {product.description} */}
+              </div>
+            </motion.div>
 
             {product.color && (
               <motion.div
@@ -527,13 +571,18 @@ export default function ProductDetailPage() {
             {activeTab === "description" ? (
               <motion.div
                 key="description"
-                className="bg-gray-50 px-6 py-10 text-lg text-gray-800 w-full"
+                className="bg-gray-50 px-6 py-10 text-lg text-gray-800 w-full leading-relaxed"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.3 }}
               >
-                {product.description}
+                <div
+                  className="prose max-w-none"
+                  dangerouslySetInnerHTML={{
+                    __html: DOMPurify.sanitize(product.description),
+                  }}
+                />
               </motion.div>
             ) : (
               <motion.div
@@ -722,7 +771,7 @@ export default function ProductDetailPage() {
               .map((relatedProduct, idx) => (
                 <motion.div
                   key={relatedProduct._id}
-                  className="border border-gray-200 rounded shadow-sm overflow-hidden group bg-white"
+                  className="boZbbczVXrder border border-gray-200 rounded shadow-sm overflow-hidden group bg-white"
                   variants={itemVariants}
                   whileHover={{ y: -5, scale: 1.02 }}
                   transition={{ duration: 0.3 }}
@@ -790,6 +839,35 @@ export default function ProductDetailPage() {
           </motion.div>
         </section>
       </motion.div>
+
+      {/* Zoom Modal */}
+      {isZoomed && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            className="relative"
+          >
+            <img
+              src={selectedImage || "/no-image.png"}
+              alt={product.title}
+              className="max-w-full max-h-full"
+            />
+            <button
+              className="absolute top-2 right-2 bg-gray-800 text-white px-3 py-1 rounded hover:bg-gray-700"
+              onClick={handleZoomToggle}
+            >
+              Close
+            </button>
+          </motion.div>
+        </div>
+      )}
     </>
   );
 }
+
+// module.exports = {
+//   ...module.exports, // Spread the existing configuration
+//   plugins: [require('@tailwindcss/typography')],
+// };

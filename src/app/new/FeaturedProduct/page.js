@@ -40,6 +40,7 @@ export default function FeaturePro() {
         );
 
         setProducts(filteredProducts.length ? filteredProducts : data.AllProduct || []);
+        console.log("Filtered products:", filteredProducts);
       } catch (err) {
         setError("Failed to fetch products");
       } finally {
@@ -220,7 +221,8 @@ export default function FeaturePro() {
                 <Link href={`/PDP_page/${item?._id}`}>
                   <div className="p-1.5 hover: relative border border-gray-300">
                     <img
-                      src={item.images}
+                      src={item.images[0]}
+                      
                       alt={item.title}
                       className="w-full h-52 object-contain mb-4"
                     />

@@ -53,6 +53,7 @@ export default function Navbar() {
     "ABOUT": "/About",
     "CUSTOMIZE": "/customizer",
     "CLOTHES": "/clothes",
+    "GUNS": "/guns",
   };
 
 
@@ -60,12 +61,14 @@ export default function Navbar() {
   const navigation = useRouter();
   const [showCustomizer, setShowCustomizer] = useState(false);
   const [showCLOTHES, setShowCLOTHES] = useState(false);
+  const [showGUNS, setShowGUNS] = useState(false);
   const [showCategories, setShowCategories] = useState([]);
   const [brands, setBrands] = useState([]);
   const [Search, setSearch] = useState("")
   const { cartCount, setsearchResults } = useAuth();
 
-  const navItems = ["NEW COLLECTIONS", "ABOUT", "CUSTOMIZE", "CLOTHES"];
+  const navItems = ["NEW COLLECTIONS", "ABOUT", "CUSTOMIZE", "CLOTHES", "GUNS"];
+
 
   const pathname = usePathname();
   const Goto_new_page = (item) => {
@@ -391,9 +394,8 @@ export default function Navbar() {
                 key="CLOTHES"
                 className="relative group mb-2"
                 onClick={() => {
-                  setShowCLOTHES(showCLOTHES => !showCLOTHES)
-
-                  setShowCustomizer(false)
+                  setShowCLOTHES((showCLOTHES) => !showCLOTHES);
+                  setShowCustomizer(false);
                 }}
               >
                 <a
@@ -409,36 +411,41 @@ export default function Navbar() {
                     <HiChevronDown className="ml-1 transition-transform duration-200" />
                   )}
                 </a>
-
+          
                 {showCLOTHES && (
-                  <div className="absolute left-1/2 top-full w-[80vw] max-w-2xl -translate-x-1/2 
-             bg-white p-6 border border-gray-200 shadow-2xl rounded-md z-50 
-             grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-3">
-                    {showCategories.map((category) => (
-                      <div key={category._id}>
-                        <h3 className="text-lg font-semibold mb-2 text-gray-800">
-                          {category.title}
-                        </h3>
-                        <ul className="space-y-1">
-                          {category.subCategory?.map((sub) => (
-                            <li key={sub._id}>
-                              <Link
-                                href={`/Catalog_page/${sub._id}`}
-                                className="text-sm sm:text-sm text-gray-600 hover:text-blue-600 transition-colors transform hover:scale-105 duration-200 font-normal"
-                                style={{ display: 'inline-block' }}
-                              >
-                                {sub.title}
-                              </Link>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    ))}
+                  <div
+                    className="absolute left-1/2 top-full w-[80vw] max-w-2xl -translate-x-1/2 
+                       bg-white p-6 border border-gray-200 shadow-2xl rounded-md z-50 
+                       grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-3"
+                  >
+                    {showCategories
+                      .filter((category) => category.title !== "GUNS") // GUNS remove kiya
+                      .map((category) => (
+                        <div key={category._id}>
+                          <h3 className="text-lg font-semibold mb-2 text-gray-800">
+                            {category.title}
+                          </h3>
+                          <ul className="space-y-1">
+                            {category.subCategory?.map((sub) => (
+                              <li key={sub._id}>
+                                <Link
+                                  href={`/Catalog_page/${sub._id}`}
+                                  className="text-sm sm:text-sm text-gray-600 hover:text-blue-600 transition-colors transform hover:scale-105 duration-200 font-normal"
+                                  style={{ display: "inline-block" }}
+                                >
+                                  {sub.title}
+                                </Link>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ))}
                   </div>
                 )}
               </div>
             );
           }
+          
 
           // CUSTOMIZER Dropdown
           if (item === "CUSTOMIZE") {
@@ -496,6 +503,53 @@ export default function Navbar() {
             );
           }
 
+          // GUN
+          if (item === "GUNS") {
+            return (
+              <div key={item} className="relative group mb-2" ref={dropdownRef}>
+                <a
+                  className={clsx(
+                    "uppercase text-base sm:text-md font-semibold cursor-pointer transition-colors flex items-center gap-1",
+                    showGUNS ? "text-blue-600" : "text-[#333333] hover:text-gray-600"
+                  )}
+                  onClick={() => {
+                    setShowGUNS(prev => !prev);
+                    setShowCustomizer(false);
+                    setShowCLOTHES(false); // CLOTHES close
+                  }}
+                >
+                  {item}
+                  {showGUNS ? (
+                    <HiChevronUp className="ml-1 transition-transform duration-200" />
+                  ) : (
+                    <HiChevronDown className="ml-1 transition-transform duration-200" />
+                  )}
+                </a>
+          
+                {showGUNS && (
+                  <div
+                    className="absolute left-1/2 top-full w-[200px] -translate-x-1/2 bg-white p-4 border border-gray-200 shadow-2xl rounded-md z-50"
+                    onMouseEnter={() => setShowGUNS(true)}
+                    onMouseLeave={() => setShowGUNS(false)}
+                  >
+                    <ul className="space-y-2">
+                      <li>
+                        <Link
+                          href="/guns/ar"
+                          className="text-sm text-gray-600 hover:text-blue-600 transition-colors font-normal"
+                        >
+                          AR
+                        </Link>
+                      </li>
+                    </ul>
+                  </div>
+                )}
+              </div>
+            );
+          }
+          
+
+
           // Default Nav Items (NEW COLLECTIONS, ABOUT)
           return (
             <div key={item} className="relative mb-3">
@@ -511,6 +565,45 @@ export default function Navbar() {
             </div>
           );
         })}
+
+        {/* Dropdown for Guns */}
+        {/* <div className="flex gap-4 items-center">
+          <div className="relative group">
+            <button className="text-[#3559C7] font-semibold text-sm underline">
+              Guns
+            </button>
+            <div className="absolute hidden group-hover:block bg-white border border-gray-200 rounded shadow-lg mt-2">
+              <ul className="py-2">
+                <li>
+                  <a
+                    href="/guns/pistols"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Pistols
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/guns/rifles"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Rifles
+                  </a>
+                </li  >
+                <li>
+                  <a
+                    href="/guns/shotguns"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Shotguns
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div> */}
+
+
 
       </div>
     </header >
