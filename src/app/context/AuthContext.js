@@ -31,7 +31,10 @@ export const AuthProvider = ({ children }) => {
         });
         const data = await res.json();
         if (res.ok && data?.cartItems) {
-          const totalQuantity = data.cartItems.reduce((total, cartItem) => total + cartItem.quantity, 0);
+          console.log(data.cartItems);
+          
+          const totalQuantity = data.cartItems.length;
+
           setCartCount(totalQuantity);
         } else {
           console.warn("Could not fetch cart items:", data.message);
